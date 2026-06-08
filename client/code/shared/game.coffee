@@ -593,7 +593,7 @@ normal3=(number)->
             ret.Fanatic=1 #狂信者
         if number==16 || number==17 || number==18
             if number==17
-                ret.Immoral=1
+                ret.Heretic=1
             ret.Madman--
             ret.HearMadman=1
         if 19<=number<=22
