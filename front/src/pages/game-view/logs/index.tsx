@@ -240,7 +240,7 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
             renderedLogCount += chunk.logs.length;
             return (
               <LogChunk
-                key={chunk.day}
+                key={`${chunk.day}:${i}`}
                 logClass={this.logClass}
                 blocks={chunk.blocks}
                 renderedNumber={chunkRenderedLogs}

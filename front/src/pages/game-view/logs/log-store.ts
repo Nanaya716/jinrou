@@ -96,16 +96,21 @@ export class LogStore {
     // If log is a nextturn log, update current day.
     if (log.mode === 'nextturn' && !log.finished && !log.night) {
       this.currentDay = log.day;
-      this.chunks.push({
-        day: this.currentDay,
-        logs: [],
-        blocks: [
-          {
-            blockId: ++this.lastBlockId,
-            logs: [],
-          },
-        ],
-      });
+      const lastChunk = this.chunks[this.chunks.length - 1];
+      if (lastChunk == null || lastChunk.logs.length > 0) {
+        this.chunks.push({
+          day: this.currentDay,
+          logs: [],
+          blocks: [
+            {
+              blockId: ++this.lastBlockId,
+              logs: [],
+            },
+          ],
+        });
+      } else {
+        lastChunk.day = this.currentDay;
+      }
     }
     // current chunk of logs.
     const chunk: LogChunk = this.chunks[this.chunks.length - 1];
