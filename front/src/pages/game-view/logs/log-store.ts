@@ -130,6 +130,9 @@ export class LogStore {
    */
   @action
   public reset(): void {
+    this.currentDay = 1;
+    this.lastLogId = 0;
+    this.lastBlockId = 0;
     this.chunks = [
       {
         day: 1,
