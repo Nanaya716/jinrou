@@ -4,13 +4,12 @@ import { LogVisibility } from '../defs';
 import { Rule } from '../../../defs';
 
 import { LogModeStyle, OneLog } from './log';
-import { StoredLog, LogStore, StoredLogBlock } from './log-store';
+import { StoredLog, LogStore } from './log-store';
 import { mapReverse } from '../../../util/map-reverse';
-import { I18n, TranslationFunction } from '../../../i18n';
+import { I18n } from '../../../i18n';
 import {
   LogWrapper,
   FixedSizeChunkWrapper,
-  LogBlockWrapper,
   PendingLogMessage,
 } from './elements';
 import { LogsRenderingState } from './store';
@@ -202,12 +201,6 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
     }
 
     const fixedSize = true;
-    const latestChunk = logs.chunks[logs.chunks.length - 1];
-    const latestBlock =
-      latestChunk != null
-        ? latestChunk.blocks[latestChunk.blocks.length - 1]
-        : null;
-    const activeBlockId = latestBlock != null ? latestBlock.blockId : null;
     /*
      * number of logs to render (not pending).
      */
@@ -242,13 +235,12 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
               <LogChunk
                 key={`${chunk.day}:${i}`}
                 logClass={this.logClass}
-                blocks={chunk.blocks}
+                logs={chunk.logs}
                 renderedNumber={chunkRenderedLogs}
                 visible={visible}
                 fixedSize={fixedSize}
                 icons={icons}
                 rule={rule}
-                activeBlockId={activeBlockId}
                 resolveLogById={this.resolveLogById}
                 onShortIdClick={onShortIdClick}
               />
@@ -273,9 +265,9 @@ class LogChunk extends React.PureComponent<
      */
     logClass: string;
     /**
-     * Stable blocks in this chunk.
+     * Logs in this chunk.
      */
-    blocks: StoredLogBlock[];
+    logs: StoredLog[];
     /**
      * Whether this chunk is visible.
      */
@@ -297,10 +289,6 @@ class LogChunk extends React.PureComponent<
      */
     rule: Rule | undefined;
     /**
-     * Id of the block that can still receive new logs.
-     */
-    activeBlockId: number | null;
-    /**
      * Function to resolve log by shortId for reply reference.
      */
     resolveLogById?: (shortId: string) => StoredLog | null;
@@ -314,39 +302,38 @@ class LogChunk extends React.PureComponent<
   public render() {
     const {
       logClass,
-      blocks,
+      logs,
       visible,
       fixedSize,
       renderedNumber,
       rule,
       icons,
-      activeBlockId,
       resolveLogById,
       onShortIdClick,
     } = this.props;
     if (!visible && !fixedSize) {
       return null;
     }
+    const logsToRender =
+      renderedNumber >= logs.length
+        ? logs
+        : renderedNumber > 0
+        ? logs.slice(-renderedNumber)
+        : [];
 
     const chunkContent = (
       <I18n namespace="game_client">
         {t =>
-          makeRenderedBlocks(blocks, renderedNumber).map(entry => {
-            const BlockComponent =
-              entry.block.blockId === activeBlockId
-                ? ActiveLogBlock
-                : HistoricalLogBlock;
+          mapReverse(logsToRender, log => {
             return (
-              <BlockComponent
-                key={entry.block.blockId}
+              <OneLog
+                key={log.logid}
                 logClass={logClass}
-                block={entry.block}
-                start={entry.start}
-                end={entry.end}
-                fixedSize={fixedSize}
-                icons={icons}
-                rule={rule}
                 t={t}
+                fixedSize={fixedSize}
+                log={log}
+                rule={rule}
+                icons={icons}
                 resolveLogById={resolveLogById}
                 onShortIdClick={onShortIdClick}
               />
@@ -366,115 +353,3 @@ class LogChunk extends React.PureComponent<
     }
   }
 }
-
-function makeRenderedBlocks(
-  blocks: StoredLogBlock[],
-  renderedNumber: number,
-): Array<{
-  block: StoredLogBlock;
-  start: number;
-  end: number;
-}> {
-  const result: Array<{
-    block: StoredLogBlock;
-    start: number;
-    end: number;
-  }> = [];
-  let remaining = renderedNumber;
-  for (let idx = blocks.length - 1; idx >= 0; idx--) {
-    const block = blocks[idx];
-    const renderedInBlock = Math.max(0, Math.min(block.logs.length, remaining));
-    remaining -= block.logs.length;
-    if (renderedInBlock <= 0) {
-      continue;
-    }
-    result.push({
-      block,
-      start: block.logs.length - renderedInBlock,
-      end: block.logs.length,
-    });
-  }
-  return result;
-}
-
-interface IPropLogBlock {
-  /**
-   * Class attached to each log.
-   */
-  logClass: string;
-  /**
-   * Log block to render.
-   */
-  block: StoredLogBlock;
-  /**
-   * Start index of this block.
-   */
-  start: number;
-  /**
-   * End index of this block.
-   */
-  end: number;
-  /**
-   * Whether logs are rendered in fixed-size mode.
-   */
-  fixedSize: boolean;
-  /**
-   * Icon of each user.
-   */
-  icons: Record<string, string | undefined>;
-  /**
-   * Current rule.
-   */
-  rule: Rule | undefined;
-  /**
-   * Translation function.
-   */
-  t: TranslationFunction;
-  /**
-   * Function to resolve log by shortId for reply reference.
-   */
-  resolveLogById?: (shortId: string) => StoredLog | null;
-  /**
-   * Callback for shortId click.
-   */
-  onShortIdClick?: (shortId: string) => void;
-}
-
-class BaseLogBlock<P extends IPropLogBlock> extends React.PureComponent<P> {
-  public render() {
-    const {
-      logClass,
-      block,
-      start,
-      end,
-      fixedSize,
-      icons,
-      rule,
-      t,
-      resolveLogById,
-      onShortIdClick,
-    } = this.props;
-    const children: React.ReactNode[] = [];
-    for (let idx = end - 1; idx >= start; idx--) {
-      const log = block.logs[idx];
-      children.push(
-        <OneLog
-          key={log.logid}
-          logClass={logClass}
-          t={t}
-          fixedSize={fixedSize}
-          log={log}
-          rule={rule}
-          icons={icons}
-          resolveLogById={resolveLogById}
-          onShortIdClick={onShortIdClick}
-        />,
-      );
-    }
-    return <LogBlockWrapper>{children}</LogBlockWrapper>;
-  }
-}
-
-class ActiveLogBlock extends BaseLogBlock<IPropLogBlock> {}
-
-class HistoricalLogBlock extends BaseLogBlock<IPropLogBlock> {}
