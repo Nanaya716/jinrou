@@ -716,8 +716,6 @@ const MainWrapper = styled.div`
   display: flex;
   flex-flow: row nowrap;
   position: relative;
-  overflow-x: clip;
-  overflow-y: visible;
 `;
 
 /**
@@ -746,14 +744,14 @@ interface IPropsRuleWrapper {
  * Wrapper of rule.
  */
 const RuleWrapper = styled.div<IPropsRuleWrapper>`
+  display: ${({ closed }) => (closed ? 'none' : 'block')};
   position: absolute;
   right: 0;
   top: 0;
-  transition: transform 250ms ease-out;
-  transform: translateX(${({ closed }) => (closed ? '100%' : '0')});
-  pointer-events: ${({ closed }) => (closed ? 'none' : 'auto')};
   width: 20em;
   max-width: 100%;
+  max-height: 100vh;
+  overflow: auto;
   order: 2;
 
   z-index: ${ruleZIndex};
