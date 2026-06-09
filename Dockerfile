@@ -3,6 +3,7 @@ FROM node:8
 MAINTAINER uhyo
 # define work directory
 WORKDIR /jinrou
+ARG APP_CONFIG=config/app.coffee
 # First, install dependencies.
 # COPY ./package.json ./package-lock.json ./
 # COPY ./node_modules ./node_modules/
@@ -14,6 +15,7 @@ RUN npm config set registry https://registry.npmmirror.com/ \
 COPY ./prizedata ./prizedata/
 COPY ./public ./public/
 COPY ./config ./config/
+COPY ./${APP_CONFIG} ./config/app.coffee
 COPY ./app.js ./
 COPY ./manual ./manual/
 COPY ./client ./client/
