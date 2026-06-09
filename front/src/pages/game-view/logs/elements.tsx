@@ -56,6 +56,7 @@ export const LogBlockWrapper = styled.div`
  * Wrapper of one log line, used in fixed-size layout.
  */
 export const FixedSizeLogRow = styled.div`
+  contain: layout paint style;
   display: grid;
   grid-template-columns: ${fixedSizeGridColumnsPC};
   ${phone`
