@@ -22,7 +22,6 @@ import {
   ReportFormConfig,
   ReportFormQuery,
   ShareButtonConfig,
-  PlayerInfo,
 } from './defs';
 import { GameStore } from './store';
 import { JobInfo } from './job-info';
@@ -316,7 +315,6 @@ export class Game extends React.Component<IPropGame, {}> {
               <LogsWrapper>
                 <LogsPane
                   store={store}
-                  players={players}
                   onResetLogPickup={this.handleResetLogPickup}
                   onShortIdClick={this.handleShortIdClick}
                 />
@@ -551,7 +549,7 @@ interface IPropRulePane {
 }
 
 @observer
-class RulePane extends React.Component<IPropRulePane, {}> {
+class RulePane extends React.PureComponent<IPropRulePane, {}> {
   public render() {
     const {
       store,
@@ -588,19 +586,14 @@ class RulePane extends React.Component<IPropRulePane, {}> {
 
 interface IPropLogsPane {
   store: GameStore;
-  players: PlayerInfo[];
   onResetLogPickup(): void;
   onShortIdClick?: (shortId: string) => void;
 }
 
 @observer
-class LogsPane extends React.Component<IPropLogsPane, {}> {
-  private makePickupUserids = memoizeOne((players: PlayerInfo[]) =>
-    players.map(player => player.id),
-  );
-
+class LogsPane extends React.PureComponent<IPropLogsPane, {}> {
   public render() {
-    const { store, players, onResetLogPickup, onShortIdClick } = this.props;
+    const { store, onResetLogPickup, onShortIdClick } = this.props;
     return (
       <Logs
         logs={store.logs}
@@ -608,7 +601,6 @@ class LogsPane extends React.Component<IPropLogsPane, {}> {
         icons={store.icons}
         rule={store.rule}
         logPickup={store.logPickup}
-        pickupUserids={this.makePickupUserids(players)}
         onResetLogPickup={onResetLogPickup}
         onShortIdClick={onShortIdClick}
       />

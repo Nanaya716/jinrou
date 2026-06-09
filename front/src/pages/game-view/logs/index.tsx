@@ -28,10 +28,6 @@ export interface IPropLogs {
    */
   logPickup: string | null;
   /**
-   * User ids which can be used for pickup filtering.
-   */
-  pickupUserids: string[];
-  /**
    * Icons of users.
    */
   icons: Record<string, string | undefined>;
@@ -61,50 +57,25 @@ function cssString(value: string): string {
     .replace(/\r/g, '\\D ')}"`;
 }
 
-function uniqueValues(values: string[]): string[] {
-  const result: string[] = [];
-  const appeared = new Set<string>();
-  for (const value of values) {
-    if (appeared.has(value)) {
-      continue;
-    }
-    appeared.add(value);
-    result.push(value);
+function PickupStyle({ userid }: { userid: string | null }) {
+  if (userid == null) {
+    return null;
   }
-  return result;
-}
-
-function PickupStyle({ userids }: { userids: string[] }) {
   return (
     <style>
-      {uniqueValues(userids)
-        .map(userid =>
-          [
-            `.jf-log-list[data-log-pickup-userid=${cssString(
-              userid,
-            )}] .jf-log{opacity:0.3;}`,
-            `.jf-log-list[data-log-pickup-userid=${cssString(
-              userid,
-            )}] .jf-log[data-log-userid=${cssString(
-              userid,
-            )}]:not(.jf-log-mode-system){opacity:1;}`,
-          ].join('\n'),
-        )
-        .join('\n')}
+      {[
+        `.jf-log-list[data-log-pickup-active="true"] .jf-log{opacity:0.3;}`,
+        `.jf-log-list[data-log-pickup-active="true"] .jf-log[data-log-userid=${cssString(
+          userid,
+        )}]:not(.jf-log-mode-system){opacity:1;}`,
+      ].join('\n')}
     </style>
   );
 }
 
-class LogStyleRules extends React.PureComponent<{
-  pickupUserids: string[];
-}> {
+class StaticLogStyleRules extends React.PureComponent {
   public render() {
-    return (
-      <>
-        <LogModeStyle />
-        <PickupStyle userids={this.props.pickupUserids} />
-      </>
-    );
+    return <LogModeStyle />;
   }
 }
 
@@ -190,7 +161,6 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
       icons,
       visibility,
       logPickup,
-      pickupUserids,
       onResetLogPickup,
       onShortIdClick,
     } = this.props;
@@ -209,11 +179,12 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
     let renderedLogCount = 0;
     return (
       <>
-        <LogStyleRules pickupUserids={pickupUserids} />
+        <StaticLogStyleRules />
+        <PickupStyle userid={logPickup} />
         <LogWrapper
           className="jf-log-list"
           fixedSize={fixedSize}
-          data-log-pickup-userid={logPickup != null ? logPickup : undefined}
+          data-log-pickup-active={logPickup != null ? 'true' : undefined}
           onClick={this.handleLogWrapperClick}
         >
           {mapReverse(logs.chunks, (chunk, i) => {
