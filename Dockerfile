@@ -3,6 +3,8 @@ FROM node:8
 MAINTAINER uhyo
 # define work directory
 WORKDIR /jinrou
+ENV SS_ENV=production
+ENV NODE_ENV=production
 ARG APP_CONFIG=config/app.coffee
 # First, install dependencies.
 # COPY ./package.json ./package-lock.json ./
@@ -21,6 +23,8 @@ COPY ./manual ./manual/
 COPY ./client ./client/
 COPY ./server ./server/
 COPY ./language ./language/
+RUN mkdir -p /jinrou/client/static/assets \
+ && chown -R node:node /jinrou/client/static/assets
 # expose to webserver.
 VOLUME ["/jinrou/client/static/", "/jinrou/public/"]
 # specify user to run the app.
