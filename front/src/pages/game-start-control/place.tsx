@@ -14,12 +14,12 @@ import { findLabeledGroupItem } from '../../util/labeled-group';
 import { mountReact } from '../../util/react-root';
 
 /**
- * Key of session storage to temporally save rule.
+ * Key of local storage to temporally save rule.
  */
-const sessionStorageRuleKey = 'lastSavedRule';
+const localStorageRuleKey = 'lastSavedRule';
 const draftStorageKeyPrefix = 'jinrou-gamestart-draft:';
 const draftIndexStorageKey = 'jinrou-gamestart-draft-index';
-const maxDraftCount = 10;
+const maxDraftCount = 5;
 
 /**
  * Options to place.
@@ -80,7 +80,7 @@ function draftStorageKey(roomid: string): string {
 
 function loadDraftIndex(): Record<string, number> {
   try {
-    const raw = sessionStorage.getItem(draftIndexStorageKey);
+    const raw = localStorage.getItem(draftIndexStorageKey);
     if (raw == null) {
       return {};
     }
@@ -99,7 +99,7 @@ function loadDraftIndex(): Record<string, number> {
 
 function saveDraftIndex(index: Record<string, number>): void {
   try {
-    sessionStorage.setItem(draftIndexStorageKey, JSON.stringify(index));
+    localStorage.setItem(draftIndexStorageKey, JSON.stringify(index));
   } catch {
     // Ignore storage errors.
   }
@@ -109,7 +109,7 @@ function pruneDrafts(index: Record<string, number>): void {
   const entries = Object.entries(index).sort((a, b) => b[1] - a[1]);
   for (const [roomid] of entries.slice(maxDraftCount)) {
     try {
-      sessionStorage.removeItem(draftStorageKey(roomid));
+      localStorage.removeItem(draftStorageKey(roomid));
     } catch {
       // Ignore storage errors.
     }
@@ -120,7 +120,7 @@ function pruneDrafts(index: Record<string, number>): void {
 
 function loadDraft(roomid: string): string | null {
   try {
-    const raw = sessionStorage.getItem(draftStorageKey(roomid));
+    const raw = localStorage.getItem(draftStorageKey(roomid));
     if (raw == null) {
       return null;
     }
@@ -149,7 +149,7 @@ function saveDraft(roomid: string, rule: string): void {
     rule,
   };
   try {
-    sessionStorage.setItem(draftStorageKey(roomid), JSON.stringify(draft));
+    localStorage.setItem(draftStorageKey(roomid), JSON.stringify(draft));
   } catch {
     // Ignore storage errors.
     return;
@@ -161,7 +161,7 @@ function saveDraft(roomid: string, rule: string): void {
 
 function removeDraft(roomid: string): void {
   try {
-    sessionStorage.removeItem(draftStorageKey(roomid));
+    localStorage.removeItem(draftStorageKey(roomid));
   } catch {
     // Ignore storage errors.
   }
@@ -197,13 +197,13 @@ export function place({
         draft,
         castingId => findCastingDefinition(castings, castingId) || null,
       );
-    } else if ('string' === typeof sessionStorage[sessionStorageRuleKey]) {
+    } else if ('string' === typeof localStorage[localStorageRuleKey]) {
       // 兼容旧 key；读取后迁移到房间级草稿。
       store.loadSerializedRule(
-        sessionStorage[sessionStorageRuleKey],
+        localStorage[localStorageRuleKey],
         castingId => findCastingDefinition(castings, castingId) || null,
       );
-      sessionStorage.removeItem(sessionStorageRuleKey);
+      localStorage.removeItem(localStorageRuleKey);
       saveDraft(roomKey, store.serializedRule);
     } else {
       if (loadSavedRules(castings, categories, roles, store)) {
