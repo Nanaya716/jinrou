@@ -63,7 +63,7 @@ function speakKindStorageKey(roomid: number): string {
 function getSpeakKindStorageIndex(): SavedSpeakKindRoom[] {
   try {
     const index = JSON.parse(
-      sessionStorage.getItem(SPEAK_KIND_STORAGE_INDEX) || '[]',
+      localStorage.getItem(SPEAK_KIND_STORAGE_INDEX) || '[]',
     );
     if (!Array.isArray(index)) {
       return [];
@@ -85,9 +85,9 @@ function touchSpeakKindStorageRoom(roomid: number): void {
     ];
     const keep = next.slice(0, MAX_SAVED_SPEAK_KIND_ROOMS);
     const removed = next.slice(MAX_SAVED_SPEAK_KIND_ROOMS);
-    sessionStorage.setItem(SPEAK_KIND_STORAGE_INDEX, JSON.stringify(keep));
+    localStorage.setItem(SPEAK_KIND_STORAGE_INDEX, JSON.stringify(keep));
     for (const item of removed) {
-      sessionStorage.removeItem(speakKindStorageKey(item.roomid));
+      localStorage.removeItem(speakKindStorageKey(item.roomid));
     }
   } catch {
     // 忽略存储异常。
@@ -96,7 +96,7 @@ function touchSpeakKindStorageRoom(roomid: number): void {
 
 function loadSpeakKind(roomid: number): string | null {
   try {
-    return sessionStorage.getItem(speakKindStorageKey(roomid));
+    return localStorage.getItem(speakKindStorageKey(roomid));
   } catch {
     return null;
   }
@@ -104,7 +104,7 @@ function loadSpeakKind(roomid: number): string | null {
 
 function saveSpeakKind(roomid: number, kind: string): void {
   try {
-    sessionStorage.setItem(speakKindStorageKey(roomid), kind);
+    localStorage.setItem(speakKindStorageKey(roomid), kind);
     touchSpeakKindStorageRoom(roomid);
   } catch {
     // 忽略存储异常。
