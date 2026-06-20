@@ -5,7 +5,7 @@ MAINTAINER uhyo
 WORKDIR /jinrou
 ENV SS_ENV=production
 ENV NODE_ENV=production
-ARG APP_CONFIG=config/app.coffee
+ARG APP_CONFIG=config/app-image.coffee
 # First, install dependencies.
 # COPY ./package.json ./package-lock.json ./
 # COPY ./node_modules ./node_modules/
