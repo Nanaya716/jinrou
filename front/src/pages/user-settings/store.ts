@@ -30,12 +30,12 @@ export class UserSettingsStore {
   public defaultProfile: ColorProfileData;
 
   constructor(i18n: i18n, public onChangePhoneUI: (use: boolean) => void) {
-    makeObservable(this);
     this.defaultProfile = {
       ...defaultColorProfile1,
       name: i18n.t('color.defaultProfile'),
     };
     this.currentProfile = deepClone(this.defaultProfile);
+    makeObservable(this);
   }
   /**
    * Saved color profiles.

@@ -1,13 +1,5 @@
 import '../util/mobx-config';
-import {
-  computed,
-  observable,
-  action,
-  runInAction,
-  set,
-  toJS,
-  makeObservable,
-} from 'mobx';
+import { computed, observable, action, toJS, makeObservable } from 'mobx';
 
 import { UserTheme, Theme, GlobalStyleTheme, UserProvidedTheme } from './theme';
 import { isPrimitive } from '../util/is-primitive';
@@ -77,8 +69,8 @@ export class ThemeStore {
   }
 
   constructor() {
+    this.savedTheme = loadFromStorage();
     makeObservable(this);
-    this.loadThemeFromStorage();
   }
 
   /**
@@ -86,12 +78,10 @@ export class ThemeStore {
    */
   @action
   public update(obj: Partial<SavedTheme>): void {
-    runInAction(() => {
-      for (const k in obj) {
-        const key = k as keyof SavedTheme;
-        set(this.savedTheme, key, deepClone(obj[key]));
-      }
-    });
+    this.savedTheme = {
+      ...this.savedTheme,
+      ...deepClone(obj),
+    };
   }
   /**
    * Load theme from storage.
