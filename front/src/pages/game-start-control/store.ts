@@ -69,10 +69,10 @@ export class CastingStore {
     categories: RoleCategoryDefinition[],
     initialCasting: CastingDefinition,
   ) {
-    makeObservable(this);
     this.roles = roles;
     this.categories = categories;
     this.currentCasting = initialCasting;
+    makeObservable(this);
     // Init userInclusion by filling with true.
     this.resetInclusion();
     // Init category numbers.
