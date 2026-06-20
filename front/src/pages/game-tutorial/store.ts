@@ -26,9 +26,9 @@ export class GameTutorialStore {
   @observable.ref
   public innerStore: GameStore = new GameStore();
   @observable
-  public phase!: number;
+  public phase = 0;
   public skipMode = false;
-  public storage!: TutorialStorage;
+  public storage: TutorialStorage = Object.assign({}, initialStorage);
 
   private t: TranslationFunction;
   private interactiveDriver: InteractiveDriver;
@@ -41,6 +41,7 @@ export class GameTutorialStore {
     this.reset();
   }
 
+  @action
   private reset() {
     this.phase = 0;
     this.storage = Object.assign({}, initialStorage);
