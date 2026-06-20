@@ -3,7 +3,7 @@ import { ColorState } from '../color-profile/color-box';
 import { UserSettingDatabase, ColorDocWithoutId, ColorDoc } from './indexeddb';
 import { showPromptDialog, showConfirmDialog } from '../../../dialog';
 import { deepClone } from '../../../util/deep-clone';
-import { runInAction } from 'mobx';
+import { runInAction, toJS } from 'mobx';
 import { startEditUpdator, endEditUpdator } from './tab-updator';
 import {
   ColorProfileData,
@@ -127,20 +127,21 @@ export async function colorChangeCompleteLogic(
     throw new Error('Cannot update profile when not editing');
   }
   const currentId = currentProfile.id;
-  // save into store.
-  store.updateProfileById(currentId, currentProfile);
-  // then, save into the db.
+  const profileSnapshot = toJS(currentProfile);
+  const plainProfile: ColorDoc = {
+    name: profileSnapshot.name,
+    profile: profileSnapshot.profile,
+    id: currentId,
+  };
+  // save into the db.
   const db = new UserSettingDatabase();
-  await db.transaction('rw', db.color, () =>
-    db.color.put({
-      ...currentProfile,
-      id: currentId,
-    }),
-  );
+  await db.transaction('rw', db.color, () => db.color.put(plainProfile));
+  // then, save into store.
+  store.updateProfileById(currentId, plainProfile);
   // if this is currently used theme, set into current theme.
   if (themeStore.savedTheme.colorProfile.id === currentId) {
     themeStore.update({
-      colorProfile: currentProfile,
+      colorProfile: plainProfile,
     });
     themeStore.saveToStorage();
   }
