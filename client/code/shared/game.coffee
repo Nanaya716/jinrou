@@ -2167,6 +2167,25 @@ exports.new_rules=[
             }
         ]
     }
+    # 人狼の末裔
+    {
+        type: 'group'
+        label:
+            id: "werewolf_descendant"
+            visible: (rule)->
+                return true if isAllJobsMode rule
+                return rule.jobNumbers.WerewolfDescendant > 0
+        items:[
+            {
+                type: 'item'
+                value:
+                    type:"checkbox"
+                    id:"werewolfdescendant_knows_wolves"
+                    defaultChecked: false
+                    value:"on"
+            }
+        ]
+    }
     # 占い系
     {
         type: 'group'

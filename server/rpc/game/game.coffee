@@ -12988,6 +12988,11 @@ class RainyBoy extends Madman
 
 class WerewolfDescendant extends Madman
     type: "WerewolfDescendant"
+    getVisibilityQuery:(game)->
+        res = super
+        if game?.rule && game.rule.werewolfdescendant_knows_wolves == "on"
+            res.wolves = true
+        res
     beforebury:(game, type)->
         return false if @dead
         wolves = game.players.filter (pl)-> pl.isWerewolf()
@@ -17263,6 +17268,7 @@ module.exports.actions=(req,res,ss)->
             "hunter_lastattack",
             "poisonwolf",
             "friendssplit",
+            "werewolfdescendant_knows_wolves",
             "quantumwerewolf_table","quantumwerewolf_dead","quantumwerewolf_diviner","quantumwerewolf_firstattack","yaminabe_hidejobs","yaminabe_safety",
             "hide_singleton_teams",
             "antimode"  # 魔女·反逆者模式配置（anti/majoanti）
