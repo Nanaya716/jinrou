@@ -171,6 +171,7 @@ function runService(server) {
   // Init connection to DB
   const db = require('./server/db.coffee');
   db.dbinit(() => {
+    require('./server/qqbot.coffee').start();
     // Start application
     server.listen(Config.http.port);
     ss.start(server);

@@ -33,7 +33,8 @@
     "ss-jade": "^0.1.3",
     "ss-latest-coffee": "^0.1.3",
     "ss-stylus": "^0.1.6",
-    "twitter": "^1.7.1"
+    "twitter": "^1.7.1",
+    "ws": "^7.5.11"
   },
   "devDependencies": {
     "coffee-script": "^1.9.3",

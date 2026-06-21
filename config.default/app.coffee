@@ -79,6 +79,12 @@ module.exports =
       # botアカウントのアクセストークン
       accessToken:"******"
       accessTokenSecret:"******"
+  qqbot:
+    # QQ 群 @ 机器人后的被动回复测试。
+    enable:false
+    appID:""
+    appSecret:""
+    sandbox:false
   weibo:
     enable:false
     oauth:
