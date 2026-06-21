@@ -765,9 +765,9 @@ fanni1=(number)->
             ret.Madman--
             ret.Fanatic=1 #狂信者
             if number==16
-                ret.Immoral=1
+                ret.Heretic=1
         if 18<=number<=22
-            ret.Immoral=1 
+            ret.Heretic=1 
             if number==19
                 ret.Madman--
                 ret.Fanatic=1 #狂信者
