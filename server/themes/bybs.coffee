@@ -7,13 +7,13 @@ module.exports=
     # 主题的作者
     author:"yingyue"
     # 修改时间
-    lastModified:"2026-06-14T07:49:48.915Z"
+    lastModified:"2026-06-22T09:34:25.112Z"
     vote:""
     sunrise:""
     sunset:""
     icon:""
     background_color:"#000000"
-    color:"#ff00a6"
+    color:"#000000"
     lockable:true
     isAvailable:->
         # 如果想要做成有某种限制条件
@@ -259,9 +259,9 @@ module.exports=
         Kim:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://cdn.phototourl.com/pro/2026-06-14-69d80923-7d17-4300-8b1d-afff5495e698.png"
+            avatar:["https://cdn.phototourl.com/pro/2026-06-22-d8903a13-300c-4843-9141-be96e1a14a3c.png","https://cdn.phototourl.com/pro/2026-06-14-69d80923-7d17-4300-8b1d-afff5495e698.png"]
             name:"金笠"
-            prize:"剑契组"
+            prize:["剑契组","LCD"]
         Aengdu:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
@@ -747,7 +747,7 @@ module.exports=
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
             avatar:"https://cdn.phototourl.com/pro/2026-06-14-9ef1bc47-d765-483f-be9e-2bca04d8d4ad.png"
             name:"某个辛克莱"
-            prize:["[印记]未来","第二次烟霾战争","阿布拉克萨斯战车"]
+            prize:"[印记"
         UNGEZIEFERKAISER:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
@@ -772,3 +772,9 @@ module.exports=
             avatar:"https://cdn.phototourl.com/pro/2026-06-14-f7297ad0-5dae-43ec-88f1-8d33823127a5.png"
             name:"埃米尔·贝努瓦"
             prize:"环指 大师"
+        ImGyeongeop:
+            # 头像链接 和 称号 可以是字符串数组，也可以是字符串
+            # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
+            avatar:"https://cdn.phototourl.com/pro/2026-06-22-c24337bb-efbf-488f-8143-2d246990f69b.png"
+            name:"林庆业"
+            prize:"S公司 节度使"
