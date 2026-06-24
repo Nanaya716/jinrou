@@ -153,6 +153,7 @@ messages:
   Itako: '请在准备倾听死者声音的时候选择'
   HimeFox: '请选择准备献祭的背信者'
   NekikillTarget: '请选择念杀目标'
+  FoxMatchmaker: '请依次选择两名恋人'
 
   # Message for normal selection form of special subjobs.  normalMessage:
   SpaceWerewolfObserver: '请选择要观察的对象'

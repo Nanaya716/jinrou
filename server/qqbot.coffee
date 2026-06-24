@@ -151,9 +151,9 @@ buildWaitingRoomsMessage = ->
             rooms = sortRoomsForMessage rooms
             rooms = rooms.slice 0, 20
             unless rooms.length
-                resolve '\n当前房间列表\n暂无募集或对战中的房间。'
+                resolve '\n📢📢📢下村下村📢📢📢\n暂无募集或对战中的房间。'
                 return
-            resolve "\n当前房间列表\n#{rooms.map(formatRoomLine).join '\n'}"
+            resolve "\📢📢📢下村下村📢📢📢\n#{rooms.map(formatRoomLine).join '\n'}"
 
 sortRoomsForMessage = (rooms)->
     rooms.sort (a, b)->

@@ -3989,7 +3989,7 @@ class Diviner extends Player
 
         if (@type == "Diviner" || @type == "Hitokotonushinokami") && game.day == 1 && game.rule.firstnightdivine == "auto"
             # 自動白通知
-            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("SuperFox")
+            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("SuperFox") && !x.isJobType("FoxMatchmaker")
             if targets2.length > 0
                 # ランダムに決定
                 log=
@@ -4078,7 +4078,7 @@ class MumouDiviner extends Player
 
         if (@type == "MumouDiviner" || @type == "Hitokotonushinokami") && game.day == 1 && game.rule.firstnightdivine == "auto"
             # 自動白通知
-            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("SuperFox")
+            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("SuperFox") && !x.isJobType("FoxMatchmaker")
             if targets2.length > 0
                 # ランダムに決定
                 log=
@@ -4314,7 +4314,7 @@ class SuperDiviner extends Diviner
 
         if (@type == "SuperDiviner" || @type == "Hitokotonushinokami") && game.day == 1 && game.rule.firstnightdivine == "auto"
             # 自動白通知
-            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("SuperFox")
+            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("SuperFox") && !x.isJobType("FoxMatchmaker")
             if targets2.length > 0
                 # ランダムに決定
                 log=
@@ -5797,6 +5797,75 @@ class Cupid extends Player
             splashlog game.id,game,log
         # 2人とも更新する
         game.splashjobinfo [game.getPlayer(@flag), game.getPlayer(@target)]
+
+        null
+class FoxMatchmaker extends Fox
+    type:"FoxMatchmaker"
+    team:"Fox"
+    formType: FormType.required
+    constructor:->
+        super
+        @setFlag null
+        @setTarget null
+    sunset:(game)->
+        if game.day>=2 && @flag? && !Array.isArray @flag
+            @setFlag ""
+            @setTarget ""
+        else if !@flag? || !Array.isArray @flag
+            @setFlag null
+            @setTarget null
+    sleeping:-> Array.isArray(@flag) || @flag? && @target?
+    getVisibilityQuery:->
+        Player.prototype.getVisibilityQuery.call this
+    isFoxVisible:->false
+    isListener:(game,log)-> Player.prototype.isListener.call this, game, log
+    getSpeakChoice:(game)-> Player.prototype.getSpeakChoice.call this, game
+    isWinner:(game, team)->
+        team in ["Friend", "Fox"]
+    hasMatchedLover:(playerid)->
+        return false unless playerid?
+        return playerid in @flag if Array.isArray @flag
+        playerid == @flag || playerid == @target
+    job:(game,playerid,query)->
+        if Array.isArray(@flag) || @flag? && @target?
+            return game.i18n.t "error.common.alreadyUsed"
+
+        pl=game.getPlayer playerid
+        unless pl?
+            return game.i18n.t "error.common.nonexistentPlayer"
+
+        unless @flag?
+            @setFlag playerid
+            log=
+                mode:"skill"
+                to:@id
+                comment: game.i18n.t "roles:FoxMatchmaker.select1", {name: @name, target: pl.name}
+            splashlog game.id,game,log
+            return null
+        if @flag==playerid
+            return game.i18n.t "roles:Cupid.noSelectTwice"
+
+        @setTarget playerid
+        loverIds = [@flag, @target]
+        plpls=loverIds.map (id)-> game.getPlayer id
+        @setFlag loverIds
+        for pl,i in plpls
+            pl.touched game,@id
+            newpl=Player.factory null, game, pl,null,FoxMatchmakerFriend
+            newpl.cmplFlag=plpls[1-i].id
+            pl.transProfile newpl
+            pl.transform game,newpl,true
+            log=
+                mode:"skill"
+                to:@id
+                comment: game.i18n.t "roles:FoxMatchmaker.select", {name: @name, target: newpl.name}
+            splashlog game.id,game,log
+            log=
+                mode:"skill"
+                to:newpl.id
+                comment: game.i18n.t "roles:FoxMatchmaker.become", {name: newpl.name}
+            splashlog game.id,game,log
+        game.splashjobinfo loverIds.map (id)-> game.getPlayer id
 
         null
 # ストーカー
@@ -10419,7 +10488,7 @@ class Satori extends Diviner
 
         if @type == "Satori" && game.day == 1 && game.rule.firstnightdivine == "auto"
             # 自動白通知
-            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("BigWolf") && !x.isJobType("Diviner") && !x.isJobType("SuperFox")
+            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("BigWolf") && !x.isJobType("Diviner") && !x.isJobType("SuperFox") && !x.isJobType("FoxMatchmaker")
             if targets2.length > 0
                 # ランダムに決定
                 log=
@@ -14079,13 +14148,32 @@ class Friend extends Complex    # 恋人
             # みんないっしょ
             result.friends=game.players.filter((x)->x.isFriend()).map (x)->
                 x.publicinfo()
-    isWinner:(game,team)->@getTeam()==team && libgame.checkAliveForJudgement(game, this)
+    isWinner:(game,team)->
+        return true if @getTeam()==team && libgame.checkAliveForJudgement(game, this)
+        getAllMainRoles(this).some (role)->
+            role.type == "FoxMatchmaker" && role.isWinner game, team
     # 相手のIDは?
     getPartner:->
         if @cmplType=="Friend"
             return @cmplFlag
         else
             return @main.getPartner()
+class FoxMatchmakerFriend extends Friend
+    cmplType:"FoxMatchmakerFriend"
+    getPartner:->
+        if @cmplType=="FoxMatchmakerFriend"
+            return @cmplFlag
+        else
+            return @main.getPartner()
+    isWinner:(game,team)->
+        if Friend.prototype.isWinner.call this, game, team
+            return true
+        if team == "Fox"
+            return game.players.some (pl)=>
+                return false if pl.dead
+                matchmakers = getAllMainRoles(pl).filter (obj)-> obj.hasMatchedLover?
+                matchmakers.some (matchmaker)=> matchmaker.hasMatchedLover @id
+        false
 # 聖職者にまもられた人
 class HolyProtected extends Complex
     # cmplFlag: 護衛元
@@ -15455,11 +15543,11 @@ class Chemical extends Complex
         win = false
         maint = @main.getTeam()
         subt = @sub?.getTeam()
-        if maint == myt || maint == "Devil" || @main.type == "Stalker" || @main.type == "Amanojaku" || @main.type == "DualPersonality" || @main.type == "GoldOni"
+        if maint == myt || maint == "Devil" || @main.type == "Stalker" || @main.type == "Amanojaku" || @main.type == "DualPersonality" || @main.type == "GoldOni" || @main.type == "FoxMatchmaker"
             win = win || @main.isWinner(game, team, context)
         # if it has team-independent winningness, adopt it.
         win = win || @main.isWinner(game, "", context)
-        if subt == myt || subt == "Devil" || @sub?.type == "Stalker" || @sub?.type == "Amanojaku" || @sub?.type == "DualPersonality" || @sub?.type == "GoldOni"
+        if subt == myt || subt == "Devil" || @sub?.type == "Stalker" || @sub?.type == "Amanojaku" || @sub?.type == "DualPersonality" || @sub?.type == "GoldOni" || @sub?.type == "FoxMatchmaker"
             win = win || @sub.isWinner(game, team, context)
         if @sub?
             win = win || @sub.isWinner(game, "", context)
@@ -15535,6 +15623,7 @@ jobs=
     TinyFox:TinyFox
     SuperFox:SuperFox
     HimeFox:HimeFox
+    FoxMatchmaker:FoxMatchmaker
     Bat:Bat
     Noble:Noble
     Slave:Slave
@@ -15737,6 +15826,7 @@ jobs=
 complexes=
     Complex:Complex
     Friend:Friend
+    FoxMatchmakerFriend:FoxMatchmakerFriend
     HolyProtected:HolyProtected
     CultMember:CultMember
     Guarded:Guarded
@@ -15835,6 +15925,7 @@ jobStrength=
     TinyFox:10
     SuperFox:10
     HimeFox:20
+    FoxMatchmaker:20
     Bat:10
     Noble:12
     Slave:5
