@@ -167,7 +167,7 @@ modeOrder = (mode)->
 
 formatRoomLine = (room)->
     players = room.players ? []
-    "#{formatRoomMode room.mode} (#{players.length}人/#{room.number}人)【#{room.name}】"
+    "#{formatRoomMode room.mode} (#{players.length}人/#{room.number}人) #{room.name}"
 
 formatRoomMode = (mode)->
     switch mode
