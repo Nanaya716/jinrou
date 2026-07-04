@@ -3973,6 +3973,10 @@ class Werewolf extends Player
     getSpeakChoice:(game)->
         ["werewolf"].concat super
 
+class DoubleHeadedWolf extends Werewolf
+    type:"DoubleHeadedWolf"
+    werewolfCount:->2
+
 
 
 class Diviner extends Player
@@ -15670,6 +15674,7 @@ jobs=
     NineTailedFox:NineTailedFox
     Poisoner:Poisoner
     BigWolf:BigWolf
+    DoubleHeadedWolf:DoubleHeadedWolf
     TinyFox:TinyFox
     SuperFox:SuperFox
     HimeFox:HimeFox
@@ -15974,6 +15979,7 @@ jobStrength=
     NineTailedFox:30
     Poisoner:20
     BigWolf:80
+    DoubleHeadedWolf:40
     TinyFox:10
     SuperFox:10
     HimeFox:20
