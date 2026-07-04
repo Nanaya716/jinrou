@@ -567,7 +567,7 @@ Dictator:
 
 # RebelliousMadman
 RebelliousMadman:
-  reflect: '{{name}} 反弹了独裁者的强制处刑，{{target}} 将被处刑。'
+  reflect: '{{name}} 是反逆的狂人，{{target}} 将处刑自己。'
 
 # SeersMama
 SeersMama:
