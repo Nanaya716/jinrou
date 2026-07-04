@@ -6987,16 +6987,17 @@ class Dictator extends Player
         unless pl?
             return game.i18n.t "error.common.nonexistentPlayer"
         # pl.touched game,@id
-        target = if pl.isJobType "RebelliousMadman" then @id else playerid
+        rebellious = game.players.some (x)-> !x.dead && x.isJobType "RebelliousMadman"
+        target = if rebellious then @id else playerid
         @setTarget target    # 処刑する人
         log=
             mode:"system"
             comment: game.i18n.t "roles:Dictator.select", {name: @name, target: pl.name}
         splashlog game.id,game,log
-        if target == @id
+        if rebellious
             log=
                 mode:"system"
-                comment: game.i18n.t "roles:RebelliousMadman.reflect", {name: pl.name, target: @name}
+                comment: game.i18n.t "roles:RebelliousMadman.reflect", {target: @name}
             splashlog game.id,game,log
             pl = game.getPlayer target
         @setFlag true  # 使用済
