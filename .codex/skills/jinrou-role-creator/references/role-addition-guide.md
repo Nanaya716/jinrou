@@ -69,6 +69,20 @@ Poisoner/Cat specifics: `Poisoner.dying` starts with all living players as retal
 
 Trapguard specifics: `Trapper` applies the `TrapGuarded` complex. `TrapGuarded.checkDeathResistance` uses `Found.isGuardableAttack`; on success it prevents the target death and kills an attacker selected from `from` for vampire attacks or from living werewolf attackers otherwise. For a non-werewolf guardable attack, make sure `TrapGuarded` can identify the correct attacker via `from`; otherwise add a narrow branch for the new `found` string instead of relying on the werewolf fallback.
 
+## `target`, `flag`, and Night State
+
+`Player.target` and `Player.flag` have different durability and should not be used interchangeably.
+
+- `target` is a short-lived current action target. It is set with `setTarget`, is used by ordinary forms, `sleeping`, `jobdone`, and `midnight`, and is not serialized in `Player.serialize`. Reset it at the next relevant phase boundary, usually in `sunset` for night actions or `sunrise` for one-day/daytime actions.
+- `flag` is role-owned persistent state. It is serialized and restored, so use it for already-used markers, previous-day data, multi-step form state, result history, and any target that must survive save/reload before its effect resolves.
+- For one-shot abilities, prefer `flag` for the consumed/used state and `target` for the current night's target. If the selected target resolves in a later phase, such as a daytime selection that applies at sunset, store the target in `flag` as well; otherwise a reload can consume the ability but lose the target.
+- Use an empty target string `""` to mean "no action needed this phase" when following existing guard-style patterns. This differs from `null`: `null` means no target has been selected yet and may open a form or cause waiting/sudden death; `""` should make `sleeping`/`jobdone` complete and should not open a form.
+- For first-night restrictions that depend on the scapegoat setting, follow `Guard`: `if game.day==1 && game.rule.scapegoat != "off"` then set `target` to `""`. Do not use a broad `game.day <= 1` shortcut if the role should act when the scapegoat is off.
+- `sleeping(game)` controls whether the night can advance and whether a player can be killed for not acting on timeout. `jobdone(game)` controls form display and client-side "done" state. Keep both aligned with `target` and `flag`.
+- If `getOpenForms` is custom, handle `target == ""` explicitly. In CoffeeScript/JavaScript, `!@target` is true for `""`, so using `if !@target` can accidentally reopen forms for a deliberately skipped action.
+- For custom multi-action forms, keep the wire protocol stable: the front end sends `commandname`, while the server decides which field to mutate. Avoid changing form `type`, `objid`, or `data` names unless you also update `front/src/pages/game-view/job-forms`.
+- For repeated/extra actions such as SP guard or SP divination, use a structured `flag` object/array consistently. Do not mix old scalar `flag` meanings such as "last target id" with newer object state; add explicit fields like `lastGuard`, `SuperGuardUsed`, and `SuperGuardTarget`.
+
 ## Form Protocol
 
 The server returns forms shaped like:
