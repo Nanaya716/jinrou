@@ -7515,17 +7515,20 @@ class GreedyWolf extends Werewolf
         return super
 class SuperWerewolf extends Werewolf
     type:"SuperWerewolf"
+    canUseSuperWerewolf:(game)-> game.day >= 2 || game.rule.scapegoat == "off"
     sleeping:(game)->game.werewolf_target_remain<=0 # 占いは必須ではない
-    jobdone:(game)->game.werewolf_target_remain<=0 && (@flag || game.day==1)
+    jobdone:(game)->game.werewolf_target_remain<=0 && (@flag || !@canUseSuperWerewolf(game))
     job:(game,playerid,query)->
         if query.jobtype!="SuperWerewolf"
             # 人狼の仕事
             return super
         if @flag
             return game.i18n.t "error.common.alreadyUsed"
-        @setFlag true
+        unless @canUseSuperWerewolf(game)
+            return game.i18n.t "error.common.cannotUseSkillNow"
         if game.werewolf_target_remain+game.werewolf_target.length ==0
             return game.i18n.t "error.common.cannotUseSkillNow"
+        @setFlag true
         log=
             mode:"wolfskill"
             comment: game.i18n.t "roles:SuperWerewolf.select", {name: @name}
@@ -7536,7 +7539,7 @@ class SuperWerewolf extends Werewolf
         null
     getOpenForms:(game)->
         res = super
-        if Phase.isNight(game.phase) && !@flag && game.day >= 2
+        if Phase.isNight(game.phase) && !@flag && @canUseSuperWerewolf(game)
             res.push {
                 type: "SuperWerewolf"
                 options: []
