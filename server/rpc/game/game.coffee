@@ -7515,7 +7515,7 @@ class GreedyWolf extends Werewolf
         return super
 class SuperWerewolf extends Werewolf
     type:"SuperWerewolf"
-    canUseSuperWerewolf:(game)-> game.day >= 2 || game.rule.scapegoat == "off"
+    canUseSuperWerewolf:(game)-> game.day >= 2
     sleeping:(game)->game.werewolf_target_remain<=0 # 占いは必須ではない
     jobdone:(game)->game.werewolf_target_remain<=0 && (@flag || !@canUseSuperWerewolf(game))
     job:(game,playerid,query)->
