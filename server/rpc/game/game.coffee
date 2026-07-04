@@ -4452,6 +4452,8 @@ class MindPsychic extends Psychic
 class Madman extends Player
     type:"Madman"
     team:"Werewolf"
+class RebelliousMadman extends Madman
+    type:"RebelliousMadman"
 class Guard extends Player
     type:"Guard"
     midnightSort: 80
@@ -6934,11 +6936,18 @@ class Dictator extends Player
         unless pl?
             return game.i18n.t "error.common.nonexistentPlayer"
         # pl.touched game,@id
-        @setTarget playerid    # 処刑する人
+        target = if pl.isJobType "RebelliousMadman" then @id else playerid
+        @setTarget target    # 処刑する人
         log=
             mode:"system"
             comment: game.i18n.t "roles:Dictator.select", {name: @name, target: pl.name}
         splashlog game.id,game,log
+        if target == @id
+            log=
+                mode:"system"
+                comment: game.i18n.t "roles:RebelliousMadman.reflect", {name: pl.name, target: @name}
+            splashlog game.id,game,log
+            pl = game.getPlayer target
         @setFlag true  # 使用済
         # その場で殺す!!!
         pl.die game, "punish", [@id]
@@ -15613,6 +15622,7 @@ jobs=
     Psychic:Psychic
     MindPsychic:MindPsychic
     Madman:Madman
+    RebelliousMadman:RebelliousMadman
     SuperGuard:SuperGuard
     Guard:Guard
     Paladin:Paladin
@@ -15915,6 +15925,7 @@ jobStrength=
     Psychic:15
     MindPsychic:15
     Madman:10
+    RebelliousMadman:12
     Guard:23
     OldGuard:18
     Paladin:20

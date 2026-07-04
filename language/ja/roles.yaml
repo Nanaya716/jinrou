@@ -10,6 +10,7 @@ jobname:
   Psychic: '灵能者'
   MindPsychic: '念缚灵能者'
   Madman: '狂人'
+  RebelliousMadman: '反逆的狂人'
   Guard: '猎人'
   OldGuard: '老骑士'
   Paladin: '圣骑士'
@@ -562,6 +563,10 @@ Dictator:
   # Select a punishment target.
   select: '独裁者 {{name}} 宣布将要处刑 {{target}}。'
   sunset: '独裁者 {{name}} 宣布，现在天黑了。'
+
+# RebelliousMadman
+RebelliousMadman:
+  reflect: '{{name}} 反弹了独裁者的强制处刑，{{target}} 将被处刑。'
 
 # SeersMama
 SeersMama:
