@@ -4592,7 +4592,7 @@ class SuperGuard extends Guard
     formType: FormType.optional
     hasDeadResistance:->true
     sleeping:->@target? || @scapegoat
-    jobdone:(game)-> game.day <= 1 || @target? && @flag[0].SuperGuardUsed
+    jobdone:(game)-> @target? && (@target == "" || @flag[0].SuperGuardUsed)
     constructor:->
         super
         @setFlag [{
@@ -4603,39 +4603,44 @@ class SuperGuard extends Guard
             # whether kill is already used.
             SuperGuardUsed: false
             SuperGuardTarget: null
+            lastGuard: null
         }]
+    sunset:(game)->
+        @setTarget null
+        @flag[0].SuperGuardTarget = null
+
+        if game.day==1 && game.rule.scapegoat != "off"
+            @setTarget ""
+            return
+
+        if @makeJobSelection(game, false).length == 0
+            @setTarget ""
+            return
     job:(game, playerid, query)->
+        type = query.commandname
+        unless type in ["SuperGuard", "NormalGuard"]
+            return game.i18n.t "error.common.invalidQuery"
+
+        if @flag[0].SuperGuardUsed && type == "SuperGuard"
+            return game.i18n.t "error.common.alreadyUsed"
+
         pl = game.getPlayer playerid
-        # must choose alive player other than myself
         unless pl?
             return game.i18n.t "error.common.nonexistentPlayer"
         if pl.id == @id
             return game.i18n.t "error.common.noSelectSelf"
         if pl.dead
             return game.i18n.t "error.common.alreadyDead"
-        # cannot guard same player twice in a row
-        if playerid==@id && game.rule.guardmyself!="ok"
-            return game.i18n.t "error.common.noSelectSelf"
-        else if playerid==@flag && game.rule.consecutiveguard=="no"
+        if game.rule.consecutiveguard=="no" && playerid==@flag[0].lastGuard
             return game.i18n.t "roles:Guard.noGuardSame"
-        # validate type
-        type = query.commandname
-        unless type in ["SuperGuard", "NormalGuard"]
-            return game.i18n.t "error.common.invalidQuery"
-
-        # cannot use kill more than once
-        
-        if @flag.SuperGuardUsed && type == "SuperGuard"
-            return game.i18n.t "error.common.alreadyUsed"
 
         if type == "SuperGuard"
             @flag[0].SuperGuardUsed = true
             @flag[0].SuperGuardTarget = playerid
+        else
+            @setTarget playerid
+            @flag[0].lastGuard = playerid
 
-        temptarget = null
-        if type == "SuperGuard" && @target != null
-            temptarget = @target
-        @setTarget playerid
         # touch targeted player.
         pl.touched game, @id
         # show selection log.
@@ -4648,55 +4653,20 @@ class SuperGuard extends Guard
                 game.i18n.t "roles:SuperGuard.SuperSelect", {name: @name, target: pl.name}
 
         splashlog game.id,game,log
-        # 如果使用的是超狩，不影响target判断行动
-        if type == "SuperGuard"
-            @target = temptarget
         null
     midnight:(game)->
-        # return unless @target?
-        # pl = game.getPlayer game.skillTargetHook.get @target
-        # return unless pl?
-
-        # if @flag.type == "NormalGuard"
-        #     pl.whenguarded game,this
-        #     newpl = Player.factory null, game, pl, null, Guarded
-        #     pl.transProfile newpl
-        #     newpl.cmplFlag = @id # 護衛元
-        #     pl.transform game, newpl, true
-        #     newpl.touched game, @id
-        #     @setFlag {
-        #         type: null
-        #         day: game.day
-        #         SuperGuardUsed: @flag.SuperGuardUsed
-        #     }
-        # else if @flag.type == "SuperGuard"
-        #     pl.whenguarded game,this
-        #     newpl = Player.factory null, game, pl, null, Guarded
-        #     pl.transProfile newpl
-        #     newpl.cmplFlag = @id # 護衛元
-        #     pl.transform game, newpl, true
-        #     newpl.touched game, @id
-        #     @setFlag {
-        #         type: null
-        #         day: game.day
-        #         SuperGuardUsed: true
-        #     }
-        pl = game.getPlayer game.skillTargetHook.get @target
-        unless pl?
-            return
-        pl.whenguarded game,this
-        # 複合させる
-        newpl=Player.factory null, game, pl,null,Guarded   # 守られた人
-        pl.transProfile newpl
-        newpl.cmplFlag=@id  # 護衛元cmplFlag
-        pl.transform game,newpl,true
-        newpl.touched game,@id
-        # 进入if前先保存target的原始值
-        originalTarget = @target
+        if @target? && @target != ""
+            pl = game.getPlayer game.skillTargetHook.get @target
+            if pl?
+                pl.whenguarded game,this
+                newpl=Player.factory null, game, pl,null,Guarded
+                pl.transProfile newpl
+                newpl.cmplFlag=@id
+                pl.transform game,newpl,true
+                newpl.touched game,@id
 
         if @flag[0].SuperGuardTarget != null
-            @setTarget @flag[0].SuperGuardTarget
-            superpl = game.getPlayer game.skillTargetHook.get @target
+            superpl = game.getPlayer game.skillTargetHook.get @flag[0].SuperGuardTarget
             unless superpl?
                 return
             superpl.whenguarded game, this
@@ -4706,13 +4676,13 @@ class SuperGuard extends Guard
             superpl.transform game, newpl, true
             newpl.touched game, @id
             @flag[0].SuperGuardTarget = null
-            @target = originalTarget
         null
 
     getOpenForms:(game)->
             if !@dead && Phase.isNight(game.phase)
+                return [] if @target == ""
                 res = []
-                if(!@target)
+                unless @target?
                     # manually generate form.
                     res.push {
                         type: "NormalGuard"
@@ -4735,6 +4705,13 @@ class SuperGuard extends Guard
                 return super
     isFormTarget:(jobtype)->
         (jobtype in ["NormalGuard", "SuperGuard"]) || super
+    makeJobSelection:(game, isvote)->
+        res = Player.prototype.makeJobSelection.call this, game, isvote
+        return res if isvote
+        res.filter (obj)=>
+            return false if obj.value == @id
+            return false if game.rule.consecutiveguard=="no" && obj.value == @flag[0].lastGuard
+            true
 
 class Couple extends Player
     type:"Couple"
@@ -4788,11 +4765,14 @@ class NineTailedFox extends Fox
     constructor:->
         super
         @setFlag null
-    sleeping:->true
-    jobdone:(game)-> @flag? || (game.day == 1 && game.rule.scapegoat != "off")
+    sleeping:->@target?
+    jobdone:(game)-> @flag? || @target?
     sunset:(game)->
         super
         @setTarget null
+        if game.day == 1 && game.rule.scapegoat != "off"
+            @setTarget ""
+            return
     makeJobSelection:(game,isvote)->
         res = Player.prototype.makeJobSelection.call this, game, isvote
         return res if isvote
@@ -4922,7 +4902,9 @@ class SuperFox extends Fox
         unless pl?
             return game.i18n.t "error.common.nonexistentPlayer"
         @setTarget playerid
-        @setFlag true
+        @setFlag {
+            target: playerid
+        }
         log=
             mode:"skill"
             to:@id
@@ -4930,14 +4912,15 @@ class SuperFox extends Fox
         splashlog game.id,game,log
         null
     sunset:(game)->
-        t=game.getPlayer @target
+        target = @flag?.target ? @target
+        t=game.getPlayer target
         unless t?
             return super
         if t.dead
             return super
 
         # 威嚇して能力無しにする
-        @addGamelog game,"threaten",t.type,@target
+        @addGamelog game,"threaten",t.type,target
         # 複合させる
 
         log=
