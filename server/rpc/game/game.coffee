@@ -4279,6 +4279,7 @@ class SuperDiviner extends Diviner
             comment:r.result
         splashlog game.id,game,log
     midnight:(game,midnightSort)->
+        savedTarget = @target
         unless game.rule.divineresult=="immediate"
             # 执行普通占卜
             if @flag[0].NormalDivinerTarget?
@@ -4288,6 +4289,7 @@ class SuperDiviner extends Diviner
             if @flag[0].SuperDivinerTarget?
                 @setTarget @flag[0].SuperDivinerTarget
                 @dodivine game
+        @setTarget savedTarget
         @divineeffect game
 
     sunrise:(game)->
@@ -4331,7 +4333,6 @@ class SuperDiviner extends Diviner
                 }
                 return
     divineeffect:(game)->
-        super
         # 对普通占卜目标执行效果
         if @flag[0].NormalDivinerTarget?
             p=game.getPlayer game.skillTargetHook.get @flag[0].NormalDivinerTarget
