@@ -164,7 +164,7 @@ Found =
         found in ["werewolf"]
     # whether this is a guardable attack.
     isGuardableAttack:(found)->
-        found == "vampire" || Found.isGuardableWerewolfAttack(found)
+        found in ["vampire", "nineTailedFox"] || Found.isGuardableWerewolfAttack(found)
     # whether this is a werewolf attack.
     isNormalWerewolfAttack: (found)->
         found in ["werewolf", "trickedWerewolf"]
@@ -2020,7 +2020,7 @@ class Game
             x = obj.pl
             situation=switch obj.found
                 #死因
-                when "werewolf","werewolf2","trickedWerewolf","poison","hinamizawa","vampire","vampire2","witch","dog","trap","marycurse","psycho","crafty","greedy","tough","lunaticlover","hooligan","dragon","samurai","elemental","sacrifice","lorelei","oni","selfdestruct","assassinate","ghostrevenge"
+                when "werewolf","werewolf2","trickedWerewolf","nineTailedFox","poison","hinamizawa","vampire","vampire2","witch","dog","trap","marycurse","psycho","crafty","greedy","tough","lunaticlover","hooligan","dragon","samurai","elemental","sacrifice","lorelei","oni","selfdestruct","assassinate","ghostrevenge"
                     @i18n.t "found.normal", {name: x.name}
                 when "bomb"
                     @i18n.t "found.normal", {name: x.name}
@@ -2063,7 +2063,7 @@ class Game
             # Show invisible detail of death
             # but do not show for obvious type of death.
             unless (obj.found in ["punish", "infirm", "bonds", "hunter", "gm", "gone-day", "gone-night"]) || (obj.found == "curse" && @rule.deadfox == "obvious")
-                if ["werewolf","werewolf2","trickedWerewolf","poison","hinamizawa",
+                if ["werewolf","werewolf2","trickedWerewolf","nineTailedFox","poison","hinamizawa",
                     "vampire","vampire2","witch","dog","trap","bomb",
                     "marycurse","psycho","curse","punish","spygone","deathnote","sacrificed","nekikill"
                     "foxsuicide","friendsuicide","twinsuicide","dragonknightsuicide","vampiresuicide","santasuicide","fascinatesuicide","loreleisuicide"
@@ -2085,6 +2085,8 @@ class Game
                 emma_log=switch obj.found
                     when "werewolf","werewolf2","trickedWerewolf","crafty","greedy","tough"
                         "werewolf"
+                    when "nineTailedFox"
+                        "nineTailedFox"
                     when "poison","witch"
                         "poison"
                     when "hinamizawa"
@@ -3989,7 +3991,7 @@ class Diviner extends Player
 
         if (@type == "Diviner" || @type == "Hitokotonushinokami") && game.day == 1 && game.rule.firstnightdivine == "auto"
             # 自動白通知
-            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("SuperFox") && !x.isJobType("FoxMatchmaker")
+            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("NineTailedFox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("SuperFox") && !x.isJobType("FoxMatchmaker")
             if targets2.length > 0
                 # ランダムに決定
                 log=
@@ -4078,7 +4080,7 @@ class MumouDiviner extends Player
 
         if (@type == "MumouDiviner" || @type == "Hitokotonushinokami") && game.day == 1 && game.rule.firstnightdivine == "auto"
             # 自動白通知
-            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("SuperFox") && !x.isJobType("FoxMatchmaker")
+            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("NineTailedFox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("SuperFox") && !x.isJobType("FoxMatchmaker")
             if targets2.length > 0
                 # ランダムに決定
                 log=
@@ -4779,6 +4781,53 @@ class Fox extends Player
     getSpeakChoice:(game)->
         ["fox"].concat super
 
+class NineTailedFox extends Fox
+    type:"NineTailedFox"
+    midnightSort:105
+    formType: FormType.optionalOnce
+    constructor:->
+        super
+        @setFlag null
+    sleeping:->true
+    jobdone:(game)-> @flag? || (game.day == 1 && game.rule.scapegoat != "off")
+    sunset:(game)->
+        super
+        @setTarget null
+    makeJobSelection:(game,isvote)->
+        res = Player.prototype.makeJobSelection.call this, game, isvote
+        return res if isvote
+        res.filter (obj)=> obj.value != @id
+    job:(game,playerid)->
+        if game.day == 1 && game.rule.scapegoat != "off"
+            return game.i18n.t "error.common.cannotUseSkillNow"
+        if @flag?
+            return game.i18n.t "error.common.alreadyUsed"
+        if playerid == @id
+            return game.i18n.t "error.common.noSelectSelf"
+        pl=game.getPlayer playerid
+        unless pl?
+            return game.i18n.t "error.common.nonexistentPlayer"
+        if pl.dead
+            return game.i18n.t "error.common.invalidSelection"
+        @setTarget playerid
+        @setFlag true
+        pl.touched game,@id
+        log=
+            mode:"skill"
+            to:@id
+            comment: game.i18n.t "roles:NineTailedFox.select", {name: @name, target: pl.name}
+        splashlog game.id,game,log
+        null
+    midnight:(game,midnightSort)->
+        return unless @target?
+        target = game.getPlayer game.skillTargetHook.get @target
+        return unless target?
+        return if target.dead
+        target.die game, "nineTailedFox", @id
+        if target.dead && target.found == "nineTailedFox"
+            @addGamelog game,"nineTailedFoxAttack",target.type,target.id
+        null
+
 
 class Poisoner extends Player
     type:"Poisoner"
@@ -4796,6 +4845,8 @@ class Poisoner extends Player
                 canbedead=canbedead.filter (x)->x.isWerewolf() && x.isAttacker()
         else if found=="vampire"
             canbedead=canbedead.filter (x)->x.id==from
+        else if found=="nineTailedFox"
+            canbedead=[]
         else if found=="gmpunish"
             canbedead=[]
         return if canbedead.length==0
@@ -14416,7 +14467,7 @@ class TrapGuarded extends Complex
             # 反撃する
             canbedead=[]
             ft=game.getPlayer from
-            if found == "vampire"
+            if found in ["vampire", "nineTailedFox"]
                 canbedead=game.players.filter (x)->!x.dead && x.id==from
             else
                 canbedead=game.players.filter (x)->!x.dead && x.isWerewolf() && x.isAttacker()
@@ -15628,6 +15679,7 @@ jobs=
     Paladin:Paladin
     Couple:Couple
     Fox:Fox
+    NineTailedFox:NineTailedFox
     Poisoner:Poisoner
     BigWolf:BigWolf
     TinyFox:TinyFox
@@ -15931,6 +15983,7 @@ jobStrength=
     Paladin:20
     Couple:10
     Fox:25
+    NineTailedFox:30
     Poisoner:20
     BigWolf:80
     TinyFox:10
@@ -16493,19 +16546,22 @@ module.exports.actions=(req,res,ss)->
                         if frees <= 0
                             break
                         r = Math.random()
-                        if r<0.24 && !nonavs.Fox
+                        if r<0.21 && !nonavs.Fox
                             joblist.Fox++
                             frees--
-                        else if r < 0.42 && !nonavs.TinyFox
+                        else if r<0.32 && !nonavs.NineTailedFox
+                            joblist.NineTailedFox++
+                            frees--
+                        else if r < 0.47 && !nonavs.TinyFox
                             joblist.TinyFox++
                             frees--
-                        else if r<0.56 && !nonavs.XianFox
+                        else if r<0.59 && !nonavs.XianFox
                             joblist.XianFox++
                             frees--
-                        else if r<0.68 && !nonavs.VariationFox
+                        else if r<0.70 && !nonavs.VariationFox
                             joblist.VariationFox++
                             frees--
-                        else if r<0.8 && !nonavs.Actress
+                        else if r<0.80 && !nonavs.Actress
                             joblist.Actress++
                             frees--
                         else if r<0.9 && !nonavs.Trickster
@@ -16653,8 +16709,8 @@ module.exports.actions=(req,res,ss)->
                         exceptions.push "VampireClan"
 
                     # 妖狐陣営
-                    if frees>0 && (joblist.Fox>0 || joblist.TinyFox > 0 || joblist.SuperFox > 0 || joblist.XianFox > 0 || joblist.NightRabbit > 0 || joblist.Trickster > 0 || joblist.VariationFox > 0)
-                        if joblist.Fox + joblist.TinyFox + joblist.SuperFox + joblist.XianFox + joblist.NightRabbit + joblist.Trickster + joblist.VariationFox == 1
+                    if frees>0 && (joblist.Fox>0 || joblist.NineTailedFox > 0 || joblist.TinyFox > 0 || joblist.SuperFox > 0 || joblist.XianFox > 0 || joblist.NightRabbit > 0 || joblist.Trickster > 0 || joblist.VariationFox > 0)
+                        if joblist.Fox + joblist.NineTailedFox + joblist.TinyFox + joblist.SuperFox + joblist.XianFox + joblist.NightRabbit + joblist.Trickster + joblist.VariationFox == 1
                             if playersnumber>=14
                                 # 1人くらいは…
                                 if Math.random()<0.25 && !nonavs.Immoral
