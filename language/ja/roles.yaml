@@ -46,6 +46,7 @@ jobname:
   Heretic: '异端者'
   Devil: '恶魔'
   ToughGuy: '硬汉'
+  Elder: '长老'
   Cupid: '丘比特'
   Stalker: '跟踪狂'
   Cursed: '被诅咒者'
@@ -460,6 +461,10 @@ Cursed:
   becomeWerewolf: '{{name}} 受到诅咒变成了人狼。'
   # became a vampire.
   becomeVampire: '{{name}} 受到诅咒变成了吸血鬼。'
+
+# Elder
+Elder:
+  attackerNotice: '被袭击的 {{target}} 是长老。'
 
 # Spellcaster
 Spellcaster:
