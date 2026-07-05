@@ -103,7 +103,7 @@ exports.jobs=["Human","Werewolf","Diviner","Psychic","MindPsychic","Madman","Reb
 "Pyrotechnist","MagicalGirl","Patissiere","Shishimai","Idol","LurkingMad",
 "DecoyWolf","Hooligan","HomeComer","DragonKnight","Poet","Sacrifice",
 "Synesthete","Streamer","RemoteWorker","Disguised","Acrobat","Hanami",
-"ResidualHaunting"
+"ResidualHaunting","Hero"
 ]
 # 隠されていて自分で入れることができない役職
 exports.hiddenJobs = [
@@ -120,7 +120,7 @@ exports.blacks=["Werewolf","DoubleHeadedWolf","WolfDiviner","NormalWolfDiviner",
 
 # チームたち
 exports.teams=teams=
-    Human:["Human","Diviner","SuperDiviner","MumouDiviner","Psychic","MindPsychic","Guard","OldGuard","SuperGuard","Paladin","Couple","Poisoner","ToughGuy","Elder","Noble","Slave","Magician","Fugitive","Merchant","QueenSpectator","MadWolf","Liar","Light","Cursed","ApprenticeSeer","Diseased","Spellcaster","Lycan","Priest","Prince","PI","Cat","Witch","Oldman","OccultMania","Dog","Dictator","SeersMama","Trapper","RedHood","Counselor","Miko","HolyMarked","WanderingGuard","TroubleMaker","FrankensteinsMonster","BloodyMary","King","SantaClaus","Phantom","DrawGirl","Pyrotechnist","MagicalGirl","Baker","SpiritPossessed","GotChocolate","Forensic","Cosplayer","TinyGhost","Ninja","Twin","Hunter","Emma","Idol","HomeComer","Illusionist","DragonKnight","Samurai","Elementaler","Poet","Sacrifice","Oracle","GachaAddicted","Fate","Synesthete","Reindeer","Streamer","Tarzan","Hitokotonushinokami","RemoteWorker","Gambler","Sleepwalker","Disguised","Saint","SpaceWerewolfCrew","SpaceWerewolfObserver","SpaceWerewolfGuard","Hanami","Reincarnator","MementoDisposer","Interpreter","Dreamer","Assassin","StraySheep","Secretary","HouseKeeper","DarkPsychic","Itako"]
+    Human:["Human","Diviner","SuperDiviner","MumouDiviner","Psychic","MindPsychic","Guard","OldGuard","SuperGuard","Paladin","Couple","Poisoner","ToughGuy","Elder","Noble","Slave","Magician","Fugitive","Merchant","QueenSpectator","MadWolf","Liar","Light","Cursed","ApprenticeSeer","Diseased","Spellcaster","Lycan","Priest","Prince","PI","Cat","Witch","Oldman","OccultMania","Dog","Dictator","SeersMama","Trapper","RedHood","Counselor","Miko","HolyMarked","WanderingGuard","TroubleMaker","FrankensteinsMonster","BloodyMary","King","SantaClaus","Phantom","DrawGirl","Pyrotechnist","MagicalGirl","Baker","SpiritPossessed","GotChocolate","Forensic","Cosplayer","TinyGhost","Ninja","Twin","Hunter","Emma","Idol","HomeComer","Illusionist","DragonKnight","Samurai","Elementaler","Poet","Sacrifice","Oracle","GachaAddicted","Fate","Synesthete","Reindeer","Streamer","Tarzan","Hitokotonushinokami","RemoteWorker","Gambler","Sleepwalker","Disguised","Saint","SpaceWerewolfCrew","SpaceWerewolfObserver","SpaceWerewolfGuard","Hanami","Reincarnator","MementoDisposer","Interpreter","Dreamer","Assassin","StraySheep","Secretary","HouseKeeper","DarkPsychic","Itako","Hero"]
     Werewolf:["Werewolf","Madman","RebelliousMadman","BigWolf","DoubleHeadedWolf","Fanatic","HearMadman","Spy","WolfDiviner","NormalWolfDiviner","Spy2","Sorcerer","LoneWolf","MinionSelector","WolfCub","WhisperingMad","WolfBoy","GreedyWolf","SuperWerewolf","FascinatingWolf","SolitudeWolf","ToughWolf","LastStandWolf","ThreateningWolf","ObstructiveMad","PsychoKiller","CautiousWolf","Bomber","Ushinotokimairi","MadDog","Hypnotist","CraftyWolf","Pumpkin","MadScientist","MadHunter","MadCouple","EyesWolf","TongueWolf","BlackCat","LurkingMad","DecoyWolf","Satori","AbsoluteWolf","QueenOfNight","CurseWolf","IntuitionWolf","Faker","SealWolf","CynthiaWolf","NetherWolf","DarkWolf","SpaceWerewolfImposter","Acrobat","BloodWolf","Shadow","AttractiveWoman","DestroyCraziest","RainyBoy","WerewolfDescendant"]
     Fox:["Fox","NineTailedFox","SuperFox","TinyFox","Immoral","Perfidious","Heretic","Blasphemy","XianFox","NightRabbit","Trickster","VariationFox","Actress","HimeFox","FoxMatchmaker"]
     Devil:["Devil"]
@@ -1507,6 +1507,8 @@ exports.jobinfo=
             color:"#6f1d8c"
         Itako:
             color:"#becabe"
+        Hero:
+            color:"#f2c94c"
 
     Werewolf:
         color:"#DD0000"

@@ -3876,6 +3876,105 @@ class Player
 
 class Human extends Player
     type:"Human"
+class Hero extends Human
+    type:"Hero"
+    constructor:->
+        super
+        @setFlag {
+            awakened: false
+            revealed: false
+            attackResisted: false
+        }
+    getHeroFlag:->
+        {
+            awakened: @flag?.awakened == true
+            revealed: @flag?.revealed == true
+            attackResisted: @flag?.attackResisted == true
+            reason: @flag?.reason
+            attackFound: @flag?.attackFound
+            attackFrom: @flag?.attackFrom
+        }
+    getTypeDisp:->
+        if @flag?.revealed || @flag?.awakened
+            @type
+        else
+            "Human"
+    getJobDisp:->
+        if @flag?.revealed || @flag?.awakened
+            @jobname
+        else
+            @game.i18n.t "roles:jobname.Human"
+    shouldAwakenByCount:(game)->
+        alives = game.players.filter((x)->!x.dead).length
+        threshold = Math.ceil game.players.length / 3
+        alives == threshold
+    isAwakened:(game)->
+        top = game.getPlayer @id
+        @flag?.awakened || top?.isCmplType?("HeroAwakened")
+    awaken:(game, reason)->
+        return if @isAwakened game
+        top = game.getPlayer @id
+        return unless top?
+
+        flag = @getHeroFlag()
+        flag.awakened = true
+        flag.revealed = true
+        flag.reason = reason
+        @setFlag flag
+
+        diviner = Player.factory "Diviner", game
+        top.transProfile diviner
+        psychic = Player.factory "Psychic", game
+        top.transProfile psychic
+        guard = Player.factory "Guard", game
+        top.transProfile guard
+
+        if Phase.isNight game.phase
+            diviner.sunset game
+            psychic.sunset game
+            guard.sunset game
+
+        withDiviner = Player.factory null, game, top, diviner, Complex
+        top.transProfile withDiviner
+        withPsychic = Player.factory null, game, withDiviner, psychic, Complex
+        top.transProfile withPsychic
+        newpl = Player.factory null, game, withPsychic, guard, HeroAwakened
+        top.transProfile newpl
+        top.transform game, newpl, true
+
+        log =
+            mode:"skill"
+            to:@id
+            comment: game.i18n.t "roles:Hero.awaken", {name: @name}
+        splashlog game.id, game, log
+        game.splashjobinfo [newpl]
+    sunrise:(game)->
+        if @shouldAwakenByCount game
+            @awaken game, "count"
+    sunset:(game)->
+        if @shouldAwakenByCount game
+            @awaken game, "count"
+    hasDeadResistance:->true
+    checkDeathResistance:(game, found, from)->
+        if !@flag?.attackResisted && found in ["werewolf", "nineTailedFox", "vampire"]
+            flag = @getHeroFlag()
+            flag.revealed = true
+            flag.attackResisted = true
+            flag.attackFound = found
+            flag.attackFrom = from
+            @setFlag flag
+            if Found.isGuardableWerewolfAttack found
+                game.addGuardLog @id, AttackKind.werewolf, GuardReason.tolerance
+            top = game.getPlayer @id
+            if top?
+                game.splashjobinfo [top]
+            log =
+                mode:"skill"
+                to:@id
+                comment: game.i18n.t "roles:Hero.resist", {name: @name}
+            splashlog game.id, game, log
+            return true
+        false
 class Werewolf extends Player
     type:"Werewolf"
     sunset:(game)->
@@ -14733,6 +14832,9 @@ class MagicalGirlKit extends Complex
         @sub?.deadsunrise? game
         @uncomplex game
 
+class HeroAwakened extends Complex
+    cmplType:"HeroAwakened"
+
 # 爆弾魔に爆弾を仕掛けられた人
 class BombTrapped extends Complex
     # cmplFlag: 護衛元ID
@@ -15779,6 +15881,7 @@ jobs=
     Pyrotechnist:Pyrotechnist
     MagicalGirl:MagicalGirl
     Baker:Baker
+    Hero:Hero
     Bomber:Bomber
     Blasphemy:Blasphemy
     Ushinotokimairi:Ushinotokimairi
@@ -15916,6 +16019,7 @@ complexes=
     KeepedLover:KeepedLover
     WatchingFireworks:WatchingFireworks
     MagicalGirlKit:MagicalGirlKit
+    HeroAwakened:HeroAwakened
     BombTrapped:BombTrapped
     FoxMinion:FoxMinion
     DivineCursed:DivineCursed
