@@ -3907,7 +3907,7 @@ class Hero extends Human
     shouldAwakenByCount:(game)->
         alives = game.players.filter((x)->!x.dead).length
         threshold = Math.ceil game.players.length / 3
-        alives == threshold
+        alives <= threshold
     isAwakened:(game)->
         top = game.getPlayer @id
         @flag?.awakened || top?.isCmplType?("HeroAwakened")
