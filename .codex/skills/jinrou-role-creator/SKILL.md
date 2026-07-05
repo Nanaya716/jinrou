@@ -27,6 +27,7 @@ Use this skill to implement a new role in this repository from a behavior descri
 
 - Preserve existing role behavior and shared flow; avoid broad refactors.
 - Do not add a custom TSX form when the normal radio-target form is enough.
+- For roles whose player-facing role name/type is disguised, keep `getJobname()` as the true GM/openjob name and override `getJobDisp()`/`getTypeDisp()` for the player's displayed name/type.
 - Keep `isWinner` aligned with `Game.judge`: the winning team is computed once, then each player decides whether they personally won.
 - If a role is fox-like but hidden from fox allies, override fox visibility, fox chat, and fox log listening explicitly.
 - If a role adds or removes `Complex` wrappers, verify `accessByJobTypeAll`, `isWinner`, and serialization still work when the role itself becomes wrapped.

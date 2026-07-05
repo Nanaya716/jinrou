@@ -45,6 +45,13 @@ Use `Player` defaults unless behavior needs overrides:
 - Forms: `formType`, `job_target`, `sleeping`, `jobdone`, `makeJobSelection`, `checkJobValidity`, `getOpenForms`, `isFormTarget`, `job`.
 - Visibility and chat: `getVisibilityQuery`, `isListener`, `isPrivateLogListener`, `getSpeakChoice`, `getSpeakChoiceDay`.
 
+Identity display split:
+
+- `getJobname()` is the true role name used for GM/openjob/public reveal paths such as `game.publicinfo({openjob: true})`; do not use it for player-facing disguise.
+- `getJobDisp()` is the role name shown to the player in their own job info. Override this when a role should initially appear to its owner as another role.
+- `getTypeDisp()` is the corresponding player-facing role type used by job info/forms. Override it alongside `getJobDisp()` for disguised roles.
+- Follow existing disguised-role patterns such as `Sleepwalker`, `Dreamer`, and `Drunk`: keep true identity available through `getJobname()`, and only disguise `getJobDisp()`/`getTypeDisp()` until the reveal condition is met.
+
 Night resolution collects all `gatherMidnightSort()` values, adds fixed `105` for werewolf attacks and `106` for Dracula, sorts ascending, then calls the relevant night hooks. Default `midnightSort` is `100`; guards tend to be around `80`.
 
 ## Death Reasons and Guardable Attacks
