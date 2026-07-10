@@ -278,6 +278,7 @@ teamName:
 fortune:
   human: '村人'
   werewolf: '人狼'
+  DoubleHeadedWolf: '双头狼'
   vampire: '吸血鬼'
   pumpkin: '南瓜'
   oni: '鬼'
@@ -287,6 +288,7 @@ psychic:
   human: '村人'
   werewolf: '人狼'
   BigWolf: '大狼'
+  DoubleHeadedWolf: '双头狼'
   TinyFox: '小狐'
   oni: '鬼'
   # delimiter of multiple result in chemical.

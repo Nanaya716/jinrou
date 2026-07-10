@@ -67,6 +67,8 @@ FortuneResult =
     human: "human"
     # Werewolf
     werewolf: "werewolf"
+    # DoubleHeadedWolf
+    DoubleHeadedWolf: "DoubleHeadedWolf"
     # Vampire
     vampire: "vampire"
     # pumpkin
@@ -83,6 +85,8 @@ PsychicResult =
     werewolf: "werewolf"
     # BigWolf
     BigWolf: "BigWolf"
+    # DoubleHeadedWolf
+    DoubleHeadedWolf: "DoubleHeadedWolf"
     # TinyFox
     TinyFox: "TinyFox"
     # oni
@@ -93,6 +97,7 @@ PsychicResult =
         oni: 1
         werewolf: 2
         BigWolf: 3
+        DoubleHeadedWolf: 3
         TinyFox: 3
     # function to combine two results in chemical.
     # filter out low priority results.
@@ -4074,6 +4079,8 @@ class Werewolf extends Player
 
 class DoubleHeadedWolf extends Werewolf
     type:"DoubleHeadedWolf"
+    fortuneResult: FortuneResult.DoubleHeadedWolf
+    psychicResult: PsychicResult.DoubleHeadedWolf
     werewolfCount:->2
 
 
