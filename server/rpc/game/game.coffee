@@ -750,7 +750,7 @@ class Game
         game
     # 公開情報
     publicinfo:(obj)->  #obj:オプション
-        {
+        info =
             rule:@rule
             finished:@finished
             players:@players.map (x)=>
@@ -774,7 +774,9 @@ class Game
             jobscount:@jobscount
             # whether watch speak is allowed.
             watchspeak: @watchspeak != false
-        }
+        if @rule?.antimode == "majoanti"
+            info.majoantiMagics = @rule._majoantiMagics ? getAssignedMajoantiMagics this
+        info
     # IDからプレイヤー
     getPlayer:(id)->
         @players.filter((x)->x.id==id)[0]
@@ -18494,6 +18496,19 @@ MAJOANTI_MAGICS = [
     "MajoantiSpecialDivination" # 22. 特异占卜
 ]
 
+# 魔女·反逆者模式：公开当前场上已分配的魔法种类
+getAssignedMajoantiMagics = (game)->
+    makeMajoantiMagicDetails game, MAJOANTI_MAGICS.filter((magicType)->
+        game.players.some (pl)-> pl.isCmplType magicType
+    )
+
+makeMajoantiMagicDetails = (game, magicTypes)->
+    magicTypes.map (magicType)->
+        {
+            name: game.i18n.t "roles:#{magicType}.name"
+            type: magicType
+        }
+
 # 魔女·反逆者模式：为每个玩家随机分配一个魔法
 assignMajoantiMagics = (game)->
     playerCount = game.players.length
@@ -18509,6 +18524,7 @@ assignMajoantiMagics = (game)->
 
     # 创建可用的魔法副本用于随机分配（不放回抽样）
     shuffledMagics = availableMagics.slice()
+    assignedMagics = []
 
     # 遍历所有玩家，为每人分配一个唯一的魔法
     for pl in game.players
@@ -18516,6 +18532,7 @@ assignMajoantiMagics = (game)->
         magicIndex = Math.floor(Math.random() * shuffledMagics.length)
         # 从数组中取出并移除该魔法（不放回）
         magicType = shuffledMagics.splice(magicIndex, 1)[0]
+        assignedMagics.push magicType
 
         # 创建魔法Complex并附加到玩家身上
         magicClass = complexes[magicType]
@@ -18524,3 +18541,5 @@ assignMajoantiMagics = (game)->
         newpl = Player.factory null, game, pl, null, magicClass
         pl.transProfile newpl
         pl.transform game, newpl, true, true
+
+    game.rule._majoantiMagics = makeMajoantiMagicDetails game, assignedMagics

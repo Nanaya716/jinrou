@@ -113,6 +113,9 @@ jobinfo:
     spaceWerewolfImposters: '同伴的诈欺师是 {{names}}'
     perfidious: '同伴的背信者是 {{names}}'
 
+rule:
+  majoantiMagics: '场上已分配的魔法效果'
+
 # game-view: speak form.
 speak:
   say: '发言'

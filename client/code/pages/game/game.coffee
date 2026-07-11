@@ -351,6 +351,7 @@ exports.start=(roomid)->
                             casting: obj.game.rule.jobrule
                             jobNumbers: convertToJobNumbers obj.game.jobscount
                             rules: new Map Object.entries obj.game.rule
+                            majoantiMagics: obj.game.majoantiMagics || obj.game.rule._majoantiMagics
                         }
                     else
                         undefined

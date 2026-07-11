@@ -39,6 +39,7 @@ export class ShowRule extends React.PureComponent<IPropShowRule, {}> {
             {rule.rules != null ? (
               <RuleTable>
                 <tbody>
+                  <MajoantiMagics rule={rule} t={t} />
                   <RuleItems items={ruleDefs} rule={rule} t={t} />
                 </tbody>
               </RuleTable>
@@ -83,6 +84,47 @@ class JobNumbers extends React.PureComponent<
     );
   }
 }
+
+const MajoantiMagics: React.FC<{
+  rule: Rule;
+  t: TranslationFunction;
+}> = ({ rule, t }) => {
+  const magics = (rule.majoantiMagics || []).map(magic =>
+    typeof magic === 'string'
+      ? {
+          name: t(`roles:${magic}.name`),
+          type: magic,
+        }
+      : magic,
+  );
+  if (magics.length === 0) {
+    return null;
+  }
+  return (
+    <>
+      <tr>
+        <th colSpan={2}>{t('game_client:rule.majoantiMagics')}</th>
+      </tr>
+      <tr>
+        <td colSpan={2}>
+          {[
+            ...mapJoin(magics, ' ', magic => (
+              <a
+                key={magic.type}
+                href={`/manual/job/${magic.type}?jobname=${encodeURIComponent(
+                  magic.name,
+                )}`}
+                data-jobname={magic.name}
+              >
+                {magic.name}
+              </a>
+            )),
+          ]}
+        </td>
+      </tr>
+    </>
+  );
+};
 
 /**
  * Show value of each rule.
@@ -139,6 +181,24 @@ class RuleItems extends React.PureComponent<
         ) : null;
       }
     });
+  }
+}
+
+/**
+ * map and join given array.
+ */
+function* mapJoin<T, U>(
+  arr: T[],
+  join: string,
+  func: (elm: T, idx: number) => U,
+): IterableIterator<U | string> {
+  let idx = 0;
+  for (const elm of arr) {
+    if (idx > 0) {
+      yield join;
+    }
+    yield func(elm, idx);
+    idx++;
   }
 }
 
