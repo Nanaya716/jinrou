@@ -244,8 +244,9 @@ jobname:
   MajoantiGreatWitch: '大魔女'
   MajoantiDeathRecall: '死亡回溯'
   MajoantiGrudgeBite: '怨念反噬'
+  MajoantiMomentaryReturn: '刹那回归'
+  MajoantiTrueNameDissolution: '真名溶解'
   MajoantiTime: '时间操纵'
-  MajoantiSpecialDivination: '特异占卜'
 
 # Name of categories.
 categoryName:
@@ -1422,12 +1423,15 @@ MajoantiDeathRecall:
 MajoantiGrudgeBite:
   name: '怨念反噬'
   jobname: '{{jobname}}（怨念反噬）'
+MajoantiMomentaryReturn:
+  name: '刹那回归'
+  jobname: '{{jobname}}（刹那回归）'
+MajoantiTrueNameDissolution:
+  name: '真名溶解'
+  jobname: '{{jobname}}（真名溶解）'
 MajoantiTime:
   name: '时间操纵'
   jobname: '{{jobname}}（时间操纵）'
-MajoantiSpecialDivination:
-  name: '特异占卜'
-  jobname: '{{jobname}}（特异占卜）'
 
 Chemical:
   jobname: '{{left}}×{{right}}'

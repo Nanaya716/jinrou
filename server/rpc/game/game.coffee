@@ -13940,7 +13940,7 @@ class Complex
 isMajoantiMode = (antimode)->
     return antimode == "majoanti"
 
-# 魔女·反逆者模式 - 22种魔法副职业类（白板职业，只有名称不同）
+# 魔女·反逆者模式 - 23种魔法副职业类（白板职业，只有名称不同）
 # ============================================================
 
 # 1. 缔结
@@ -14225,7 +14225,35 @@ class MajoantiGrudgeBite extends Complex
             type: "MajoantiGrudgeBite"
         }
 
-# 21. 时间操纵
+# 21. 刹那回归
+class MajoantiMomentaryReturn extends Complex
+    cmplType:"MajoantiMomentaryReturn"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiMomentaryReturn.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiMomentaryReturn.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiMomentaryReturn.name"
+            type: "MajoantiMomentaryReturn"
+        }
+
+# 22. 真名溶解
+class MajoantiTrueNameDissolution extends Complex
+    cmplType:"MajoantiTrueNameDissolution"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiTrueNameDissolution.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiTrueNameDissolution.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiTrueNameDissolution.name"
+            type: "MajoantiTrueNameDissolution"
+        }
+
+# 23. 时间操纵
 class MajoantiTime extends Complex
     cmplType:"MajoantiTime"
     formType: FormType.optional
@@ -14237,20 +14265,6 @@ class MajoantiTime extends Complex
         result.desc.push {
             name: @game.i18n.t "roles:MajoantiTime.name"
             type: "MajoantiTime"
-        }
-
-# 22. 特异占卜
-class MajoantiSpecialDivination extends Complex
-    cmplType:"MajoantiSpecialDivination"
-    formType: FormType.optional
-    getJobname:-> @game.i18n.t "roles:MajoantiSpecialDivination.jobname", {jobname: @main.getJobname()}
-    getJobDisp:-> @game.i18n.t "roles:MajoantiSpecialDivination.jobname", {jobname: @main.getJobDisp()}
-    makejobinfo:(game,result)->
-        @main.makejobinfo game, result
-        result.desc ?= []
-        result.desc.push {
-            name: @game.i18n.t "roles:MajoantiSpecialDivination.name"
-            type: "MajoantiSpecialDivination"
         }
 
 # 灵能者念杀护卫的复合类 - 只能护卫念杀攻击
@@ -16089,8 +16103,9 @@ complexes=
     MajoantiGreatWitch: MajoantiGreatWitch
     MajoantiDeathRecall: MajoantiDeathRecall
     MajoantiGrudgeBite: MajoantiGrudgeBite
+    MajoantiMomentaryReturn: MajoantiMomentaryReturn
+    MajoantiTrueNameDissolution: MajoantiTrueNameDissolution
     MajoantiTime: MajoantiTime
-    MajoantiSpecialDivination: MajoantiSpecialDivination
 
     # 役職ごとの強さ
 jobStrength=
@@ -18493,8 +18508,9 @@ MAJOANTI_MAGICS = [
     "MajoantiGreatWitch",     # 18. 大魔女
     "MajoantiDeathRecall",    # 19. 死亡回溯
     "MajoantiGrudgeBite",     # 20. 怨念反噬
-    "MajoantiTime",           # 21. 时间操纵
-    "MajoantiSpecialDivination" # 22. 特异占卜
+    "MajoantiMomentaryReturn", # 21. 刹那回归
+    "MajoantiTrueNameDissolution", # 22. 真名溶解
+    "MajoantiTime"            # 23. 时间操纵
 ]
 
 # 魔女·反逆者模式：公开当前场上已分配的魔法种类
@@ -18513,9 +18529,9 @@ makeMajoantiMagicDetails = (game, magicTypes)->
 # 魔女·反逆者模式：为每个玩家随机分配一个魔法
 assignMajoantiMagics = (game)->
     playerCount = game.players.length
-    magicCount = MAJOANTI_MAGICS.length  # 22
+    magicCount = MAJOANTI_MAGICS.length  # 23
 
-    # 如果玩家人数超过魔法数（22人），不进行分配
+    # 如果玩家人数超过魔法数（23人），不进行分配
     if playerCount > magicCount
         return
 
