@@ -89,6 +89,7 @@ showUserSummary = (usersummary)->
         <p>对战数：<b>#{usersummary.game_total}</b></p>
         <p>胜利数：<b>#{usersummary.win}</b> (#{(if usersummary.game_total>0 then usersummary.win/usersummary.game_total*100 else 0).toFixed(1)}%)</p>
         <p>败北数：<b>#{usersummary.lose}</b> (#{(if usersummary.game_total>0 then usersummary.lose/usersummary.game_total*100 else 0).toFixed(1)}%)</p>
+        <p>平局数：<b>#{usersummary.draw ? 0}</b> (#{(if usersummary.game_total>0 then (usersummary.draw ? 0)/usersummary.game_total*100 else 0).toFixed(1)}%)</p>
         <p>猝死数：<b>#{usersummary.gone}</b> (#{(if usersummary.game_total>0 then usersummary.gone/usersummary.game_total*100 else 0).toFixed(1)}%)</p>
         <p>GM数：<b>#{usersummary.gm}</b></p>
         <p>帮手数：<b>#{usersummary.helper}</b></p>
