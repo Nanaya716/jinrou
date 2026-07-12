@@ -80,6 +80,57 @@ favoriteSearchText = (room, gameinfo)->
         parts.push favoriteResultText gameinfo.subtype
     normalizeFavoriteSearchText parts.join " "
 
+makeFavoriteSummary = (items)->
+    summary =
+        total: items.length
+        played: 0
+        win: 0
+        lose: 0
+        draw: 0
+        gm: 0
+        helper: 0
+    for item in items
+        switch item.subtype
+            when "win"
+                summary.win += 1
+            when "lose"
+                summary.lose += 1
+            when "draw"
+                summary.draw += 1
+            when "gm"
+                summary.gm += 1
+            when "helper"
+                summary.helper += 1
+        if item.subtype?
+            summary.played += 1
+    summary
+
+makeFavoriteUserlog = (logs)->
+    userlog =
+        counter:
+            allgamecount: 0
+        wincount:
+            all: 0
+        losecount:
+            all: 0
+    for log in logs
+        switch log.subtype
+            when "win"
+                userlog.counter.allgamecount += 1
+                userlog.wincount.all += 1
+                if log.job?
+                    userlog.wincount[log.job] ?= 0
+                    userlog.wincount[log.job] += 1
+            when "lose"
+                userlog.counter.allgamecount += 1
+                userlog.losecount.all += 1
+                if log.job?
+                    userlog.losecount[log.job] ?= 0
+                    userlog.losecount[log.job] += 1
+            when "draw"
+                userlog.counter.allgamecount += 1
+    userlog
+
 # Collection of jobs to reset readiness.
 readyResetJobCollection = new Map
 
@@ -241,7 +292,11 @@ module.exports.actions=(req,res,ss)->
                 return
             roomids = favorites.map (x)-> x.roomid
             unless roomids.length
-                res []
+                res {
+                    rooms: []
+                    summary: makeFavoriteSummary []
+                    userlog: null
+                }
                 return
             M.userrawlogs.find({
                 userid: req.session.userId
@@ -277,7 +332,11 @@ module.exports.actions=(req,res,ss)->
                             job: gameinfo?.job ? null
                             subtype: gameinfo?.subtype ? null
                         }
-                    res matched.slice page * page_number, (page + 1) * page_number
+                    res {
+                        rooms: matched.slice page * page_number, (page + 1) * page_number
+                        summary: makeFavoriteSummary matched
+                        userlog: makeFavoriteUserlog logs
+                    }
 
     getFavoriteState:(roomid)->
         unless req.session.userId

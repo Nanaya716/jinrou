@@ -44,12 +44,14 @@ exports.start=(query={})->
                 jobobj = Shared.game.getjobobj job
                 jobobj?.color
         }
-        prooms.then (rooms)->
-            rooms_view.store.setRooms rooms, page
+        prooms.then (result)->
+            rooms_view.store.setRooms result.rooms, page, result.summary, result.userlog
+            renderFavoriteUserlog i18n, mode, result.userlog
 
         reqRpc = ()->
-            requestRooms(mode, page, keyword).then((rooms)->
-                rooms_view.store.setRooms rooms, page
+            requestRooms(mode, page, keyword).then((result)->
+                rooms_view.store.setRooms result.rooms, page, result.summary, result.userlog
+                renderFavoriteUserlog i18n, mode, result.userlog
             ).catch (err)->
                 console.error err
                 rooms_view.store.setError()
@@ -62,33 +64,55 @@ requestRooms = (mode, page, keyword = '')->
                 if results.error?
                     reject results.error
                 else
-                    resolve results.map (obj)->
-                        # align with other query's object structure
-                        # (with additional properties)
-                        room = obj.room
-                        if obj.job? || obj.subtype?
-                            room.gameinfo = {
-                                job: obj.job
-                                subtype: obj.subtype
-                            }
-                        return room
+                    roomResults = results.rooms ? results
+                    summary = results.summary ? null
+                    userlog = results.userlog ? null
+                    resolve {
+                        rooms: roomResults.map (obj)->
+                            # align with other query's object structure
+                            # (with additional properties)
+                            room = obj.room
+                            if obj.job? || obj.subtype?
+                                room.gameinfo = {
+                                    job: obj.job
+                                    subtype: obj.subtype
+                                }
+                            return room
+                        summary: summary
+                        userlog: userlog
+                    }
         else if mode == "my"
             ss.rpc "game.rooms.getMyRooms", page, (results)->
                 if results.error?
                     reject results.error
                 else
-                    resolve results.map (obj)->
-                        # align with other query's object structure
-                        # (with additional properties)
-                        room = obj.room
-                        if obj.job? || obj.subtype?
-                            room.gameinfo = {
-                                job: obj.job
-                                subtype: obj.subtype
-                            }
-                        return room
+                    resolve {
+                        rooms: results.map (obj)->
+                            # align with other query's object structure
+                            # (with additional properties)
+                            room = obj.room
+                            if obj.job? || obj.subtype?
+                                room.gameinfo = {
+                                    job: obj.job
+                                    subtype: obj.subtype
+                                }
+                            return room
+                        summary: null
+                        userlog: null
+                    }
         else
-            ss.rpc "game.rooms.getRooms", mode, page, resolve
+            ss.rpc "game.rooms.getRooms", mode, page, (rooms)->
+                resolve {
+                    rooms: rooms
+                    summary: null
+                    userlog: null
+                }
 
 exports.end = ->
   rooms_view?.unmount()
+
+renderFavoriteUserlog = (i18n, mode, userlog)->
+    return unless mode == "favorites"
+    node = document.getElementById "favorite-userlog"
+    return unless node?
+    Index.user.mylog.showUserlog i18n, userlog, node

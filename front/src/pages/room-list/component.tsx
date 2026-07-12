@@ -1,7 +1,12 @@
 import * as React from 'react';
 
 import { I18nProvider, i18n } from '../../i18n';
-import { RoomListStore, RoomInStore } from './store';
+import {
+  FavoriteSummary,
+  FavoriteUserlog,
+  RoomListStore,
+  RoomInStore,
+} from './store';
 import { observer } from 'mobx-react';
 import {
   RoomListWrapper,
@@ -62,6 +67,8 @@ export class RoomList extends React.Component<IPropRoomList, {}> {
           prevAvailable={store.prevAvailable}
           nextAvailable={store.nextAvailable}
           indexStart={store.indexStart}
+          favoriteSummary={store.favoriteSummary}
+          favoriteUserlog={store.favoriteUserlog}
         />
       </I18nProvider>
     );
@@ -79,6 +86,8 @@ class RoomListInner extends React.Component<
     keyword: string;
     loadingState: RoomListStore['state'];
     indexStart: number;
+    favoriteSummary: FavoriteSummary | null;
+    favoriteUserlog: FavoriteUserlog | null;
   },
   {
     keyword: string;
@@ -100,6 +109,8 @@ class RoomListInner extends React.Component<
       mode,
       loadingState,
       onSearch,
+      favoriteSummary,
+      favoriteUserlog,
     } = this.props;
     return (
       <Wrapper>
@@ -128,6 +139,9 @@ class RoomListInner extends React.Component<
                 清空
               </NormalButton>
             </FavoriteSearchForm>
+          ) : null}
+          {mode === 'favorites' && favoriteSummary != null ? (
+            <p>收藏 {favoriteSummary.total} 间房间。</p>
           ) : null}
           {loadingState === 'loading' ? (
             <p>{i18n.t('rooms_client:loading')}</p>
@@ -159,6 +173,15 @@ class RoomListInner extends React.Component<
             </>
           ) : null}
         </Navigation>
+        {mode === 'favorites' ? (
+          <section>
+            <h2>全部战绩</h2>
+            <div
+              id="favorite-userlog"
+              data-userlog-state={favoriteUserlog == null ? 'empty' : 'loaded'}
+            />
+          </section>
+        ) : null}
         <RoomListWrapper>
           {rooms.map((room, i) => (
             <Room

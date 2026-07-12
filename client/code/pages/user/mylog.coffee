@@ -12,7 +12,7 @@ exports.start=->
                 userlog = result.userlog
                 usersummary = result.usersummary
 
-                showUserlog i18n, userlog
+                exports.showUserlog i18n, userlog, $("#alldata").get 0
                 showUserSummary usersummary
 
                 if result.data_open_recent
@@ -57,20 +57,24 @@ namedJobinfo = (i18n)->
             }
     result
 
-showUserlog = (i18n, userlog)->
+exports.showUserlog = showUserlog = (i18n, userlog, container)->
     # 全期間データを表示
+    target = $ container
     unless userlog?
-        $("#alldata")
+        target
             .empty()
             .append("<p>尚无战绩。</p>")
         return
     grapharea = document.createElement 'div'
-    $("#alldata")
+    target
         .empty()
         .append("""<p>对战数：<b>#{userlog.counter?.allgamecount ? 0}</b>
             （胜利数：<b>#{userlog.wincount?.all ? 0}</b>，
             败北数：<b>#{userlog.losecount?.all ? 0}</b>）</p>""")
-        .append(grapharea)
+    unless (userlog.wincount?.all ? 0) + (userlog.losecount?.all ? 0) > 0
+        target.append "<p>尚无可显示的胜败职业数据。</p>"
+        return
+    target.append grapharea
 
     # グラフも表示
     makeGraph i18n, userlog, grapharea
