@@ -421,7 +421,7 @@ Merchant:
 
 # Princess
 Princess:
-  inherit: '{{name}} 继承了女王观战者的身份。'
+  inherit: '{{name}} 成为了新的女王观战者。'
 
 # Liar
 Liar:
