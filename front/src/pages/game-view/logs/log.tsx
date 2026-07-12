@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import Color from 'color';
 import styled, { withTheme } from '../../../util/styled';
 import { Log, autolinkLogType } from '../defs';
@@ -732,20 +733,68 @@ const NameInner = ({
   children?: React.ReactNode;
 }) => {
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0 });
+  const nameTextRef = React.useRef<HTMLSpanElement>(null);
+  const menuRef = React.useRef<HTMLSpanElement>(null);
   const canOpenMenu =
     pickupUserid != null && onLogUserFilter != null && children != null;
   const canUseShortId = shortId != null && onShortIdClick != null;
+
+  const updateMenuPosition = React.useCallback(() => {
+    const anchor = nameTextRef.current;
+    if (anchor == null) {
+      return;
+    }
+    const rect = anchor.getBoundingClientRect();
+    const menuWidth = 120;
+    const left = Math.min(
+      Math.max(4, rect.left),
+      Math.max(4, window.innerWidth - menuWidth - 4),
+    );
+    setMenuPosition({
+      top: rect.bottom + 4,
+      left,
+    });
+  }, []);
 
   React.useEffect(() => {
     if (!menuOpen) {
       return;
     }
-    const closeMenu = () => setMenuOpen(false);
-    document.addEventListener('click', closeMenu);
-    return () => {
-      document.removeEventListener('click', closeMenu);
+    let rafId: number | null = null;
+    const updatePosition = () => {
+      if (rafId != null) {
+        return;
+      }
+      rafId = requestAnimationFrame(() => {
+        updateMenuPosition();
+        rafId = null;
+      });
     };
-  }, [menuOpen]);
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        menuRef.current != null &&
+        !menuRef.current.contains(target) &&
+        nameTextRef.current != null &&
+        !nameTextRef.current.contains(target)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+    updateMenuPosition();
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+      document.removeEventListener('mousedown', handleClickOutside);
+      if (rafId != null) {
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }, [menuOpen, updateMenuPosition]);
 
   const handleNameClick = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -754,6 +803,7 @@ const NameInner = ({
       return;
     }
     if (canOpenMenu) {
+      updateMenuPosition();
       setMenuOpen(true);
     }
   };
@@ -774,6 +824,7 @@ const NameInner = ({
     <LogPart className={className} data-shortid={shortId} {...rest}>
       {canUseShortId || canOpenMenu ? (
         <NameText
+          ref={nameTextRef}
           data-shortid={shortId}
           onClick={handleNameClick}
           style={{ cursor: 'pointer' }}
@@ -783,13 +834,23 @@ const NameInner = ({
       ) : (
         children
       )}
-      {menuOpen ? (
-        <NameMenu onClick={handleMenuClick}>
-          <NameMenuButton type="button" onClick={handleFilterClick}>
-            筛选发言
-          </NameMenuButton>
-        </NameMenu>
-      ) : null}
+      {menuOpen
+        ? createPortal(
+            <NameMenu
+              ref={menuRef}
+              onClick={handleMenuClick}
+              style={{
+                top: `${menuPosition.top}px`,
+                left: `${menuPosition.left}px`,
+              }}
+            >
+              <NameMenuButton type="button" onClick={handleFilterClick}>
+                筛选发言
+              </NameMenuButton>
+            </NameMenu>,
+            document.body,
+          )
+        : null}
     </LogPart>
   );
 };
@@ -797,7 +858,7 @@ const NameInner = ({
 const Name = styled(NameInner)<IPropName>`
   grid-column: 2;
   max-width: 10em;
-  overflow: visible;
+  overflow: hidden;
   position: relative;
 
   font-weight: bold;
@@ -828,10 +889,8 @@ const NameText = styled.span`
 `;
 
 const NameMenu = styled.span`
-  position: absolute;
-  z-index: 1;
-  right: 0;
-  top: 100%;
+  position: fixed;
+  z-index: 9999;
   display: block;
   min-width: 6em;
   padding: 2px;
