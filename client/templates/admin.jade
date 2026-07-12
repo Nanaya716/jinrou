@@ -5,6 +5,7 @@ section.admin#admin
     li(data-opener="blacklist") 黑名单管理
     li(data-opener="grandalert") 全体告知
     li(data-opener="dataexport") 数据库导出
+    li(data-opener="refreshRoomMade") 刷新房间创建时间
     li(data-opener="shutdownExpireRooms") 关闭陈旧房间
     li(data-opener="update") 更新
     li(data-opener="news") 通知管理
@@ -97,6 +98,16 @@ section.admin#admin
         | 命令
         input(name="command",size="100")
       p: input(type="submit",value="取得")
+  section#refreshRoomMade(hidden)
+    h1 刷新房间创建时间
+    form#refreshRoomMadeForm
+      p
+        | 房间ID
+        input(name="roomid",type="number",step="1",min="1",required)
+      p
+        input(type="submit",value="刷新")
+      p
+        samp#refreshRoomMadeResult
   section#shutdownExpireRooms(hidden)
     h1 关闭陈旧房间
     form#shutdownExpireRoomsForm
@@ -117,6 +128,7 @@ section.admin#admin
           th _id
           th 时间
           th 内容
+          th 操作
       tbody#newstable
     h2 新建通知
     form#newnewsform

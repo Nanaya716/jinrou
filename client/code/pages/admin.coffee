@@ -56,6 +56,18 @@ tabs=
                             Index.util.message "错误",result.error
                             return
                         window.open result.file
+    refreshRoomMade:
+        init:->
+            $("#refreshRoomMadeForm").submit (je)->
+                je.preventDefault()
+                query=Index.util.formQuery je.target
+                ss.rpc "admin.refreshRoomMade", query,(result)->
+                    if result.error
+                        $("#refreshRoomMadeResult").get(0).style.color="red"
+                        $("#refreshRoomMadeResult").text result.error
+                    else
+                        $("#refreshRoomMadeResult").get(0).style.color=""
+                        $("#refreshRoomMadeResult").text result.result
     shutdownExpireRooms:
         init:->
             $("#shutdownExpireRoomsForm").submit (je)->
@@ -87,6 +99,29 @@ tabs=
                 query=Index.util.formQuery je.target
                 ss.rpc "admin.addNews", query,->
                     initnewstable()
+            $("#newstable").click (je)->
+                t=je.target
+                if t.dataset.updatenewsid
+                    row=$(t).closest("tr").get 0
+                    message=$("input[name='message']", row).val()
+                    query=
+                        id:t.dataset.updatenewsid
+                        message:message
+                    ss.rpc "admin.updateNews", query,(result)->
+                        if result?.error?
+                            Index.util.message "管理界面",result.error
+                            return
+                        initnewstable()
+                else if t.dataset.deletenewsid
+                    query=
+                        id:t.dataset.deletenewsid
+                    Index.util.ask "管理界面","要删除这条通知吗?",(ok)->
+                        if ok
+                            ss.rpc "admin.deleteNews", query,(result)->
+                                if result?.error?
+                                    Index.util.message "管理界面",result.error
+                                    return
+                                initnewstable()
 
 
 exports.start=->
@@ -99,7 +134,7 @@ exports.start=->
         if t.dataset.opener && to=tabs[t.dataset.opener]
             unless to.inited    # 初回
                 to.init()
-                to.inied=true
+                to.inited=true
             e=$("##{t.dataset.opener}").get 0
             e.hidden=!e.hidden
         
@@ -172,5 +207,21 @@ initnewstable=->
             cell.textContent=doc.time.toLocaleString()
             
             cell=row.insertCell 2
-            cell.textContent=doc.message
+            input=document.createElement "input"
+            input.name="message"
+            input.size=100
+            input.value=doc.message
+            cell.appendChild input
+
+            cell=row.insertCell 3
+            update=document.createElement "input"
+            update.type="button"
+            update.dataset.updatenewsid=doc._id
+            update.value="更新"
+            cell.appendChild update
+            del=document.createElement "input"
+            del.type="button"
+            del.dataset.deletenewsid=doc._id
+            del.value="删除"
+            cell.appendChild del
     
