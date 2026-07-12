@@ -75,3 +75,21 @@ export interface SpeakState {
    */
   widePage: boolean;
 }
+
+/**
+ * State of the room favorite control.
+ */
+export interface FavoriteState {
+  /**
+   * Whether the current user can favorite this room.
+   */
+  available: boolean;
+  /**
+   * Whether this room is already favorited by current user.
+   */
+  favorite: boolean;
+  /**
+   * Whether a favorite request is running.
+   */
+  loading: boolean;
+}

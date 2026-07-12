@@ -71,7 +71,7 @@ export interface Room {
 /**
  * mode fo roomlist.
  */
-export type RoomListMode = '' | 'old' | 'log' | 'my';
+export type RoomListMode = '' | 'old' | 'log' | 'my' | 'favorites';
 
 /**
  * Additional game information.

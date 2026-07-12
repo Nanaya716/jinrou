@@ -87,6 +87,10 @@ export interface IPlaceOptions {
    */
   onReportFormSubmit: (query: ReportFormQuery) => void;
   /**
+   * Toggle current room favorite state.
+   */
+  onFavoriteToggle: (favorite: boolean) => void;
+  /**
    * Handlers of room prelude events.
    */
   roomControlHandlers: RoomControlHandlers;
@@ -127,6 +131,7 @@ export function place({
   onWillChange,
   onNoteChange,
   onReportFormSubmit,
+  onFavoriteToggle,
   roomControlHandlers,
 }: IPlaceOptions): IPlaceResult {
   const store = new GameStore();
@@ -150,6 +155,7 @@ export function place({
       onWillChange={onWillChange}
       onNoteChange={onNoteChange}
       onReportFormSubmit={onReportFormSubmit}
+      onFavoriteToggle={onFavoriteToggle}
       roomControlHandlers={roomControlHandlers}
     />
   );

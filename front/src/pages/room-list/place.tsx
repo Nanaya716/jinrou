@@ -29,6 +29,10 @@ export interface IPlaceOptions {
    */
   noLinks: boolean;
   /**
+   * Initial keyword for favorite room search.
+   */
+  keyword?: string;
+  /**
    * Start number of index of rooms.
    */
   indexStart: number;
@@ -36,6 +40,10 @@ export interface IPlaceOptions {
    * handler of page move.
    */
   onPageMove: (dist: number) => void;
+  /**
+   * Handler of favorite room search.
+   */
+  onSearch?: (keyword: string) => void;
   /**
    * Function to return color of given job.
    */
@@ -52,7 +60,9 @@ export function place({
   pageNumber,
   listMode,
   noLinks,
+  keyword,
   onPageMove,
+  onSearch,
   getJobColor,
 }: IPlaceOptions): IPlaceResult {
   const store = new RoomListStore(pageNumber, listMode);
@@ -63,7 +73,9 @@ export function place({
         i18n={i18n}
         store={store}
         noLinks={noLinks}
+        keyword={keyword || ''}
         onPageMove={onPageMove}
+        onSearch={onSearch}
       />
     </GetJobColorProvider>
   );

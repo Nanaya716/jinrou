@@ -64,6 +64,7 @@ export const GameTutorial: React.FunctionComponent<IPropGameTutorial> = observer
           {...gameInput}
           onInvalidSpeakKind={noop}
           onReportFormSubmit={noop}
+          onFavoriteToggle={noop}
         />
       </>
     );

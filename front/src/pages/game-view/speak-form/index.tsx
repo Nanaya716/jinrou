@@ -9,6 +9,7 @@ import {
   LogVisibility,
   SpeakQuery,
   PlayerInfo,
+  FavoriteState,
 } from '../defs';
 
 import { LogVisibilityControl } from './log-visibility';
@@ -126,6 +127,14 @@ export interface IPropSpeakForm extends SpeakState {
    * Change the note.
    */
   onNoteChange: (note: string) => void;
+  /**
+   * Current favorite state of this room.
+   */
+  favoriteState: FavoriteState;
+  /**
+   * Toggle favorite state of this room.
+   */
+  onFavoriteToggle: (favorite: boolean) => void;
   /**
    * Focus/unfocus the speak input.
    */
@@ -450,6 +459,7 @@ export class SpeakForm extends React.PureComponent<
                             {t('game_client:speak.widepage')}
                           </label>
                         )}
+                        {this.renderFavoriteControl()}
                       </OthersArea>
                       <ButtonArea>
                         <ExpandButton
@@ -951,6 +961,14 @@ export class SpeakForm extends React.PureComponent<
     localStorage.setItem('widepage', String(e.currentTarget.checked));
   }
   /**
+   * Handle a click of favorite button.
+   */
+  @bind
+  protected handleFavoriteClick(): void {
+    const { favoriteState, onFavoriteToggle } = this.props;
+    onFavoriteToggle(!favoriteState.favorite);
+  }
+  /**
    * Handle a click of will button.
    */
   @bind
@@ -958,6 +976,26 @@ export class SpeakForm extends React.PureComponent<
     this.props.onUpdate({
       willOpen: !this.props.willOpen,
     });
+  }
+
+  private renderFavoriteControl(): React.ReactNode {
+    const { favoriteState } = this.props;
+    if (!favoriteState.available) {
+      return null;
+    }
+    return (
+      <button
+        type="button"
+        disabled={favoriteState.loading}
+        onClick={this.handleFavoriteClick}
+      >
+        {favoriteState.loading
+          ? '处理中...'
+          : favoriteState.favorite
+          ? '★ 已收藏'
+          : '☆ 收藏本房间'}
+      </button>
+    );
   }
   /**
    * Handle a change to the will.
