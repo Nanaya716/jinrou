@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Color from 'color';
 import styled, { withTheme } from '../../../util/styled';
 import { Log, autolinkLogType } from '../defs';
 import { Rule } from '../../../defs';
@@ -16,10 +17,10 @@ let lastShortIdClickTime = 0;
 let lastShortIdClick = '';
 let shortIdClickResetTimer: number | null = null;
 
-function handleShortIdDoubleClick(e: React.MouseEvent<HTMLElement>) {
+function handleShortIdDoubleClick(e: React.MouseEvent<HTMLElement>): boolean {
   const shortId = e.currentTarget.getAttribute('data-shortid');
   if (!shortId || !currentShortIdClick) {
-    return;
+    return false;
   }
 
   const now = Date.now();
@@ -36,7 +37,7 @@ function handleShortIdDoubleClick(e: React.MouseEvent<HTMLElement>) {
       window.clearTimeout(shortIdClickResetTimer);
       shortIdClickResetTimer = null;
     }
-    return;
+    return true;
   }
 
   lastShortIdClickTime = now;
@@ -49,6 +50,7 @@ function handleShortIdDoubleClick(e: React.MouseEvent<HTMLElement>) {
     lastShortIdClick = '';
     shortIdClickResetTimer = null;
   }, SHORT_ID_DOUBLE_CLICK_DELAY);
+  return false;
 }
 
 export interface IPropOneLog {
@@ -86,6 +88,10 @@ export interface IPropOneLog {
    * Callback for shortId click.
    */
   onShortIdClick?: (shortId: string) => void;
+  /**
+   * Callback for selecting a user from log name menu.
+   */
+  onLogUserFilter?: (userid: string) => void;
 }
 
 /**
@@ -110,6 +116,7 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
       icons,
       resolveLogById,
       onShortIdClick,
+      onLogUserFilter,
     } = this.props;
     currentShortIdClick = onShortIdClick;
     const baseClassName = logClass;
@@ -298,6 +305,8 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
             size={size}
             shortId={log.shortId}
             onShortIdClick={onShortIdClick}
+            pickupUserid={logUserid}
+            onLogUserFilter={onLogUserFilter}
             {...partAttrs(log.mode)}
           >
             {nameText ? sanitizeLog(nameText) : null}
@@ -706,36 +715,81 @@ interface IPropName extends IPropLogPart {
     | 'brown';
   shortId?: string;
   onShortIdClick?: (shortId: string) => void;
+  pickupUserid?: string;
+  onLogUserFilter?: (userid: string) => void;
 }
 
 const NameInner = ({
   children,
   shortId,
   onShortIdClick,
+  pickupUserid,
+  onLogUserFilter,
   className,
   ...rest
 }: IPropName & {
   className?: string;
   children?: React.ReactNode;
 }) => {
-  // 只在有 shortId 时显示名字文字的双击效果
-  if (shortId && onShortIdClick) {
-    return (
-      <LogPart className={className} data-shortid={shortId} {...rest}>
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const canOpenMenu =
+    pickupUserid != null && onLogUserFilter != null && children != null;
+  const canUseShortId = shortId != null && onShortIdClick != null;
+
+  React.useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+    const closeMenu = () => setMenuOpen(false);
+    document.addEventListener('click', closeMenu);
+    return () => {
+      document.removeEventListener('click', closeMenu);
+    };
+  }, [menuOpen]);
+
+  const handleNameClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    if (canUseShortId && handleShortIdDoubleClick(e)) {
+      setMenuOpen(false);
+      return;
+    }
+    if (canOpenMenu) {
+      setMenuOpen(true);
+    }
+  };
+
+  const handleMenuClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+  };
+
+  const handleFilterClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (pickupUserid != null && onLogUserFilter != null) {
+      onLogUserFilter(pickupUserid);
+    }
+    setMenuOpen(false);
+  };
+
+  return (
+    <LogPart className={className} data-shortid={shortId} {...rest}>
+      {canUseShortId || canOpenMenu ? (
         <NameText
           data-shortid={shortId}
-          onClick={handleShortIdDoubleClick}
+          onClick={handleNameClick}
           style={{ cursor: 'pointer' }}
         >
           {children}
         </NameText>
-      </LogPart>
-    );
-  }
-
-  return (
-    <LogPart className={className} data-shortid={shortId} {...rest}>
-      {children}
+      ) : (
+        children
+      )}
+      {menuOpen ? (
+        <NameMenu onClick={handleMenuClick}>
+          <NameMenuButton type="button" onClick={handleFilterClick}>
+            筛选发言
+          </NameMenuButton>
+        </NameMenu>
+      ) : null}
     </LogPart>
   );
 };
@@ -743,7 +797,8 @@ const NameInner = ({
 const Name = styled(NameInner)<IPropName>`
   grid-column: 2;
   max-width: 10em;
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
 
   font-weight: bold;
   white-space: nowrap;
@@ -766,7 +821,45 @@ const Name = styled(NameInner)<IPropName>`
  * Only the text itself should be clickable, not the entire name area.
  */
 const NameText = styled.span`
-  display: inline;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  vertical-align: bottom;
+`;
+
+const NameMenu = styled.span`
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  top: 100%;
+  display: block;
+  min-width: 6em;
+  padding: 2px;
+  background-color: ${({ theme }) => theme.globalStyle.background};
+  border: 1px solid
+    ${({ theme }) =>
+      Color(theme.globalStyle.color)
+        .fade(0.5)
+        .string()};
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+`;
+
+const NameMenuButton = styled.button`
+  width: 100%;
+  padding: 3px 8px;
+  border: none;
+  background: transparent;
+  color: ${({ theme }) => theme.globalStyle.color};
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    background-color: rgba(127, 127, 127, 0.2);
+    outline: none;
+  }
 `;
 
 /**

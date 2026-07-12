@@ -325,6 +325,7 @@ export class Game extends React.Component<IPropGame, {}> {
                   store={store}
                   onResetLogPickup={this.handleResetLogPickup}
                   onShortIdClick={this.handleShortIdClick}
+                  onLogUserFilter={this.handleLogFilter}
                 />
               </LogsWrapper>
             </MainWrapper>
@@ -596,12 +597,18 @@ interface IPropLogsPane {
   store: GameStore;
   onResetLogPickup(): void;
   onShortIdClick?: (shortId: string) => void;
+  onLogUserFilter?: (userid: string) => void;
 }
 
 @observer
 class LogsPane extends React.PureComponent<IPropLogsPane, {}> {
   public render() {
-    const { store, onResetLogPickup, onShortIdClick } = this.props;
+    const {
+      store,
+      onResetLogPickup,
+      onShortIdClick,
+      onLogUserFilter,
+    } = this.props;
     return (
       <Logs
         logs={store.logs}
@@ -611,6 +618,7 @@ class LogsPane extends React.PureComponent<IPropLogsPane, {}> {
         logPickup={store.logPickup}
         onResetLogPickup={onResetLogPickup}
         onShortIdClick={onShortIdClick}
+        onLogUserFilter={onLogUserFilter}
       />
     );
   }

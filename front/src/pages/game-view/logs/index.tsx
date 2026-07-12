@@ -44,6 +44,10 @@ export interface IPropLogs {
    * Callback for shortId click.
    */
   onShortIdClick?: (shortId: string) => void;
+  /**
+   * Callback for selecting a user from log name menu.
+   */
+  onLogUserFilter?: (userid: string) => void;
 }
 
 export interface IStateLogs {
@@ -164,6 +168,7 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
       logPickup,
       onResetLogPickup,
       onShortIdClick,
+      onLogUserFilter,
     } = this.props;
     const { renderingState } = this.state;
 
@@ -216,6 +221,7 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
                 rule={rule}
                 resolveLogById={this.resolveLogById}
                 onShortIdClick={onShortIdClick}
+                onLogUserFilter={onLogUserFilter}
               />
             );
           })}
@@ -273,6 +279,10 @@ class LogChunk extends React.PureComponent<
      * Callback for shortId click.
      */
     onShortIdClick?: (shortId: string) => void;
+    /**
+     * Callback for selecting a user from log name menu.
+     */
+    onLogUserFilter?: (userid: string) => void;
   },
   {}
 > {
@@ -288,6 +298,7 @@ class LogChunk extends React.PureComponent<
       icons,
       resolveLogById,
       onShortIdClick,
+      onLogUserFilter,
     } = this.props;
     if (!visible && !fixedSize) {
       return null;
@@ -315,6 +326,7 @@ class LogChunk extends React.PureComponent<
                     icons={icons}
                     resolveLogById={resolveLogById}
                     onShortIdClick={onShortIdClick}
+                    onLogUserFilter={onLogUserFilter}
                   />
                 ),
               )
@@ -329,6 +341,7 @@ class LogChunk extends React.PureComponent<
                   icons={icons}
                   resolveLogById={resolveLogById}
                   onShortIdClick={onShortIdClick}
+                  onLogUserFilter={onLogUserFilter}
                 />
               ))
         }
@@ -424,6 +437,10 @@ class LogBlock extends React.PureComponent<{
    * Callback for shortId click.
    */
   onShortIdClick?: (shortId: string) => void;
+  /**
+   * Callback for selecting a user from log name menu.
+   */
+  onLogUserFilter?: (userid: string) => void;
 }> {
   public render() {
     const {
@@ -435,6 +452,7 @@ class LogBlock extends React.PureComponent<{
       icons,
       resolveLogById,
       onShortIdClick,
+      onLogUserFilter,
     } = this.props;
     return (
       <LogBlockWrapper>
@@ -449,6 +467,7 @@ class LogBlock extends React.PureComponent<{
             icons={icons}
             resolveLogById={resolveLogById}
             onShortIdClick={onShortIdClick}
+            onLogUserFilter={onLogUserFilter}
           />
         ))}
       </LogBlockWrapper>
