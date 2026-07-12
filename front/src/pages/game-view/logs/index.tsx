@@ -4,12 +4,13 @@ import { LogVisibility } from '../defs';
 import { Rule } from '../../../defs';
 
 import { LogModeStyle, OneLog } from './log';
-import { StoredLog, LogStore } from './log-store';
+import { StoredLog, StoredLogBlock, LogStore } from './log-store';
 import { mapReverse } from '../../../util/map-reverse';
-import { I18n } from '../../../i18n';
+import { I18n, TranslationFunction } from '../../../i18n';
 import {
   LogWrapper,
   FixedSizeChunkWrapper,
+  LogBlockWrapper,
   PendingLogMessage,
 } from './elements';
 import { LogsRenderingState } from './store';
@@ -207,6 +208,7 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
                 key={`${chunk.day}:${i}`}
                 logClass={this.logClass}
                 logs={chunk.logs}
+                blocks={chunk.blocks}
                 renderedNumber={chunkRenderedLogs}
                 visible={visible}
                 fixedSize={fixedSize}
@@ -239,6 +241,10 @@ class LogChunk extends React.PureComponent<
      * Logs in this chunk.
      */
     logs: StoredLog[];
+    /**
+     * Stable log blocks in this chunk.
+     */
+    blocks: StoredLogBlock[];
     /**
      * Whether this chunk is visible.
      */
@@ -274,6 +280,7 @@ class LogChunk extends React.PureComponent<
     const {
       logClass,
       logs,
+      blocks,
       visible,
       fixedSize,
       renderedNumber,
@@ -285,31 +292,45 @@ class LogChunk extends React.PureComponent<
     if (!visible && !fixedSize) {
       return null;
     }
-    const logsToRender =
-      renderedNumber >= logs.length
-        ? logs
-        : renderedNumber > 0
-        ? logs.slice(-renderedNumber)
-        : [];
-
     const chunkContent = (
       <I18n namespace="game_client">
         {t =>
-          mapReverse(logsToRender, log => {
-            return (
-              <OneLog
-                key={log.logid}
-                logClass={logClass}
-                t={t}
-                fixedSize={fixedSize}
-                log={log}
-                rule={rule}
-                icons={icons}
-                resolveLogById={resolveLogById}
-                onShortIdClick={onShortIdClick}
-              />
-            );
-          })
+          fixedSize
+            ? mapReverse(
+                selectRenderedBlocks(blocks, renderedNumber),
+                block => (
+                  <LogBlock
+                    key={block.blockId}
+                    logClass={logClass}
+                    logs={block.logs}
+                    logLength={block.logs.length}
+                    lastLogId={
+                      block.logs.length > 0
+                        ? block.logs[block.logs.length - 1].logid
+                        : 0
+                    }
+                    fixedSize={fixedSize}
+                    t={t}
+                    rule={rule}
+                    icons={icons}
+                    resolveLogById={resolveLogById}
+                    onShortIdClick={onShortIdClick}
+                  />
+                ),
+              )
+            : mapReverse(selectRenderedLogs(logs, renderedNumber), log => (
+                <OneLog
+                  key={log.logid}
+                  logClass={logClass}
+                  t={t}
+                  fixedSize={fixedSize}
+                  log={log}
+                  rule={rule}
+                  icons={icons}
+                  resolveLogById={resolveLogById}
+                  onShortIdClick={onShortIdClick}
+                />
+              ))
         }
       </I18n>
     );
@@ -322,5 +343,115 @@ class LogChunk extends React.PureComponent<
     } else {
       return chunkContent;
     }
+  }
+}
+
+function selectRenderedLogs(
+  logs: StoredLog[],
+  renderedNumber: number,
+): StoredLog[] {
+  return renderedNumber >= logs.length
+    ? logs
+    : renderedNumber > 0
+    ? logs.slice(-renderedNumber)
+    : [];
+}
+
+function selectRenderedBlocks(
+  blocks: StoredLogBlock[],
+  renderedNumber: number,
+): StoredLogBlock[] {
+  if (renderedNumber <= 0) {
+    return [];
+  }
+  const result: StoredLogBlock[] = [];
+  let remaining = renderedNumber;
+  for (let i = blocks.length - 1; i >= 0 && remaining > 0; i--) {
+    const block = blocks[i];
+    const take = Math.min(block.logs.length, remaining);
+    const logs =
+      take === block.logs.length ? block.logs : block.logs.slice(-take);
+    if (logs.length > 0) {
+      result.push({
+        blockId: block.blockId,
+        logs,
+      });
+    }
+    remaining -= take;
+  }
+  result.reverse();
+  return result;
+}
+
+class LogBlock extends React.PureComponent<{
+  /**
+   * Class attached to each log.
+   */
+  logClass: string;
+  /**
+   * Logs in this block.
+   */
+  logs: StoredLog[];
+  /**
+   * Number of logs in this block, used to detect in-place log array updates.
+   */
+  logLength: number;
+  /**
+   * Last log id in this block, used to detect appended logs.
+   */
+  lastLogId: number;
+  /**
+   * Whether logs are rendered in fixed-size mode.
+   */
+  fixedSize: boolean;
+  /**
+   * Translation function.
+   */
+  t: TranslationFunction;
+  /**
+   * Icon of each user.
+   */
+  icons: Record<string, string | undefined>;
+  /**
+   * Current rule.
+   */
+  rule: Rule | undefined;
+  /**
+   * Function to resolve log by shortId for reply reference.
+   */
+  resolveLogById?: (shortId: string) => StoredLog | null;
+  /**
+   * Callback for shortId click.
+   */
+  onShortIdClick?: (shortId: string) => void;
+}> {
+  public render() {
+    const {
+      logClass,
+      logs,
+      fixedSize,
+      t,
+      rule,
+      icons,
+      resolveLogById,
+      onShortIdClick,
+    } = this.props;
+    return (
+      <LogBlockWrapper>
+        {mapReverse(logs, log => (
+          <OneLog
+            key={log.logid}
+            logClass={logClass}
+            t={t}
+            fixedSize={fixedSize}
+            log={log}
+            rule={rule}
+            icons={icons}
+            resolveLogById={resolveLogById}
+            onShortIdClick={onShortIdClick}
+          />
+        ))}
+      </LogBlockWrapper>
+    );
   }
 }

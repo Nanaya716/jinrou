@@ -126,12 +126,10 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
           } as Record<string, any>)
         : {};
     const partAttrs = (mode: Log['mode']) =>
-      fixedSize
-        ? {}
-        : ({
-            className: classNameForMode(mode),
-            ...logUserAttrs,
-          } as Record<string, any>);
+      ({
+        className: classNameForMode(mode),
+        ...logUserAttrs,
+      } as Record<string, any>);
     const renderLine = (mode: Log['mode'], children: React.ReactNode) =>
       fixedSize ? (
         <FixedSizeLogRow {...lineAttrs(mode)}>{children}</FixedSizeLogRow>

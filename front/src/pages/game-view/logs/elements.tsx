@@ -50,19 +50,19 @@ export const FixedSizeChunkWrapper = styled.div<{
  */
 export const LogBlockWrapper = styled.div`
   contain: layout paint style;
-`;
-
-/**
- * Wrapper of one log line, used in fixed-size layout.
- */
-export const FixedSizeLogRow = styled.div`
-  contain: layout paint style;
   display: grid;
   grid-template-columns: ${fixedSizeGridColumnsPC};
   ${phone`
     grid-template-columns: ${fixedSizeGridColumnsPhone};
     grid-auto-flow: row dense;
   `};
+`;
+
+/**
+ * Wrapper of one log line, used in fixed-size layout.
+ */
+export const FixedSizeLogRow = styled.div`
+  display: contents;
 `;
 
 /**
