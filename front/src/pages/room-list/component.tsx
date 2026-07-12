@@ -124,6 +124,7 @@ class RoomListInner extends React.Component<
               <a href="/rooms">{i18n.t('rooms_client:link.new')}</a>
               <a href="/rooms/old">{i18n.t('rooms_client:link.old')}</a>
               <a href="/rooms/log">{i18n.t('rooms_client:link.log')}</a>
+              <a href="/rooms/favorites">收藏房间一览</a>
             </NavLinks>
           )}
           {mode === 'favorites' && onSearch != null ? (
@@ -174,13 +175,13 @@ class RoomListInner extends React.Component<
           ) : null}
         </Navigation>
         {mode === 'favorites' ? (
-          <section>
-            <h2>全部战绩</h2>
+          <details>
+            <summary>全部战绩</summary>
             <div
               id="favorite-userlog"
               data-userlog-state={favoriteUserlog == null ? 'empty' : 'loaded'}
             />
-          </section>
+          </details>
         ) : null}
         <RoomListWrapper>
           {rooms.map((room, i) => (

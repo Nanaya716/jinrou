@@ -113,6 +113,8 @@ makeFavoriteUserlog = (logs)->
             all: 0
         losecount:
             all: 0
+        drawcount:
+            all: 0
     for log in logs
         switch log.subtype
             when "win"
@@ -129,6 +131,10 @@ makeFavoriteUserlog = (logs)->
                     userlog.losecount[log.job] += 1
             when "draw"
                 userlog.counter.allgamecount += 1
+                userlog.drawcount.all += 1
+                if log.job?
+                    userlog.drawcount[log.job] ?= 0
+                    userlog.drawcount[log.job] += 1
     userlog
 
 # Collection of jobs to reset readiness.
