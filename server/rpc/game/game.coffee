@@ -27,7 +27,7 @@ DIVINER_NOIMMEDIATE_JOBS = ["WolfBoy", "ObstructiveMad", "Pumpkin", "Patissiere"
 # 会話覗き役職
 LOG_PEEKING_JOBS = ["NightRabbit"]
 # 村人だと思い込む役職
-HUMAN_DISP_JOBS = ["Oracle","Fate","Sleepwalker","Dreamer","Princess"]
+HUMAN_DISP_JOBS = ["Oracle","Fate","Sleepwalker","Dreamer"]
 # 狩人仲間の役職
 GUARD_JOBS = ["Guard", "OldGuard", "Cosplayer", "WanderingGuard", "Samurai", "Trapper", "DragonKnight", "Elementaler"]
 
@@ -16564,8 +16564,8 @@ module.exports.actions=(req,res,ss)->
 
                 # 村人だと思い込むシリーズは村人除外で出現しない
                 if excluded_exceptions.some((x)->x=="Human")
-                    exceptions.push "Hanami", HUMAN_DISP_JOBS...
-                    special_exceptions.push "Hanami", HUMAN_DISP_JOBS...
+                    exceptions.push "Hanami", "Princess", HUMAN_DISP_JOBS...
+                    special_exceptions.push "Hanami", "Princess", HUMAN_DISP_JOBS...
                 # メアリーの特殊処理（セーフティ高じゃないとでない）
                 if query.yaminabe_hidejobs=="" || (!safety.jobs && query.yaminabe_safety!="none")
                     exceptions.push "BloodyMary"
