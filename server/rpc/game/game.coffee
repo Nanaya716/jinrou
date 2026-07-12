@@ -27,7 +27,7 @@ DIVINER_NOIMMEDIATE_JOBS = ["WolfBoy", "ObstructiveMad", "Pumpkin", "Patissiere"
 # 会話覗き役職
 LOG_PEEKING_JOBS = ["NightRabbit"]
 # 村人だと思い込む役職
-HUMAN_DISP_JOBS = ["Oracle","Fate","Sleepwalker","Dreamer"]
+HUMAN_DISP_JOBS = ["Oracle","Fate","Sleepwalker","Dreamer","Princess"]
 # 狩人仲間の役職
 GUARD_JOBS = ["Guard", "OldGuard", "Cosplayer", "WanderingGuard", "Samurai", "Trapper", "DragonKnight", "Elementaler"]
 
@@ -1128,6 +1128,8 @@ class Game
         # プレイヤーシャッフル
         @players=shuffle @players
         @participants=@players.concat []    # コピー
+        if @players.some((x)->x.isJobType "Princess") && !@players.some((x)->x.isJobType "QueenSpectator")
+            inheritQueenSpectator @
         # ここでプレイヤー以外の処理をする
         for pl in supporters
             if pl.mode=="gm"
@@ -5559,10 +5561,36 @@ class QueenSpectator extends Player
     hasDeadlyWeapon:->true
     dying:(game,found)->
         super
+        if inheritQueenSpectator game
+            return
         # 感染
         humans = game.players.filter (x)->!x.dead && x.isHuman()    # 生きている人たち
         humans.forEach (x)->
             x.die game, "hinamizawa", @id
+
+class Princess extends Player
+    type:"Princess"
+    getTypeDisp:->"Human"
+    getJobDisp:->@game.i18n.t "roles:jobname.Human"
+
+inheritQueenSpectator = (game)->
+    princess = null
+    for pl in game.players
+        continue if pl.dead
+        princess = pl.accessByJobTypeAll("Princess")[0]
+        break if princess?
+    unless princess?
+        return false
+    newpl = Player.factory "QueenSpectator", game
+    princess.transProfile newpl
+    princess.transform game, newpl, false
+    log =
+        mode:"skill"
+        to:newpl.id
+        comment: game.i18n.t "roles:Princess.inherit", {name: newpl.name}
+    splashlog game.id, game, log
+    game.splashjobinfo [game.getPlayer newpl.id]
+    true
 
 class MadWolf extends Werewolf
     type:"MadWolf"
@@ -15830,6 +15858,7 @@ jobs=
     Fugitive:Fugitive
     Merchant:Merchant
     QueenSpectator:QueenSpectator
+    Princess:Princess
     MadWolf:MadWolf
     Neet:Neet
     Liar:Liar
@@ -16139,6 +16168,7 @@ jobStrength=
     Fugitive:8
     Merchant:18
     QueenSpectator:20
+    Princess:20
     MadWolf:40
     Neet:50
     Liar:8
@@ -16552,6 +16582,10 @@ module.exports.actions=(req,res,ss)->
                 if safety.jingais || safety.jobs
                     exceptions.push "MadWolf"
                     special_exceptions.push "MadWolf"
+                # 公主は女王観戦者の安全性チェックを通した後にだけ出す
+                if safety.jobs
+                    exceptions.push "Princess"
+                    special_exceptions.push "Princess"
                 # 闇道化
                 if safety.jingais || safety.jobs
                     exceptions.push "DarkClown"
@@ -17142,6 +17176,22 @@ module.exports.actions=(req,res,ss)->
                         frees--
                         return true
                     return false
+                initPrincessForQueen = ->
+                    if joblist.Princess > 0 || "Princess" in excluded_exceptions || "Human" in excluded_exceptions
+                        return false
+                    if joblist.category_Human > 0
+                        joblist.Princess++
+                        joblist.category_Human--
+                        return true
+                    if joblist.team_Human > 0
+                        joblist.Princess++
+                        joblist.team_Human--
+                        return true
+                    if frees > 0
+                        joblist.Princess++
+                        frees--
+                        return true
+                    false
 
                 # セーフティ超用
                 trial_count=0
@@ -17282,9 +17332,14 @@ module.exports.actions=(req,res,ss)->
                                                 unless init "Trapper","Human", "Human"
                                                     # 護衛がいない
                                                     continue
+                                    if Math.random() < 0.2
+                                        initPrincessForQueen()
+                                when "Princess"
+                                    # safety.jobsでは公主単独のランダム生成はさせない
+                                    continue
                                 when "Spy2"
                                     # スパイIIは2人いるとかわいそうなので入れない
-                                    if joblist.Spy2>0 || joblist.QueenSpectator>0
+                                    if joblist.Spy2>0 || joblist.QueenSpectator>0 || joblist.Princess>0
                                         continue
                                     else if Math.random()>0.1
                                         # 90%の確率で弾く（レア）
@@ -17314,7 +17369,7 @@ module.exports.actions=(req,res,ss)->
                                     if countCategory("Werewolf")<=1
                                         continue
                                     # 女王とは共存できない
-                                    if joblist.QueenSpectator>0
+                                    if joblist.QueenSpectator>0 || joblist.Princess>0
                                         continue
                                 when "SpiritPossessed"
                                     # 2人いるとうるさい
@@ -17336,7 +17391,6 @@ module.exports.actions=(req,res,ss)->
                                     # 姫狐が出るときは必ず念缚灵能者を出す
                                     unless init "MindPsychic","Human"
                                         continue
-
                         # 絶対狼はセーフティに関わらず処理を実施する
                         if job == "AbsoluteWolf"
                             # 人狼系が2以上且つ人狼数と絶対狼数は一致しないこと
@@ -18144,6 +18198,9 @@ writeGlobalJobInfo = (game, player, result={})->
         # 女王観戦者の情報
         if player.getTeam() == "Human" && player.getTeamDisp() == "Human"
             result.queens = game.players.filter((x)-> x.isJobType "QueenSpectator").map (x)->
+                x.publicinfo()
+        if player.isJobType "QueenSpectator"
+            result.princesses = game.players.filter((x)-> x.isJobType "Princess").map (x)->
                 x.publicinfo()
         # 狼による他の狼の把握
         vq = player.getVisibilityQuery game
