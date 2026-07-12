@@ -654,11 +654,12 @@ const LogPart = styled.div`
   border-top: var(--jf-log-border);
   border-bottom: var(--jf-log-border);
   font-weight: var(--jf-log-weight);
-  line-height: inherit;
+  line-height: 1;
   overflow: hidden;
   word-break: break-all;
   overflow-wrap: break-word;
   word-break: break-word;
+  padding: 1px 0;
   font-size: var(--base-font-size);
 `;
 
