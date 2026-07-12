@@ -172,6 +172,7 @@ exports.actions =(req,res,ss)->
                         game: obj.userlog.counter?.allgamecount ? 0
                         win: obj.userlog.wincount?.all ? 0
                         lose: obj.userlog.losecount?.all ? 0
+                        draw: obj.userlog.drawcount?.all ? 0
                     }
                 else
                     null

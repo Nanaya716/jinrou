@@ -28,16 +28,19 @@ module.exports=exports=
             }
             type=prizedata.getOriginalType game,pl.id
             team=prizedata.getTeamByType type
-            if pl.winner==true
-                query.$inc["wincount.#{type}"]=1
-                query.$inc["wincount.all"]=1
-                if team
-                    query.$inc["winteamcount.#{team}"]=1
-            else if pl.winner==false
+            if pl.winner==false
                 query.$inc["losecount.#{type}"]=1
                 query.$inc["losecount.all"]=1
                 if team
                     query.$inc["loseteamcount.#{team}"]=1
+            else if game.winner == "Draw"
+                query.$inc["drawcount.#{type}"]=1
+                query.$inc["drawcount.all"]=1
+            else if pl.winner==true
+                query.$inc["wincount.#{type}"]=1
+                query.$inc["wincount.all"]=1
+                if team
+                    query.$inc["winteamcount.#{team}"]=1
             for prizename,obj of prize.counterprize
                 inc=obj.func game,pl
                 if inc>0
