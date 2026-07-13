@@ -152,7 +152,7 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
         <>
           <Icon noName {...partAttrs(log.mode)} />
           <Name noName {...partAttrs(log.mode)} />
-          <Main noName {...partAttrs(log.mode)}>
+          <TableLogMain noName {...partAttrs(log.mode)}>
             <LogTable>
               {/* Vote result caption */}
               <caption>{t('log.voteResult.caption')}</caption>
@@ -172,7 +172,7 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
                 })}
               </tbody>
             </LogTable>
-          </Main>
+          </TableLogMain>
           <Time noName time={new Date(log.time)} {...partAttrs(log.mode)} />
         </>,
       );
@@ -183,7 +183,7 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
         <>
           <Icon noName {...partAttrs(log.mode)} />
           <Name noName {...partAttrs(log.mode)} />
-          <Main noName {...partAttrs(log.mode)}>
+          <TableLogMain noName {...partAttrs(log.mode)}>
             <LogTable>
               {/* Probability table caption */}
               <caption>{t('log.probabilityTable.caption')}</caption>
@@ -232,7 +232,7 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
                 })}
               </tbody>
             </LogTable>
-          </Main>
+          </TableLogMain>
           <Time noName time={new Date(log.time)} {...partAttrs(log.mode)} />
         </>,
       );
@@ -736,9 +736,17 @@ const NameInner = ({
   const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0 });
   const nameTextRef = React.useRef<HTMLSpanElement>(null);
   const menuRef = React.useRef<HTMLSpanElement>(null);
+  const menuOpenTimerRef = React.useRef<number | null>(null);
   const canOpenMenu =
     pickupUserid != null && onLogUserFilter != null && children != null;
   const canUseShortId = shortId != null && onShortIdClick != null;
+
+  const clearMenuOpenTimer = React.useCallback(() => {
+    if (menuOpenTimerRef.current != null) {
+      window.clearTimeout(menuOpenTimerRef.current);
+      menuOpenTimerRef.current = null;
+    }
+  }, []);
 
   const updateMenuPosition = React.useCallback(() => {
     const anchor = nameTextRef.current;
@@ -779,6 +787,7 @@ const NameInner = ({
         nameTextRef.current != null &&
         !nameTextRef.current.contains(target)
       ) {
+        clearMenuOpenTimer();
         setMenuOpen(false);
       }
     };
@@ -794,17 +803,26 @@ const NameInner = ({
         cancelAnimationFrame(rafId);
       }
     };
-  }, [menuOpen, updateMenuPosition]);
+  }, [clearMenuOpenTimer, menuOpen, updateMenuPosition]);
+
+  React.useEffect(() => {
+    return clearMenuOpenTimer;
+  }, [clearMenuOpenTimer]);
 
   const handleNameClick = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     if (canUseShortId && handleShortIdDoubleClick(e)) {
+      clearMenuOpenTimer();
       setMenuOpen(false);
       return;
     }
     if (canOpenMenu) {
-      updateMenuPosition();
-      setMenuOpen(true);
+      clearMenuOpenTimer();
+      menuOpenTimerRef.current = window.setTimeout(() => {
+        updateMenuPosition();
+        setMenuOpen(true);
+        menuOpenTimerRef.current = null;
+      }, SHORT_ID_DOUBLE_CLICK_DELAY);
     }
   };
 
@@ -814,6 +832,7 @@ const NameInner = ({
 
   const handleFilterClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    clearMenuOpenTimer();
     if (pickupUserid != null && onLogUserFilter != null) {
       onLogUserFilter(pickupUserid);
     }
@@ -932,6 +951,10 @@ const Main = styled(LogPart)<IPropLogPart>`
     ${({ noName }) => (noName ? '' : 'border-top: none;')}
     padding-left: 0.3em;
   `};
+`;
+
+const TableLogMain = styled(Main)`
+  line-height: normal;
 `;
 
 interface IPropComment {
