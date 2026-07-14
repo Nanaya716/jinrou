@@ -46,9 +46,9 @@ export const FixedSizeChunkWrapper = styled.div<{
 `;
 
 /**
- * Wrapper of a stable log block inside a day chunk.
+ * Wrapper of one log line, used in fixed-size layout.
  */
-export const LogBlockWrapper = styled.div`
+export const FixedSizeLogRow = styled.div`
   contain: layout paint style;
   display: grid;
   grid-template-columns: ${fixedSizeGridColumnsPC};
@@ -56,13 +56,6 @@ export const LogBlockWrapper = styled.div`
     grid-template-columns: ${fixedSizeGridColumnsPhone};
     grid-auto-flow: row dense;
   `};
-`;
-
-/**
- * Wrapper of one log line, used in fixed-size layout.
- */
-export const FixedSizeLogRow = styled.div`
-  display: contents;
 `;
 
 /**
