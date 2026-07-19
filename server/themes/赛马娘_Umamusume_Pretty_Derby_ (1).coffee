@@ -7,7 +7,7 @@ module.exports=
     # 主题的作者
     author:"05q、人生"
     # 修改时间
-    lastModified:"2026-07-18T14:43:23.315Z"
+    lastModified:"2026-07-19T01:34:01.162Z"
     vote:""
     sunrise:""
     sunset:""
@@ -25,7 +25,7 @@ module.exports=
         cwll:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/JzrVjXcC/IMG-20260717-185831.png"
+            avatar:"https://i.postimg.cc/BvHbZRg0/IMG-20260719-083641.png"
             name:"春乌拉拉"
             prize:"春丽加油"
         yhjw:
@@ -79,7 +79,7 @@ module.exports=
         hjc:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/9Qm5y9tR/IMG-20260717-191232.png"
+            avatar:"https://i.postimg.cc/9fZ0XspH/IMG-20260719-085006.png"
             name:"黄金船"
             prize:"破天荒"
         ftj:
@@ -97,10 +97,10 @@ module.exports=
         csf:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/vZ0Rhm31/IMG-20260717-191013.png"
+            avatar:"https://i.postimg.cc/mkbK1FWS/IMG-20260719-093315.png"
             name:"草上飞"
             prize:"不死鸟"
-        sy:
+        sy1:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
             avatar:"https://i.postimg.cc/YCdcRSbm/IMG-20260717-190952.png"
@@ -121,7 +121,7 @@ module.exports=
         cjxhw:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/Hk6GzLB2/IMG-20260717-190837.png"
+            avatar:"https://i.postimg.cc/s27xfbcF/IMG-20260719-085150.png"
             name:"超级小海湾"
             prize:"高速Stayer"
         wgfj:
@@ -193,7 +193,7 @@ module.exports=
         dskc:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/XJrKBszV/IMG-20260717-193100.png"
+            avatar:"https://i.postimg.cc/jSFKVvYW/IMG-20260719-092738.png"
             name:"大树快车"
             prize:"最强英里跑者"
         lymx:
@@ -205,7 +205,7 @@ module.exports=
         mbmk:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/76j33SFv/IMG-20260717-193226.png"
+            avatar:"https://i.postimg.cc/KYBjcCNS/IMG-20260719-083723.png"
             name:"目白麦昆"
             prize:"名优"
         hgj:
@@ -241,7 +241,7 @@ module.exports=
         yzsz:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/XJtff9RK/IMG-20260717-193739.png"
+            avatar:"https://i.postimg.cc/q7yqBWLJ/IMG-20260719-084926.png"
             name:"玉藻十字"
             prize:"白色闪电"
         mmzs:
@@ -259,7 +259,7 @@ module.exports=
         mccz:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/B6tWLG36/IMG-20260717-194452.png"
+            avatar:"https://i.postimg.cc/g08jc1Dc/IMG-20260719-083816.png"
             name:"曼城茶座"
             prize:"漆黑的幻影"
         mpbp:
@@ -301,7 +301,7 @@ module.exports=
         dhy:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/63PkC165/IMG-20260717-195017.png"
+            avatar:"https://i.postimg.cc/CKk5M9Nx/IMG-20260719-083833.png"
             name:"稻荷一"
             prize:"大井出身的平天下之人"
         gzsg:
@@ -319,7 +319,7 @@ module.exports=
         csgz:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/TwsznH2y/IMG-20260717-195223-edit-76805543297654.png"
+            avatar:"https://i.postimg.cc/hvpfWx0Y/IMG-20260719-082742.png"
             name:"川上公主"
             prize:"懂事的公主"
         rjsy:
@@ -328,7 +328,7 @@ module.exports=
             avatar:"https://i.postimg.cc/50rh8k9t/IMG-20260717-195347.png"
             name:"荣进闪耀"
             prize:"锋芒一闪"
-        hjc:
+        hjcs:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
             avatar:"https://i.postimg.cc/xCZwLFjz/IMG-20260717-195441.png"
@@ -379,13 +379,13 @@ module.exports=
         ctdj:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/Kj2H7K3t/IMG-20260717-200942.png"
+            avatar:"https://i.postimg.cc/mgW0fqtn/IMG-20260719-084832.png"
             name:"成田大进"
             prize:"逆转的马娘"
         xyh:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/Bb0V58Pp/IMG-20260717-201007.png"
+            avatar:"https://i.postimg.cc/N0mFGZ4M/IMG-20260719-083921.png"
             name:"西野花"
             prize:"小小天才少女"
         qzhy:
@@ -397,7 +397,7 @@ module.exports=
         mlzr:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/Bb0V58Ph/IMG-20260717-201110.png"
+            avatar:"https://i.postimg.cc/R0KhC2R3/IMG-20260719-083056.png"
             name:"美丽周日"
             prize:"Marvelous传教士"
         qmdb:
@@ -433,7 +433,7 @@ module.exports=
         ljgz:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/1XrYv9p1/IMG-20260717-202113.png"
+            avatar:"https://i.postimg.cc/q7wfGLBx/IMG-20260719-083457.png"
             name:"里见光钻"
             prize:"实现愿望的宝石"
         bbxj:
@@ -445,13 +445,13 @@ module.exports=
         yhqdw:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/QCJnfXpX/IMG-20260717-202232.png"
+            avatar:"https://i.postimg.cc/bwfKcMsM/IMG-20260719-084800.png"
             name:"樱花千代王"
             prize:"盛开的樱花"
         tlxxz:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/mky6mbQ2/IMG-20260717-202505-edit-78545081471347.png"
+            avatar:"https://i.postimg.cc/HLzGt2WX/IMG-20260719-083424.png"
             name:"天狼星象征"
             prize:"凶赫的天狼"
         mbard:
@@ -469,7 +469,7 @@ module.exports=
         mbgm:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/dQ2Xs9gZ/IMG-20260717-202846.png"
+            avatar:"https://i.postimg.cc/g08jc1Dx/IMG-20260719-084651.png"
             name:"目白光明"
             prize:"绰有余力的Stayer"
         yhgg:
@@ -481,7 +481,7 @@ module.exports=
         ctl:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/59ZF9Bd8/IMG-20260717-203642.png"
+            avatar:"https://i.postimg.cc/7ZWDvXrf/IMG-20260719-092852.png"
             name:"成田路"
             prize:"优美的挑战者"
         ywsh:
@@ -517,13 +517,13 @@ module.exports=
         jz:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/SQwzQ6Fv/IMG-20260717-203924.png"
+            avatar:"https://i.postimg.cc/7L0hPjVJ/IMG-20260719-083031.png"
             name:"吉兆"
             prize:"漆黑的帝王"
         gsql:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/44rh46Rs/IMG-20260717-203945.png"
+            avatar:"https://i.postimg.cc/1zwXRbH6/IMG-20260719-083951.png"
             name:"谷水琴蕾"
             prize:"唯美系破坏神"
         dyhbs:
@@ -577,7 +577,7 @@ module.exports=
         ksqj:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/XYDW3gtp/IMG-20260717-204420.png"
+            avatar:"https://i.postimg.cc/HLzGt2W5/IMG-20260719-084625.png"
             name:"凯斯奇迹"
             prize:"奇迹的主角"
         slbx:
@@ -619,13 +619,13 @@ module.exports=
         qrj:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/DZktyp6f/IMG-20260717-204845.png"
+            avatar:"https://i.postimg.cc/25hyjgw4/IMG-20260719-084552.png"
             name:"奇锐骏"
             prize:"坚韧不拔的熏银"
         wlzm:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/1z9cnQgs/IMG-20260717-204735-edit-79879447241456.png"
+            avatar:"https://i.postimg.cc/LsL54GTt/IMG-20260719-084503.png"
             name:"万籁争鸣"
             prize:"热情的艺术家"
         gcwp:
@@ -637,7 +637,7 @@ module.exports=
         xyz:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/Dz2dJTWT/IMG-20260717-204934.png"
+            avatar:"https://i.postimg.cc/1zwXRbH0/IMG-20260719-084442.png"
             name:"新宇宙"
             prize:"宇宙诗篇"
         lzqb:
@@ -655,7 +655,7 @@ module.exports=
         dmdf:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/SsTcXT3Y/IMG-20260718-093430.png"
+            avatar:"https://i.postimg.cc/ydKdDnQD/IMG-20260719-084416.png"
             name:"大鸣大放"
             prize:"最强的体现者"
         lyll:
@@ -691,7 +691,7 @@ module.exports=
         mrjz:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/KzqtKqw7/IMG-20260718-093722.png"
+            avatar:"https://i.postimg.cc/HLzGt2Wb/IMG-20260719-084036.png"
             name:"迷人景致"
             prize:"约定的绝景"
         hjjj:
@@ -745,7 +745,7 @@ module.exports=
         ccjj:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/zDQn8Qn8/IMG-20260718-094206.png"
+            avatar:"https://i.postimg.cc/G2R24z7T/IMG-20260719-084319.png"
             name:"超常骏骥"
             prize:"漆黑的怪物"
         xm:
@@ -764,7 +764,7 @@ module.exports=
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
             avatar:"https://i.postimg.cc/9XkGCkGQ/IMG-20260718-094351.png"
-            name:"放声呼唤"
+            name:"放声欢呼"
             prize:"英里界的绝对女王"
         wdan:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
@@ -796,16 +796,16 @@ module.exports=
             avatar:"https://i.postimg.cc/qvVyCCby/IMG-20260718-094806-edit-119591094089563.png"
             name:"红色梦想"
             prize:"深红的圣女"
-        sy:
+        sy2:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/RZ5Knnsw/IMG-20260718-094907.png"
+            avatar:"https://i.postimg.cc/zBNByptR/IMG-20260719-084201.png"
             name:"神业"
             prize:"神业的轨迹"
         bssj:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
-            avatar:"https://i.postimg.cc/htWT77y9/IMG-20260718-094931.png"
+            avatar:"https://i.postimg.cc/vByB4Xqn/IMG-20260719-084143.png"
             name:"比萨胜驹"
             prize:"连结希望"
         dsx:
