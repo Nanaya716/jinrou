@@ -1317,6 +1317,8 @@ exports.jobinfo=
             color:"#00b3ff"
         Diviner:
             color:"#00b3fA"
+        MumouDiviner:
+            color:"#00b3fA"
         SuperDiviner:
             color:"#49AF58"
         Psychic:
@@ -1644,6 +1646,8 @@ exports.jobinfo=
         TinyFox:
             color:"#dd81f0"
         SuperFox:
+            color:"#dd81f2"
+        HimeFox:
             color:"#dd81f2"
         Immoral:
             color:"#5c2f5c"
