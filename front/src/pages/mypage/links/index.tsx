@@ -69,6 +69,7 @@ export const Links: React.FunctionComponent<{
         full
         icon="magic"
         href="/thememaker"
+        target="_blank"
         title={t('links.themeMaker.title')}
       />
       <Link
@@ -86,10 +87,17 @@ const Link: React.FunctionComponent<{
   full?: boolean;
   long?: boolean;
   href: string;
+  target?: React.HTMLAttributeAnchorTarget;
   title: string;
   description?: string | (() => React.ReactNode);
-}> = ({ icon, full, long, href, title, description }) => (
-  <LinkElement href={href} full={full} long={long}>
+}> = ({ icon, full, long, href, target, title, description }) => (
+  <LinkElement
+    href={href}
+    full={full}
+    long={long}
+    target={target}
+    rel={target === '_blank' ? 'noopener noreferrer' : undefined}
+  >
     <FontAwesomeIcon icon={icon} size="3x" />
     <LinkTitle>{title}</LinkTitle>
     {typeof description === 'string' ? (
