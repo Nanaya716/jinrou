@@ -304,77 +304,35 @@ normal2=(number)->
         ret.Teruteru=1
     ret
 
-other1=(number)->
-    ret={}
-    #狼
-    ret.Werewolf=1
-    if number>=11
-        ret.Werewolf++
-        if number>=14
-            ret.Werewolf++
-            if number>=17
-                ret.Werewolf++
-                if number>=20
-                    ret.Werewolf++
-                    if number>=23
-                        ret.Werewolf++
-                        if number>=27
-                            ret.Werewolf++
-                            if number>=29
-                                ret.Werewolf++
-    ret.Diviner=1 #占い
-    if number>=23
-        ret.Diviner++
-    if number==9 || number==10
-        ret.Fox=1
-        ret.Immoral=2
-        ret.Guard=0
-    if number>=11
-        ret.Psychic=1 #灵能
-        if number>=23
-            ret.Psychic++
-    if number>=6
-        if number != 9 && number != 10
-            ret.Madman=1 #狂人
-            ret.Guard=1 #猎人
-        if number==13
-            ret.Madman--
-            ret.HearMadman=1  #13人是听狂配置
-            ret.Baker=1
-        if 15<=number<=16
-            ret.Madman--
-            ret.Fanatic=1 #狂信者
-            if number==16
-                ret.Immoral=1
-        if 19<=number<=22
-            ret.Immoral=1 
-            if number==19
-                ret.Madman--
-                ret.Fanatic=1 #狂信者
-            if number==22
-                ret.Madman--
-                ret.Fanatic=1 #狂信者
-        if number>=23
-            ret.Madman++
-    if number>=14
-        ret.Couple=2 #共有
-        if number>=25
-            ret.Couple++
-    if number==11
-        ret.ButaOtoko=1
-    if number==12
-        ret.Teruteru=1
-    if number>=13
-        ret.Fox=1 #狐
-        if number>=23
-            ret.Fox++
-            if number>=24
-                ret.Fox++
-    if number>=17
-        ret.Poisoner=1 #猫
-    if number==18
-        ret.Teruteru=1
-    ret
+fixed9=(number)->
+    {
+        Diviner:1
+        Werewolf:1
+        Fox:1
+        Immoral:2
+    }
+
+fixed11=(number)->
+    {
+        Diviner:1
+        Psychic:1
+        SuperGuard:1
+        Werewolf:1
+        Madman:1
+        ToughWolf:1
+        NineTailedFox:1
+    }
+
+butaotoko11=(number)->
+    {
+        Diviner:1
+        Psychic:1
+        Guard:1
+        Werewolf:2
+        Madman:1
+        ButaOtoko:1
+    }
+
 
 koi=(number)->
     ret={}
@@ -904,12 +862,6 @@ exports.jobrules=[
           ret=mumou1 number
           ret
       },
-      {
-        name:"特化配置"
-        rule:(number)->
-          ret=other1 number
-          ret
-      }
     ]
   }
   {
@@ -975,6 +927,29 @@ exports.jobrules=[
           ret=normal1 number
           ret.Merchant=1
           ret
+      }
+    ]
+  }
+  {
+    name:"固定人数配置"
+    rule:[
+      {
+        name:"9D"
+        fixedNumber:9
+        minNumber:9
+        rule:fixed9
+      }
+      {
+        name:"10人无欠九尾狐"
+        fixedNumber:10
+        minNumber:10
+        rule:fixed11
+      }
+      {
+        name:"11猪男"
+        fixedNumber:11
+        minNumber:11
+        rule:butaotoko11
       }
     ]
   }
@@ -1260,6 +1235,7 @@ getruleobj=(name)->
             return ruleobj
         obj=ruleobj.rule
     null
+exports.getruleobj=getruleobj
 # 规则関数を得る
 exports.getrulefunc=(name)->
     if name=="内部利用.量子人狼"

@@ -14,8 +14,9 @@ exports.start=(rolename)->
                 rolename=decodeURIComponent rolename
             roleid = rolename.replace "-", "."
             func = Shared.game.getrulefunc roleid
+            ruleobj = Shared.game.getruleobj roleid
 
-            unless func?
+            unless func? && ruleobj?
                 $("#roletitle").text i18n.t "page_casting:unknownCasting"
                 return
             # set casting name and title.
@@ -47,7 +48,7 @@ exports.start=(rolename)->
 
             count=0 # 何個行をつくったか
             max=30  # 最大
-            index=6 # 現在の人数
+            index=if ruleobj.fixedNumber? then ruleobj.fixedNumber else 6
             while count<max
                 obj=func index
                 sum=0
