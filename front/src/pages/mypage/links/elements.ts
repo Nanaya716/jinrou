@@ -10,9 +10,10 @@ export const LinksWrapper = styled.div`
 `;
 
 export const LinkElement = styled.a<{
+  full?: boolean;
   long?: boolean;
 }>`
-  flex-basis: 9em;
+  flex-basis: ${props => (props.full ? 'calc(100% - 0.5em)' : '9em')};
   flex-grow: ${props => (props.long ? '100' : '1')};
   flex-shrink: 0;
   display: flex;

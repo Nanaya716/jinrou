@@ -65,19 +65,31 @@ export const Links: React.FunctionComponent<{
         title={t('links.gameTutorial.title')}
         description={t('links.gameTutorial.description')}
       />
-      <Link icon="door-open" href="/logout" title={t('links.logout.title')} />
+      <Link
+        full
+        icon="magic"
+        href="/thememaker"
+        title={t('links.themeMaker.title')}
+      />
+      <Link
+        full
+        icon="door-open"
+        href="/logout"
+        title={t('links.logout.title')}
+      />
     </LinksWrapper>
   );
 });
 
 const Link: React.FunctionComponent<{
   icon: React.ComponentProps<typeof FontAwesomeIcon>['icon'];
+  full?: boolean;
   long?: boolean;
   href: string;
   title: string;
   description?: string | (() => React.ReactNode);
-}> = ({ icon, long, href, title, description }) => (
-  <LinkElement href={href} long={long}>
+}> = ({ icon, full, long, href, title, description }) => (
+  <LinkElement href={href} full={full} long={long}>
     <FontAwesomeIcon icon={icon} size="3x" />
     <LinkTitle>{title}</LinkTitle>
     {typeof description === 'string' ? (
