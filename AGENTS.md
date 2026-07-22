@@ -33,6 +33,8 @@ Do not commit local secrets from `config/`, database dumps, or generated runtime
 
 ## Agent Notes: Log Performance
 
+When adding a playable role, also register it in `client/code/shared/game.coffee`'s `jobinfo`. The black-hotpot opening team-count announcement uses `jobinfo`; roles absent from it are omitted from the announced team totals.
+
 When working on `front/src/pages/game-view/logs/`, preserve unrelated log features such as quote/reply behavior, filtering improvements, and the current rule-panel display mode. The rule panel must render as an independent layer and must not resize or push the log area, because layout shifts here can trigger the same performance issue as new log messages.
 
 There are two observed log stutter modes. The first is stable stutter on new messages, which can be improved by CSS isolation such as `contain: paint`. The second appears after an unclear browser/runtime state and causes new-message stutter until the browser is restarted. Treat both as likely layout/reflow or render-scope issues before changing product behavior.

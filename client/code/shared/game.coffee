@@ -260,11 +260,11 @@ normal2=(number)->
                             if number>=29
                                 ret.Werewolf++
     ret.Diviner=1 #占い
-    if number>=23
+    if number>=20
         ret.Diviner++
     if number>=8
         ret.Psychic=1 #灵能
-        if number>=23
+        if number>=24
             ret.Psychic++
     if number>=6
         ret.Madman=1 #狂人
@@ -282,28 +282,26 @@ normal2=(number)->
         if number==16
             ret.Immoral=1
             ret.Madman--
-        if 18<=number<=22
+        if 18<=number<=19
             ret.Immoral=1 
             if number==19
                 ret.Madman--
                 ret.Fanatic=1 #狂信者
-            if number==22
-                ret.Madman--
-                ret.Fanatic=1 #狂信者
-        if number>=23
-            ret.Madman++
+        if number>=20
+            ret.Madman--
+            ret.HearMadman=1
     if number>=14
         ret.Poisoner=1 #猫
     if number == 12 || number>=14
         ret.Fox=1 #狐 
-        if number>=23
+        if number>=20
             ret.Fox++
-            if number>=24
+            if number>=25
                 ret.Fox++
     if number>=14
         ret.Couple=2
-        if number>=25
-            ret.Couple++
+    if number==19 || number>=22
+        ret.Teruteru=1
     ret
 
 other1=(number)->
@@ -570,12 +568,15 @@ normal3=(number)->
                             ret.Werewolf++
                             if number>=29
                                 ret.Werewolf++
+    if number>=21
+        ret.Werewolf--
+        ret.NormalWolfDiviner=1
     ret.Diviner=1 #占い
-    if number>=23
+    if number>=21
         ret.Diviner++
     if number>=8
         ret.Psychic=1 #灵能
-        if number>=23
+        if number>=24
             ret.Psychic++
     if number>=6
         ret.Madman=1 #狂人
@@ -591,33 +592,24 @@ normal3=(number)->
         if number==15
             ret.Madman--
             ret.Fanatic=1 #狂信者
-        if number==16 || number==17 || number==18
+        if 16 <= number <= 20
             if number==17
                 ret.Heretic=1
             ret.Madman--
             ret.HearMadman=1
-        if 19<=number<=22
-            ret.Immoral=1 
-            if number==19
-                ret.Madman--
-                ret.Fanatic=1 #狂信者
-            if number==22
-                ret.Madman--
-                ret.Fanatic=1 #狂信者
-        if number>=23
-            ret.Madman++
+        if number==19 || number == 20
+            ret.Immoral=1
+
     if number>=16
         ret.Couple=2 #共有
-        if number>=25
-            ret.Couple++
     if number>=12
         ret.Fox=1 #狐
-        if number>=23
+        if number>=21
             ret.Fox++
-            if number>=24
-                ret.Fox++
     if (number >= 14 && number != 16 && number != 17)
         ret.Poisoner=1 #猫
+    if number>=22 || number==19 || number==20
+        ret.HolyMarked=1
     ret
 
 super1=(number)->
