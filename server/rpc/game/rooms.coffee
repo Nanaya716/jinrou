@@ -784,9 +784,19 @@ module.exports.actions=(req,res,ss)->
                 res error:"#{user.realid} 正在尝试重复加入游戏，请检查您的网络连接是否正常稳定。"
                 return
 
-            M.rooms.update {id:roomid},{$push: {players:user}},(err)=>
+            M.rooms.updateOne {
+                id:roomid
+                "players.realid": {$ne:user.realid}
+            }, {
+                $push:
+                    players:user
+            }, {
+                w:1
+            }, (err,result)=>
                 if err?
                     res error: String err
+                else unless result?.matchedCount
+                    res error: i18n.t "error.join.alreadyJoined"
                 else
                     # 啊啦，为什么身上有一张身份证，这就是我吗？
                     if room.theme && theme != null
