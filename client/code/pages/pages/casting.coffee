@@ -22,10 +22,12 @@ exports.start=(rolename)->
             $("#rolename").text i18n.t "casting:castingName.#{roleid}"
             $("#roletitle").text i18n.t "casting:castingTitle.#{roleid}"
 
-            jobs=[null] # 出現する役職の一覧
+            jobs=[null,null] # 复制按钮、人数和出現する役職の一覧
 
             the=$("#rolehead").get 0
             thr=the.insertRow 0
+            th=document.createElement "th"
+            thr.appendChild th
             th=document.createElement "th"
             th.textContent = i18n.t "page_casting:playerNumber"
             thr.appendChild th
@@ -63,6 +65,15 @@ exports.start=(rolename)->
 
                 tr=tb.insertRow -1
                 td=tr.insertCell 0
+                copytext=getCastingText i18n, roleid, index, obj
+                do (copytext)->
+                    button=document.createElement "button"
+                    button.type="button"
+                    button.textContent=i18n.t "page_casting:copy"
+                    button.title=copytext
+                    button.addEventListener "click", -> copyText copytext
+                    td.appendChild button
+                td=tr.insertCell -1
                 td.textContent=index    # 人数
                 while tr.cells.length < jobs.length
                     tr.insertCell -1
@@ -80,4 +91,30 @@ exports.end=->
 
 getjobname=(i18n, type)->
     i18n.t "roles:jobname.#{type}"
+
+getCastingText=(i18n, roleid, number, jobnumbers)->
+    jobs=[]
+    for category in Shared.game.categoryList
+        for job in category.roles
+            continue unless jobnumbers[job]>0
+            jobs.push "#{getjobname i18n, job}: #{jobnumbers[job]}"
+    castingname=i18n.t "casting:castingName.#{roleid}"
+    "#{number}人 - #{castingname} / #{jobs.join ' '}"
+
+copyText=(text)->
+    if navigator.clipboard?.writeText?
+        navigator.clipboard.writeText(text).catch -> copyTextFallback text
+    else
+        copyTextFallback text
+
+copyTextFallback=(text)->
+    textarea=document.createElement "textarea"
+    textarea.value=text
+    textarea.setAttribute "readonly", ""
+    textarea.style.position="fixed"
+    textarea.style.opacity="0"
+    document.body.appendChild textarea
+    textarea.select()
+    document.execCommand "copy"
+    textarea.remove()
 

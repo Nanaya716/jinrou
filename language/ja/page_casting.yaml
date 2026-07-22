@@ -4,3 +4,5 @@
 unknownCasting: "その配役表は利用できません。"
 # label for number of players.
 playerNumber: "人数"
+# label for copying a casting row.
+copy: "复制"
