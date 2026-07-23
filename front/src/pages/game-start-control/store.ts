@@ -190,6 +190,7 @@ export class CastingStore {
       rules: mapToObject(this.rules),
       jobNumbers: this.jobNumbers,
       jobInclusions: mapToObject(this.jobInclusions),
+      categoryNumbers: mapToObject(this.categoryNumbers),
     };
     return JSON.stringify(ruleObj);
   }
@@ -274,9 +275,19 @@ export class CastingStore {
     lookupCasting: (id: string) => CastingDefinition | null,
   ): void {
     try {
-      const { casting, rules, jobNumbers, jobInclusions } = JSON.parse(repr);
+      const {
+        casting,
+        rules,
+        jobNumbers,
+        jobInclusions,
+        categoryNumbers,
+      } = JSON.parse(repr);
 
       this.resetInclusion();
+      this.userJobNumbers.clear();
+      for (const { id } of this.categories) {
+        this.categoryNumbers.set(id, 0);
+      }
       const castingDef = lookupCasting(casting);
       if (castingDef == null) {
         // unknown casting id.
@@ -285,19 +296,29 @@ export class CastingStore {
       this.setCurrentCasting(castingDef);
       for (const ruleKey in rules) {
         const ruleValue = rules[ruleKey];
-        if ('string' !== typeof ruleValue) {
+        if ('string' !== typeof ruleValue || !this.rules.has(ruleKey)) {
           continue;
         }
         this.updateRule(ruleKey, rules[ruleKey]);
       }
       for (const job in jobNumbers) {
         const jobNum = jobNumbers[job];
-        if ('number' !== typeof jobNum) {
+        if ('number' !== typeof jobNum || !this.roles.includes(job)) {
           continue;
         }
         const ji = jobInclusions[job];
 
         this.updateJobNumber(job, jobNum, ji != null ? !!ji : true);
+      }
+      for (const category in categoryNumbers) {
+        const categoryNum = categoryNumbers[category];
+        if (
+          'number' !== typeof categoryNum ||
+          !this.categoryNumbers.has(category)
+        ) {
+          continue;
+        }
+        this.updateCategoryNumber(category, categoryNum);
       }
     } catch (err) {
       console.error(err);

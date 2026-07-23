@@ -5,6 +5,7 @@ import { themeStore } from '../../theme';
 
 import { WideButton } from '../../common/button';
 import { showConfirmDialog, showMessageDialog } from '../../dialog';
+import { Select } from '../../common/forms/select';
 import {
   CastingDefinition,
   LabeledGroup,
@@ -13,6 +14,7 @@ import {
 } from '../../defs';
 import { bind } from '../../util/bind';
 import {
+  findLabeledGroupItem,
   SelectLabeledGroup,
   IPropSelectLabeledGroup,
 } from '../../util/labeled-group';
@@ -26,6 +28,53 @@ import { CastingStore } from './store';
 
 import { i18n, I18n, I18nProvider } from '../../i18n';
 import { AppStyling } from '../../styles/phone';
+
+interface GameStartTemplate {
+  id: string;
+  name: string;
+  rule: string;
+  updatedAt: string;
+}
+
+interface IStateCasting {
+  templates: GameStartTemplate[];
+  selectedTemplateId: string;
+}
+
+const gameStartTemplatesStorageKey = 'jinrou-game-start-templates';
+
+function loadGameStartTemplates(): GameStartTemplate[] {
+  try {
+    const raw = localStorage.getItem(gameStartTemplatesStorageKey);
+    if (raw == null) {
+      return [];
+    }
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+    return parsed.filter(
+      (template): template is GameStartTemplate =>
+        typeof template?.id === 'string' &&
+        typeof template?.name === 'string' &&
+        typeof template?.rule === 'string' &&
+        typeof template?.updatedAt === 'string',
+    );
+  } catch {
+    return [];
+  }
+}
+
+function saveGameStartTemplates(templates: GameStartTemplate[]): void {
+  try {
+    localStorage.setItem(
+      gameStartTemplatesStorageKey,
+      JSON.stringify(templates),
+    );
+  } catch {
+    // Ignore storage errors.
+  }
+}
 
 const StatusLine = styled.div`
   position: sticky;
@@ -75,7 +124,11 @@ interface IPropCasting {
 }
 
 @observer
-export class Casting extends React.Component<IPropCasting, {}> {
+export class Casting extends React.Component<IPropCasting, IStateCasting> {
+  public state: IStateCasting = {
+    templates: loadGameStartTemplates(),
+    selectedTemplateId: '',
+  };
   public render() {
     const {
       i18n,
@@ -210,6 +263,42 @@ export class Casting extends React.Component<IPropCasting, {}> {
                       onUpdate={this.handleRuleUpdate}
                     />
                   </fieldset>
+                  <fieldset>
+                    <legend>{t('gamestart.template.title')}</legend>
+                    <TemplateControls>
+                      <Select
+                        value={this.state.selectedTemplateId}
+                        onChange={this.handleTemplateChange}
+                      >
+                        <option value="">{t('gamestart.template.none')}</option>
+                        {this.state.templates.map(template => (
+                          <option key={template.id} value={template.id}>
+                            {template.name}
+                          </option>
+                        ))}
+                      </Select>
+                      <TemplateButton
+                        type="button"
+                        onClick={this.handleTemplateSave}
+                      >
+                        {t('gamestart.template.save')}
+                      </TemplateButton>
+                      <TemplateButton
+                        type="button"
+                        disabled={!this.state.selectedTemplateId}
+                        onClick={this.handleTemplateApply}
+                      >
+                        {t('gamestart.template.apply')}
+                      </TemplateButton>
+                      <TemplateButton
+                        type="button"
+                        disabled={!this.state.selectedTemplateId}
+                        onClick={this.handleTemplateDelete}
+                      >
+                        {t('gamestart.template.delete')}
+                      </TemplateButton>
+                    </TemplateControls>
+                  </fieldset>
                   {/* Game start button */}
                   <div>
                     <WideButton onClick={this.handleGameStart}>
@@ -252,6 +341,131 @@ export class Casting extends React.Component<IPropCasting, {}> {
     this.props.onDraftSave();
   }
   @bind
+  protected handleTemplateChange(
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ): void {
+    this.setState({ selectedTemplateId: event.target.value });
+  }
+  @bind
+  protected handleTemplateSave(): void {
+    const name = window.prompt(
+      this.props.i18n.t('game_client:gamestart.template.namePrompt') as string,
+    );
+    const normalizedName = name?.trim();
+    if (!normalizedName) {
+      return;
+    }
+    const rule = this.props.store.serializedRule;
+    const now = new Date().toISOString();
+    this.setState(current => {
+      const oldTemplate = current.templates.find(
+        template => template.name === normalizedName,
+      );
+      const template: GameStartTemplate = {
+        id:
+          oldTemplate?.id ||
+          `${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2)}`,
+        name: normalizedName,
+        rule,
+        updatedAt: now,
+      };
+      const templates = [
+        template,
+        ...current.templates.filter(item => item.name !== normalizedName),
+      ];
+      saveGameStartTemplates(templates);
+      return { templates, selectedTemplateId: template.id };
+    });
+  }
+  @bind
+  protected async handleTemplateApply(): Promise<void> {
+    const template = this.state.templates.find(
+      item => item.id === this.state.selectedTemplateId,
+    );
+    if (template == null) {
+      return;
+    }
+    const { castings, i18n, store } = this.props;
+    const preview = this.makeTemplatePreview(template.rule);
+    if (preview == null) {
+      await showMessageDialog({
+        modal: true,
+        title: i18n.t('game_client:gamestart.template.title') as string,
+        message: i18n.t('game_client:gamestart.template.invalid') as string,
+        ok: i18n.t('game_client:gamestart.template.close') as string,
+      });
+      return;
+    }
+    const accepted = await showConfirmDialog({
+      modal: true,
+      title: i18n.t('game_client:gamestart.template.previewTitle', {
+        name: template.name,
+      }) as string,
+      message: preview,
+      yes: i18n.t('game_client:gamestart.template.apply') as string,
+      no: i18n.t('game_client:gamestart.template.cancel') as string,
+    });
+    if (!accepted) {
+      return;
+    }
+    store.loadSerializedRule(
+      template.rule,
+      castingId =>
+        findLabeledGroupItem(castings, item => item.id === castingId) || null,
+    );
+    this.props.onDraftSave();
+  }
+  @bind
+  protected handleTemplateDelete(): void {
+    const selectedTemplateId = this.state.selectedTemplateId;
+    if (!selectedTemplateId) {
+      return;
+    }
+    this.setState(current => {
+      const templates = current.templates.filter(
+        template => template.id !== selectedTemplateId,
+      );
+      saveGameStartTemplates(templates);
+      return { templates, selectedTemplateId: '' };
+    });
+  }
+  protected makeTemplatePreview(rule: string): string | null {
+    try {
+      const parsed = JSON.parse(rule);
+      if (typeof parsed?.casting !== 'string') {
+        return null;
+      }
+      const { i18n } = this.props;
+      const lines = [
+        i18n.t('game_client:gamestart.template.preview.casting', {
+          name: i18n.t(`casting:castingName.${parsed.casting}`),
+        }),
+      ];
+      const appendValues = (key: string, values: Record<string, unknown>) => {
+        const entries = Object.entries(values || {}).filter(
+          ([, value]) => value !== 0 && value !== '' && value !== false,
+        );
+        if (entries.length > 0) {
+          lines.push(
+            `${i18n.t(
+              `game_client:gamestart.template.preview.${key}`,
+            )}: ${entries
+              .map(([name, value]) => `${name}=${value}`)
+              .join(', ')}`,
+          );
+        }
+      };
+      appendValues('roles', parsed.jobNumbers);
+      appendValues('categories', parsed.categoryNumbers);
+      appendValues('rules', parsed.rules);
+      return lines.join('\n');
+    } catch {
+      return null;
+    }
+  }
+  @bind
   protected async handleGameStart(): Promise<void> {
     const { i18n, roles, categories, ruledefs, store, onStart } = this.props;
     const query = await gameStart({
@@ -270,4 +484,15 @@ export class Casting extends React.Component<IPropCasting, {}> {
 
 const Wrapper = styled(AppStyling)`
   margin-bottom: 1.2em;
+`;
+
+const TemplateControls = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4em;
+`;
+
+const TemplateButton = styled.button`
+  padding: 0.35em 0.6em;
 `;

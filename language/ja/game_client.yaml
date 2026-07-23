@@ -36,6 +36,23 @@ gamestart:
     start: 开始
     # Legend of category query.
     categorySelection: 手调黑暗火锅选项
+  # Local reusable game-start settings templates.
+  template:
+    title: 设置模板
+    none: 选择本地模板
+    save: 保存为模板
+    apply: 预览并应用
+    delete: 删除模板
+    namePrompt: 请输入模板名。同名模板会被覆盖。
+    previewTitle: 模板「{{name}}」
+    invalid: 此模板的数据无效，无法应用。
+    close: 关闭
+    cancel: 取消
+    preview:
+      casting: 配置：{{name}}
+      roles: 职业
+      categories: 分类职业
+      rules: 规则
   # confirmation messages.
   confirm:
     # suggestion of rule based on casting.
