@@ -1,6 +1,13 @@
 import * as React from 'react';
 import { i18n, I18nProvider } from '../../i18n';
-import { TemplateControls, Wrapper } from './elements';
+import {
+  MarkdownButton,
+  MarkdownToolbar,
+  TemplateControls,
+  VillageRulesRichEditor,
+  VillageRulesRichEditorSurface,
+  Wrapper,
+} from './elements';
 import {
   Controls,
   ControlsWrapper,
@@ -10,7 +17,7 @@ import {
   ControlsMain,
   InlineControl,
 } from '../../common/forms/controls-wrapper';
-import { Input, Textarea } from '../../common/forms/text';
+import { Input } from '../../common/forms/text';
 import { RadioButtons } from '../../common/forms/radio';
 import { useI18n } from '../../i18n/react';
 import { NewRoomStore } from './store';
@@ -80,19 +87,381 @@ function saveVillageRuleTemplates(templates: VillageRuleTemplate[]): void {
   );
 }
 
+function appendVillageRuleInline(parent: HTMLElement, text: string): void {
+  for (const part of text.split(/(\*\*[^*]+\*\*)/g)) {
+    if (/^\*\*[^*]+\*\*$/.test(part)) {
+      const strong = document.createElement('strong');
+      strong.textContent = part.slice(2, -2);
+      parent.appendChild(strong);
+    } else {
+      parent.appendChild(document.createTextNode(part));
+    }
+  }
+}
+
+function renderVillageRulesEditor(root: HTMLElement, content: string): void {
+  root.replaceChildren();
+  let radioGroup = 0;
+  let previousWasRadio = false;
+  for (const line of content.split(/\r?\n/)) {
+    if (line === '---') {
+      root.appendChild(document.createElement('br'));
+      continue;
+    }
+    const checkbox = line.match(/^- \[([ xX])\] (.*)$/);
+    const radio = line.match(/^- \(([ xX])\) (.*)$/);
+    const bullet = line.match(/^- (.*)$/);
+    const heading = line.match(/^(#{1,2}) (.*)$/);
+    let node: HTMLElement;
+
+    if (heading) {
+      node = document.createElement(heading[1] === '#' ? 'h3' : 'h4');
+      appendVillageRuleInline(node, heading[2]);
+    } else if (checkbox || radio) {
+      if (radio && !previousWasRadio) {
+        radioGroup += 1;
+      }
+      node = document.createElement('label');
+      const input = document.createElement('input');
+      input.type = checkbox ? 'checkbox' : 'radio';
+      input.name = radio ? `village-rule-radio-${radioGroup}` : '';
+      input.checked = (checkbox || radio)![1].toLowerCase() === 'x';
+      input.contentEditable = 'false';
+      node.appendChild(input);
+      appendVillageRuleInline(node, (checkbox || radio)![2]);
+      node.appendChild(document.createTextNode('\u200B'));
+    } else {
+      node = document.createElement('div');
+      if (bullet) {
+        node.appendChild(document.createTextNode('• '));
+        appendVillageRuleInline(node, bullet[1]);
+      } else if (line) {
+        appendVillageRuleInline(node, line);
+      } else {
+        node.appendChild(document.createElement('br'));
+      }
+    }
+    root.appendChild(node);
+    previousWasRadio = radio != null;
+  }
+  ensureVillageRuleCaretAnchors(root);
+}
+
+function ensureVillageRuleCaretAnchors(root: HTMLElement): void {
+  root.querySelectorAll('label').forEach(label => {
+    const input = label.querySelector<HTMLInputElement>('input');
+    if (input != null && !label.textContent?.includes('\u200B')) {
+      label.appendChild(document.createTextNode('\u200B'));
+    }
+    if (input != null) {
+      label.style.fontWeight = input.checked ? 'bold' : 'normal';
+    }
+  });
+  const lastNode = root.lastChild;
+  if (
+    lastNode?.nodeType !== Node.TEXT_NODE ||
+    !lastNode.textContent?.includes('\u200B')
+  ) {
+    // Keep an editable caret position after a final non-editable choice control.
+    root.appendChild(document.createTextNode('\u200B'));
+  }
+}
+
+function serializeVillageRuleInline(node: Node): string {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return (node.textContent || '').replace(/\u200B/g, '');
+  }
+  if (!(node instanceof HTMLElement) || node.tagName === 'INPUT') {
+    return '';
+  }
+  if (node.tagName === 'BR') {
+    return '';
+  }
+  const content = Array.from(node.childNodes)
+    .map(serializeVillageRuleInline)
+    .join('');
+  return node.tagName === 'STRONG' || node.tagName === 'B'
+    ? `**${content}**`
+    : content;
+}
+
+function isVillageRuleChoice(node: Node | null): node is HTMLElement {
+  return node instanceof HTMLElement && node.querySelector('input') != null;
+}
+
+function serializeVillageRulesEditor(root: HTMLElement): string {
+  return Array.from(root.childNodes)
+    .flatMap(node => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return [(node.textContent || '').replace(/\u200B/g, '')];
+      }
+      if (!(node instanceof HTMLElement)) {
+        return [];
+      }
+      if (node.tagName === 'BR') {
+        return ['---'];
+      }
+      if (node.tagName === 'UL' || node.tagName === 'OL') {
+        return Array.from(node.querySelectorAll(':scope > li')).map(
+          item => `- ${serializeVillageRuleInline(item)}`,
+        );
+      }
+      const input = node.querySelector<HTMLInputElement>('input');
+      if (input?.type === 'checkbox') {
+        return [
+          `- [${input.checked ? 'x' : ' '}] ${serializeVillageRuleInline(
+            node,
+          )}`,
+        ];
+      }
+      if (input?.type === 'radio') {
+        return [
+          `- (${input.checked ? 'x' : ' '}) ${serializeVillageRuleInline(
+            node,
+          )}`,
+        ];
+      }
+      const content = serializeVillageRuleInline(node).replace(/^•\s*/, '');
+      if (node.tagName === 'H3') {
+        return [`# ${content}`];
+      }
+      if (node.tagName === 'H4') {
+        return [`## ${content}`];
+      }
+      return [content];
+    })
+    .join('\n');
+}
+
+function VillageRulesRichTextEditor({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const editorRef = React.useRef<HTMLDivElement | null>(null);
+  const renderedValueRef = React.useRef<string | null>(null);
+  const sync = React.useCallback(() => {
+    if (editorRef.current != null) {
+      ensureVillageRuleCaretAnchors(editorRef.current);
+      const next = serializeVillageRulesEditor(editorRef.current);
+      renderedValueRef.current = next;
+      onChange(next);
+    }
+  }, [onChange]);
+
+  React.useEffect(() => {
+    if (editorRef.current != null && renderedValueRef.current !== value) {
+      renderVillageRulesEditor(editorRef.current, value);
+      renderedValueRef.current = value;
+    }
+  }, [value]);
+
+  const runCommand = (command: string) => {
+    editorRef.current?.focus();
+    document.execCommand(command);
+    sync();
+  };
+  const insertList = () => {
+    const editor = editorRef.current;
+    editor?.focus();
+    if (!editor?.textContent?.replace(/\u200B/g, '').trim()) {
+      document.execCommand('insertHTML', false, '<ul><li>项目</li></ul>');
+    } else {
+      document.execCommand('insertUnorderedList');
+    }
+    sync();
+  };
+  const preserveSelection = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+  };
+  const insertLayoutBreak = () => {
+    const editor = editorRef.current;
+    if (editor == null) {
+      return;
+    }
+    const selection = window.getSelection();
+    let line = selection?.anchorNode || null;
+    while (line?.parentNode != null && line.parentNode !== editor) {
+      line = line.parentNode;
+    }
+    const lineBreak = document.createElement('br');
+    if (line != null && line !== editor) {
+      editor.insertBefore(lineBreak, line.nextSibling);
+    } else {
+      editor.appendChild(lineBreak);
+    }
+    const range = document.createRange();
+    range.setStartAfter(lineBreak);
+    range.collapse(true);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    sync();
+  };
+  const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const editor = e.currentTarget;
+    const selection = window.getSelection();
+    let line = selection?.anchorNode || null;
+    while (line?.parentNode != null && line.parentNode !== editor) {
+      line = line.parentNode;
+    }
+    if (
+      e.key === 'Backspace' &&
+      selection?.isCollapsed &&
+      isVillageRuleChoice(line) &&
+      selection.rangeCount > 0
+    ) {
+      const beforeCaret = selection.getRangeAt(0).cloneRange();
+      beforeCaret.selectNodeContents(line);
+      beforeCaret.setEnd(selection.anchorNode!, selection.anchorOffset);
+      if (!beforeCaret.toString()) {
+        e.preventDefault();
+        const previous = line.previousSibling;
+        const next = line.nextSibling;
+        line.remove();
+        if (next instanceof HTMLBRElement && !isVillageRuleChoice(previous)) {
+          next.remove();
+        }
+        const range = document.createRange();
+        if (next?.parentNode === editor) {
+          range.setStartBefore(next);
+        } else if (previous?.parentNode === editor) {
+          range.setStartAfter(previous);
+        } else {
+          range.setStart(editor, 0);
+        }
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        sync();
+        return;
+      }
+    }
+    if (e.key !== 'Enter' || e.shiftKey) {
+      return;
+    }
+    if (!(line instanceof HTMLElement)) {
+      return;
+    }
+    const radio = line.querySelector<HTMLInputElement>('input[type="radio"]');
+    if (radio != null) {
+      e.preventDefault();
+      const option = document.createElement('label');
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = radio.name;
+      input.contentEditable = 'false';
+      const text = document.createTextNode('选项');
+      option.append(input, text, document.createTextNode('\u200B'));
+      editor?.insertBefore(option, line.nextSibling);
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      sync();
+      return;
+    }
+    if (line.querySelector('input') != null) {
+      e.preventDefault();
+      insertLayoutBreak();
+    }
+  };
+  const insertChoice = (type: 'checkbox' | 'radio') => {
+    editorRef.current?.focus();
+    const checkbox = '<input type="checkbox" contenteditable="false">';
+    const radioGroup = `village-rule-radio-${Date.now()}`;
+    const radio = `<input type="radio" name="${radioGroup}" contenteditable="false">`;
+    const content =
+      type === 'checkbox'
+        ? `<label>${checkbox}选项\u200B</label>`
+        : `<label>${radio}选项一\u200B</label><label>${radio}选项二\u200B</label>`;
+    document.execCommand('insertHTML', false, content);
+    sync();
+  };
+
+  return (
+    <VillageRulesRichEditor>
+      <MarkdownToolbar aria-label="村规格式工具">
+        <MarkdownButton
+          type="button"
+          title="加粗"
+          onMouseDown={preserveSelection}
+          onClick={() => runCommand('bold')}
+        >
+          加粗
+        </MarkdownButton>
+        <MarkdownButton
+          type="button"
+          title="项目列表"
+          onMouseDown={preserveSelection}
+          onClick={insertList}
+        >
+          列表
+        </MarkdownButton>
+        <MarkdownButton
+          type="button"
+          title="多选项"
+          onMouseDown={preserveSelection}
+          onClick={() => insertChoice('checkbox')}
+        >
+          多选
+        </MarkdownButton>
+        <MarkdownButton
+          type="button"
+          title="单选项"
+          onMouseDown={preserveSelection}
+          onClick={() => insertChoice('radio')}
+        >
+          单选
+        </MarkdownButton>
+        <MarkdownButton
+          type="button"
+          title="强制换行"
+          onMouseDown={preserveSelection}
+          onClick={insertLayoutBreak}
+        >
+          换行
+        </MarkdownButton>
+      </MarkdownToolbar>
+      <VillageRulesRichEditorSurface
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
+        role="textbox"
+        aria-multiline="true"
+        onInput={sync}
+        onChange={sync}
+        onKeyDown={handleEditorKeyDown}
+        onPaste={e => {
+          e.preventDefault();
+          document.execCommand(
+            'insertText',
+            false,
+            e.clipboardData.getData('text/plain'),
+          );
+          sync();
+        }}
+      />
+    </VillageRulesRichEditor>
+  );
+}
+
 export const NewRoom: React.FunctionComponent<IPropNewRoom> = observer(
   ({ themes, store, roomDefaults, onCreate }) => {
     const t = useI18n('newroom_client');
     const nameInputRef = React.useRef<HTMLInputElement | null>(null);
     const passwordInputRef = React.useRef<HTMLInputElement | null>(null);
     const commentInputRef = React.useRef<HTMLInputElement | null>(null);
-    const villageRulesInputRef = React.useRef<HTMLTextAreaElement | null>(null);
     const maxNumberInputRef = React.useRef<HTMLInputElement | null>(null);
     const themeSelectRef = React.useRef<HTMLSelectElement | null>(null);
     const templateSelectRef = React.useRef<HTMLSelectElement | null>(null);
     const [villageRuleTemplates, setVillageRuleTemplates] = React.useState<
       VillageRuleTemplate[]
     >(() => loadVillageRuleTemplates());
+    const [villageRules, setVillageRules] = React.useState(
+      roomDefaults?.villageRules || '',
+    );
     // memory of whether submit button was explicitly clicked (or pressed).
     const enterPressedRef = React.useRef(false);
 
@@ -123,8 +492,8 @@ export const NewRoom: React.FunctionComponent<IPropNewRoom> = observer(
     const applyVillageRuleTemplate = React.useCallback(
       (selectedId: string) => {
         const template = villageRuleTemplates.find(t => t.id === selectedId);
-        if (template != null && villageRulesInputRef.current != null) {
-          villageRulesInputRef.current.value = template.content;
+        if (template != null) {
+          setVillageRules(template.content);
         }
       },
       [villageRuleTemplates],
@@ -135,7 +504,7 @@ export const NewRoom: React.FunctionComponent<IPropNewRoom> = observer(
       if (!normalizedName) {
         return;
       }
-      const content = villageRulesInputRef.current?.value || '';
+      const content = villageRules;
       const now = new Date().toISOString();
       setVillageRuleTemplates(current => {
         const oldTemplate = current.find(t => t.name === normalizedName);
@@ -156,7 +525,7 @@ export const NewRoom: React.FunctionComponent<IPropNewRoom> = observer(
         saveVillageRuleTemplates(next);
         return next;
       });
-    }, [t]);
+    }, [t, villageRules]);
     const deleteVillageRuleTemplate = React.useCallback(() => {
       const selectedId = templateSelectRef.current?.value;
       if (!selectedId) {
@@ -265,7 +634,7 @@ export const NewRoom: React.FunctionComponent<IPropNewRoom> = observer(
           usepassword: store.usePassword ? 'on' : '',
           password: store.usePassword ? getValue(passwordInputRef) : void 0,
           comment: getValue(commentInputRef),
-          villageRules: getValue(villageRulesInputRef),
+          villageRules,
           number: getValue(maxNumberInputRef),
           blind: store.blind,
           theme: getValue(themeSelectRef),
@@ -349,11 +718,9 @@ export const NewRoom: React.FunctionComponent<IPropNewRoom> = observer(
               ) : null}
             </ControlsHeader>
             <ControlsMain>
-              <Textarea
-                name="village-rules"
-                rows={6}
-                defaultValue={roomDefaults?.villageRules || ''}
-                ref={villageRulesInputRef}
+              <VillageRulesRichTextEditor
+                value={villageRules}
+                onChange={setVillageRules}
               />
               <TemplateControls>
                 <Select

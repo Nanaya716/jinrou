@@ -13,6 +13,52 @@ game_start_control = null
 game_view = null
 village_rules_panel_cleanup = null
 
+append_village_rule_inline = (parent, text)->
+    for part in text.split /(\*\*[^*]+\*\*)/g
+        if /^\*\*[^*]+\*\*$/.test part
+            strong = document.createElement 'strong'
+            strong.textContent = part.slice 2, -2
+            parent.appendChild strong
+        else
+            parent.appendChild document.createTextNode part
+
+render_village_rules = (panel, content)->
+    panel.textContent = ''
+    for line in content.split /\r?\n/
+        if line == '---'
+            panel.appendChild document.createElement 'br'
+            continue
+        checkbox = line.match /^- \[([ xX])\] (.*)$/
+        radio = line.match /^- \(([ xX])\) (.*)$/
+        bullet = line.match /^- (.*)$/
+        heading = line.match /^(#{1,2}) (.*)$/
+        if heading
+            node = document.createElement if heading[1] == '#' then 'h3' else 'h4'
+            node.style.margin = '0.55em 0 0.3em'
+            node.style.fontSize = '1em'
+            node.style.fontWeight = 'bold'
+            append_village_rule_inline node, heading[2]
+        else if checkbox or radio
+            node = document.createElement 'label'
+            node.style.display = 'inline-flex'
+            node.style.alignItems = 'center'
+            node.style.margin = '0 0.75em 0.3em 0'
+            node.style.whiteSpace = 'nowrap'
+            input = document.createElement 'input'
+            input.type = if checkbox then 'checkbox' else 'radio'
+            input.checked = (checkbox ? radio)[1].toLowerCase() == 'x'
+            input.disabled = true
+            input.style.marginRight = '0.45em'
+            node.style.fontWeight = 'bold' if input.checked
+            node.appendChild input
+            append_village_rule_inline node, (checkbox ? radio)[2]
+        else
+            node = document.createElement 'div'
+            node.style.margin = '0.2em 0'
+            node.appendChild document.createTextNode '• ' if bullet
+            append_village_rule_inline node, if bullet then bullet[1] else line
+        panel.appendChild node
+
 
 exports.start=(roomid)->
     village_rules_panel_cleanup?()
@@ -562,7 +608,7 @@ exports.start=(roomid)->
             icon.classList.add 'fa-sticky-note'
             panel = document.createElement 'div'
             panel.classList.add 'roomname-village-rules-panel'
-            panel.textContent = room.villageRules
+            render_village_rules panel, room.villageRules
             panel.style.right = 'auto'
             panel.style.bottom = 'auto'
 
