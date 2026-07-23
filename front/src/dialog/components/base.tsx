@@ -17,6 +17,7 @@ const DraggableContainer = (Draggable as unknown) as React.ComponentType<
   React.PropsWithChildren<{
     bounds?: string;
     handle?: string;
+    cancel?: string;
     nodeRef?: React.RefObject<HTMLDivElement>;
   }>
 >;
@@ -100,6 +101,7 @@ const CloseButton = styled.span`
     color: black;
   }
 `;
+const closeButtonClassName = 'dialog-close-button';
 const DialogMain = styled.div`
   margin: 0.8em;
 `;
@@ -143,7 +145,10 @@ class DialogBaseInner extends React.PureComponent<IPropDialogBase, {}> {
               <Title id={titleid} className={titleClassName}>
                 {icon ? <FontAwesomeIcon icon={icon} /> : null}
                 {title}
-                <CloseButton onClick={onCancel}>
+                <CloseButton
+                  className={closeButtonClassName}
+                  onClick={onCancel}
+                >
                   <FontAwesomeIcon icon="times" />
                 </CloseButton>
               </Title>
@@ -244,6 +249,7 @@ export function Dialog({
           <DraggableContainer
             bounds="body"
             handle={`.${titleClassName}`}
+            cancel={`.${closeButtonClassName}`}
             nodeRef={draggableNodeRef}
           >
             <div ref={draggableNodeRef}>
