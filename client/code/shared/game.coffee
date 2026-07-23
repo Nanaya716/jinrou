@@ -791,6 +791,110 @@ cosplayer=(number)->
         ret.Poisoner=1
     ret
 
+dictatorVillage=(number)->
+    ret={}
+    if number>=20
+        ret.Diviner=2
+        ret.Dictator=2
+        ret.Hunter=1
+        ret.SeersMama=1
+        ret.QueenSpectator=1
+        ret.Witch=1
+        ret.Priest=1
+        ret.BloodWolf=1
+        ret.ToughWolf=1
+        ret.ThreateningWolf=1
+        ret.Sorcerer=1
+        ret.Fanatic=1
+        ret.LurkingMad=1
+        ret.MadHunter=1
+        ret.Madman=4
+    else if number==19
+        ret.Diviner=2
+        ret.Dictator=2
+        ret.Hunter=1
+        ret.SeersMama=1
+        ret.QueenSpectator=1
+        ret.Witch=1
+        ret.Priest=1
+        ret.BloodWolf=1
+        ret.ToughWolf=1
+        ret.ThreateningWolf=1
+        ret.Sorcerer=1
+        ret.Fanatic=1
+        ret.LurkingMad=1
+        ret.MadHunter=1
+        ret.Madman=3
+    else if number>=17
+        ret.Diviner=2
+        ret.Dictator=2
+        ret.Hunter=1
+        ret.SeersMama=1
+        ret.QueenSpectator=1
+        ret.Witch=1
+        ret.BloodWolf=1
+        ret.ToughWolf=1
+        ret.ThreateningWolf=1
+        ret.Sorcerer=1
+        ret.Fanatic=1
+        ret.LurkingMad=1
+        ret.Madman=if number==17 then 3 else 4
+    else if number>=15
+        ret.Diviner=2
+        ret.Dictator=2
+        ret.Hunter=1
+        ret.SeersMama=1
+        ret.Witch=1
+        ret.Werewolf=3
+        ret.Sorcerer=1
+        ret.Fanatic=1
+        ret.Madman=if number==15 then 3 else 4
+    else if number>=13
+        ret.Diviner=2
+        ret.Dictator=1
+        ret.Hunter=1
+        ret.SeersMama=1
+        ret.Witch=1
+        ret.Werewolf=2
+        ret.Sorcerer=1
+        ret.MadDictator=1
+        ret.Madman=3
+        if number==14
+            ret.Doppleganger=1
+    else if number==12
+        ret.Diviner=2
+        ret.Dictator=2
+        ret.Hunter=1
+        ret.Werewolf=2
+        ret.Sorcerer=1
+        ret.Madman=3
+        ret.Doppleganger=1
+    else if number==11
+        ret.Diviner=1
+        ret.Dictator=2
+        ret.Hunter=1
+        ret.Werewolf=1
+        ret.Sorcerer=1
+        ret.WhisperingMad=1
+        ret.Madman=3
+        ret.Doppleganger=1
+    else if number>=9
+        ret.Diviner=1
+        ret.Dictator=2
+        ret.Hunter=1
+        ret.Werewolf=1
+        ret.Sorcerer=1
+        ret.WhisperingMad=1
+        ret.Madman=if number==9 then 2 else 3
+    else
+        ret.Diviner=1
+        ret.Dictator=1
+        ret.Hunter=1
+        ret.Werewolf=1
+        ret.Sorcerer=1
+        ret.Madman=number-5
+    ret
+
 exports.jobrules=[
   {
     name:"普通配置"
@@ -956,6 +1060,11 @@ exports.jobrules=[
   {
       name:"主题配置"
       rule:[
+        {
+          name:"独裁者村"
+          minNumber:7
+          rule:dictatorVillage
+        }
         {
           name:"变化村"
           minNumber:6
