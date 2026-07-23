@@ -6,6 +6,7 @@ import {
   faClock,
   faPaperPlane,
   faNewspaper,
+  faStickyNote,
 } from '@fortawesome/free-regular-svg-icons';
 import {
   faPlus,
@@ -83,6 +84,7 @@ library.add(
   faBars,
   faMicrophoneSlash,
   faPaperPlane,
+  faStickyNote,
   faFileSignature,
   faTheaterMasks,
   faSchool,

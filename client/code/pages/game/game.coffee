@@ -11,9 +11,12 @@ reload_room = null
 game_start_control = null
 # GameViewのインスタンス
 game_view = null
+village_rules_panel_cleanup = null
 
 
 exports.start=(roomid)->
+    village_rules_panel_cleanup?()
+    village_rules_panel_cleanup = null
     this_rule=null
     my_player_id=null
     this_room_id=null
@@ -554,21 +557,79 @@ exports.start=(roomid)->
             tooltip.tabIndex = 0
             tooltip.title = "村规说明"
             icon = document.createElement 'i'
-            icon.classList.add 'fa'
+            icon.classList.add 'far'
             icon.classList.add 'fa-fw'
-            icon.classList.add 'fa-scroll'
+            icon.classList.add 'fa-sticky-note'
             panel = document.createElement 'div'
             panel.classList.add 'roomname-village-rules-panel'
             panel.textContent = room.villageRules
+            panel.style.right = 'auto'
+            panel.style.bottom = 'auto'
+
+            positionPanel = ->
+                rect = tooltip.getBoundingClientRect()
+                viewport = window.visualViewport
+                keyboardHeight = if viewport? then window.innerHeight - viewport.height else 0
+                isMobile = window.matchMedia('(max-width: 600px)').matches
+                margin = if isMobile then 12 else 16
+
+                panel.style.maxWidth = "#{window.innerWidth - margin * 2}px"
+                panel.style.maxHeight = "#{Math.floor(window.innerHeight * (if isMobile then 0.55 else 0.75))}px"
+                panel.style.left = "#{rect.left}px"
+                panel.style.top = "#{rect.bottom - keyboardHeight + 4}px"
+
+                panelRect = panel.getBoundingClientRect()
+                left = Math.max margin, Math.min(rect.left, window.innerWidth - panelRect.width - margin)
+                top = rect.bottom - keyboardHeight + 4
+                if top + panelRect.height > window.innerHeight - margin
+                    top = rect.top - keyboardHeight - panelRect.height - 4
+                panel.style.left = "#{Math.max(margin, left)}px"
+                panel.style.top = "#{Math.max(margin, top)}px"
+
+            frame = null
+            revealPanel = false
+            updatePanelPosition = (reveal = false)->
+                return unless panel.classList.contains 'open'
+                revealPanel ||= reveal
+                return if frame?
+                frame = requestAnimationFrame ->
+                    positionPanel()
+                    panel.style.visibility = 'visible' if revealPanel
+                    revealPanel = false
+                    frame = null
+
+            closePanel = (e)->
+                unless tooltip.contains(e.target) || panel.contains(e.target)
+                    panel.classList.remove 'open'
+                    cancelAnimationFrame frame if frame?
+                    frame = null
+                    revealPanel = false
             tooltip.appendChild icon
             iconlist.appendChild tooltip
             document.body.appendChild panel
             tooltip.addEventListener 'click', (e)->
                 e.preventDefault()
-                panel.classList.toggle 'open'
-            document.addEventListener 'click', (e)->
-                unless tooltip.contains(e.target) || panel.contains(e.target)
+                if panel.classList.contains 'open'
                     panel.classList.remove 'open'
+                    cancelAnimationFrame frame if frame?
+                    frame = null
+                    revealPanel = false
+                else
+                    panel.style.visibility = 'hidden'
+                    panel.classList.add 'open'
+                    updatePanelPosition true
+            document.addEventListener 'click', closePanel
+            window.addEventListener 'scroll', updatePanelPosition, true
+            window.addEventListener 'resize', updatePanelPosition
+            window.visualViewport?.addEventListener 'resize', updatePanelPosition
+            village_rules_panel_cleanup = ->
+                document.removeEventListener 'click', closePanel
+                window.removeEventListener 'scroll', updatePanelPosition, true
+                window.removeEventListener 'resize', updatePanelPosition
+                window.visualViewport?.removeEventListener 'resize', updatePanelPosition
+                cancelAnimationFrame frame if frame?
+                panel.remove()
+                village_rules_panel_cleanup = null
         $("#roomname").append roomnumber, iconlist
         if room.mode=="waiting"
             game_view.store.resetPlayers room.players.map convertRoomPlayerToPlayerInfo
@@ -706,6 +767,7 @@ exports.end=->
             console.error result
             return
     alloff socket_ids...
+    village_rules_panel_cleanup?()
     document.body.classList.remove x for x in ["day","night","finished","heaven"]
 
 exports.reconnect=->
