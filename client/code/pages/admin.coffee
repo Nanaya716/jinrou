@@ -68,6 +68,20 @@ tabs=
                     else
                         $("#refreshRoomMadeResult").get(0).style.color=""
                         $("#refreshRoomMadeResult").text result.result
+    abandonRoom:
+        init:->
+            $("#abandonRoomForm").submit (je)->
+                je.preventDefault()
+                query=Index.util.formQuery je.target
+                unless window.confirm "确定要废弃 #{query.roomid} 号等待中房间吗？"
+                    return
+                ss.rpc "admin.abandonRoom", query,(result)->
+                    if result.error
+                        $("#abandonRoomResult").get(0).style.color="red"
+                        $("#abandonRoomResult").text result.error
+                    else
+                        $("#abandonRoomResult").get(0).style.color=""
+                        $("#abandonRoomResult").text result.result
     shutdownExpireRooms:
         init:->
             $("#shutdownExpireRoomsForm").submit (je)->

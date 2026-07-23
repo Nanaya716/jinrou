@@ -6,6 +6,8 @@ ObjectID=require('mongodb').ObjectID
 
 libblacklist = require '../libs/blacklist.coffee'
 libi18n      = require '../libs/i18n.coffee'
+libready     = require '../libs/ready.coffee'
+libgame      = require './game/game.coffee'
 
 i18n = libi18n.getWithDefaultNS 'admin'
 
@@ -163,6 +165,36 @@ exports.actions =(req,res,ss)->
                     res {error: err.message ? err}
                     return
                 res {result: "已将 #{roomid} 号房间创建时间刷新为 #{new Date(made).toLocaleString()}。"}
+    #   废弃等待中的房间
+    abandonRoom: (query)->
+        unless req.session.maintenance
+            res {error: i18n.t "error.notAdmin"}
+            return
+        roomid=parseInt query?.roomid, 10
+        unless roomid > 0
+            res {error: i18n.t "common:error.invalidInput"}
+            return
+        M.rooms.findOne {id:roomid}, (err, room)->
+            if err?
+                res {error: err.message ? err}
+                return
+            unless room?
+                res {error: "房间不存在。"}
+                return
+            unless room.mode == "waiting"
+                res {error: "只能废弃等待中的房间。"}
+                return
+            M.rooms.updateOne {id:roomid, mode:"waiting"}, {$set:{mode:"end"}}, {w:1}, (err, result)->
+                if err?
+                    res {error: err.message ? err}
+                    return
+                unless result?.matchedCount
+                    res {error: "房间状态已变化，无法废弃。"}
+                    return
+                for pl in room.players
+                    libready.unregister roomid, pl
+                libgame.deletedlog ss,room
+                res {result: "已废弃 #{roomid} 号房间。"}
     #   关闭陈旧房间
     # 关闭陈旧房间
     shutdownExpireRooms: ->
