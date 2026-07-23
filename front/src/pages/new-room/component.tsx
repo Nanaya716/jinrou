@@ -99,6 +99,27 @@ function appendVillageRuleInline(parent: HTMLElement, text: string): void {
   }
 }
 
+function createVillageRuleChoice(
+  type: 'checkbox' | 'radio',
+  name: string,
+  content: string,
+): { choice: HTMLSpanElement; input: HTMLInputElement; text: HTMLSpanElement } {
+  const choice = document.createElement('span');
+  choice.className = 'village-rules-choice';
+  const input = document.createElement('input');
+  input.type = type;
+  input.name = name;
+  input.contentEditable = 'false';
+  const text = document.createElement('span');
+  text.className = 'village-rules-choice-text';
+  appendVillageRuleInline(text, content);
+  if (!text.hasChildNodes()) {
+    text.appendChild(document.createElement('br'));
+  }
+  choice.append(input, text);
+  return { choice, input, text };
+}
+
 function renderVillageRulesEditor(root: HTMLElement, content: string): void {
   root.replaceChildren();
   let radioGroup = 0;
@@ -121,15 +142,13 @@ function renderVillageRulesEditor(root: HTMLElement, content: string): void {
       if (radio && !previousWasRadio) {
         radioGroup += 1;
       }
-      node = document.createElement('label');
-      const input = document.createElement('input');
-      input.type = checkbox ? 'checkbox' : 'radio';
-      input.name = radio ? `village-rule-radio-${radioGroup}` : '';
+      const { choice, input } = createVillageRuleChoice(
+        checkbox ? 'checkbox' : 'radio',
+        radio ? `village-rule-radio-${radioGroup}` : '',
+        (checkbox || radio)![2],
+      );
       input.checked = (checkbox || radio)![1].toLowerCase() === 'x';
-      input.contentEditable = 'false';
-      node.appendChild(input);
-      appendVillageRuleInline(node, (checkbox || radio)![2]);
-      node.appendChild(document.createTextNode('\u200B'));
+      node = choice;
     } else {
       node = document.createElement('div');
       if (bullet) {
@@ -144,27 +163,55 @@ function renderVillageRulesEditor(root: HTMLElement, content: string): void {
     root.appendChild(node);
     previousWasRadio = radio != null;
   }
-  ensureVillageRuleCaretAnchors(root);
+  normalizeVillageRuleChoices(root);
 }
 
-function ensureVillageRuleCaretAnchors(root: HTMLElement): void {
-  root.querySelectorAll('label').forEach(label => {
-    const input = label.querySelector<HTMLInputElement>('input');
-    if (input != null && !label.textContent?.includes('\u200B')) {
-      label.appendChild(document.createTextNode('\u200B'));
+function normalizeVillageRuleChoices(root: HTMLElement): void {
+  root
+    .querySelectorAll<HTMLElement>('.village-rules-choice')
+    .forEach(choice => {
+      const input = choice.querySelector<HTMLInputElement>('input');
+      let text = choice.querySelector<HTMLElement>(
+        '.village-rules-choice-text',
+      );
+      if (text == null) {
+        text = document.createElement('span');
+        text.className = 'village-rules-choice-text';
+        choice.appendChild(text);
+      }
+      if (!text.hasChildNodes()) {
+        text.appendChild(document.createElement('br'));
+      }
+      if (input != null) {
+        choice.style.fontWeight = input.checked ? 'bold' : 'normal';
+      }
+    });
+}
+
+function findVillageRuleChoiceText(
+  root: HTMLElement,
+  node: Node | null,
+): HTMLElement | null {
+  let current =
+    node instanceof HTMLElement ? node : node?.parentElement || null;
+  while (current != null && current !== root) {
+    if (current.classList.contains('village-rules-choice-text')) {
+      return current;
     }
-    if (input != null) {
-      label.style.fontWeight = input.checked ? 'bold' : 'normal';
-    }
-  });
-  const lastNode = root.lastChild;
-  if (
-    lastNode?.nodeType !== Node.TEXT_NODE ||
-    !lastNode.textContent?.includes('\u200B')
-  ) {
-    // Keep an editable caret position after a final non-editable choice control.
-    root.appendChild(document.createTextNode('\u200B'));
+    current = current.parentElement;
   }
+  return null;
+}
+
+function findVillageRuleTopLevelNode(
+  root: HTMLElement,
+  node: Node | null,
+): Node | null {
+  let current = node;
+  while (current?.parentNode != null && current.parentNode !== root) {
+    current = current.parentNode;
+  }
+  return current?.parentNode === root ? current : null;
 }
 
 function serializeVillageRuleInline(node: Node): string {
@@ -185,15 +232,12 @@ function serializeVillageRuleInline(node: Node): string {
     : content;
 }
 
-function isVillageRuleChoice(node: Node | null): node is HTMLElement {
-  return node instanceof HTMLElement && node.querySelector('input') != null;
-}
-
 function serializeVillageRulesEditor(root: HTMLElement): string {
   return Array.from(root.childNodes)
     .flatMap(node => {
       if (node.nodeType === Node.TEXT_NODE) {
-        return [(node.textContent || '').replace(/\u200B/g, '')];
+        const content = (node.textContent || '').replace(/\u200B/g, '');
+        return content ? [content] : [];
       }
       if (!(node instanceof HTMLElement)) {
         return [];
@@ -244,7 +288,7 @@ function VillageRulesRichTextEditor({
   const renderedValueRef = React.useRef<string | null>(null);
   const sync = React.useCallback(() => {
     if (editorRef.current != null) {
-      ensureVillageRuleCaretAnchors(editorRef.current);
+      normalizeVillageRuleChoices(editorRef.current);
       const next = serializeVillageRulesEditor(editorRef.current);
       renderedValueRef.current = next;
       onChange(next);
@@ -299,84 +343,169 @@ function VillageRulesRichTextEditor({
     selection?.addRange(range);
     sync();
   };
-  const handleEditorKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleChoiceKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const editor = e.currentTarget;
     const selection = window.getSelection();
-    let line = selection?.anchorNode || null;
-    while (line?.parentNode != null && line.parentNode !== editor) {
-      line = line.parentNode;
+    if (selection == null) {
+      return;
     }
-    if (
-      e.key === 'Backspace' &&
-      selection?.isCollapsed &&
-      isVillageRuleChoice(line) &&
-      selection.rangeCount > 0
-    ) {
-      const beforeCaret = selection.getRangeAt(0).cloneRange();
-      beforeCaret.selectNodeContents(line);
-      beforeCaret.setEnd(selection.anchorNode!, selection.anchorOffset);
-      if (!beforeCaret.toString()) {
+    if (e.key === 'Enter' && selection.rangeCount > 0) {
+      const text = findVillageRuleChoiceText(editor, selection.anchorNode);
+      const focusText = findVillageRuleChoiceText(editor, selection.focusNode);
+      const choice = text?.parentElement;
+      if (text != null && text === focusText && choice != null) {
         e.preventDefault();
-        const previous = line.previousSibling;
-        const next = line.nextSibling;
-        line.remove();
-        if (next instanceof HTMLBRElement && !isVillageRuleChoice(previous)) {
-          next.remove();
+        const caret = selection.getRangeAt(0);
+        if (!caret.collapsed) {
+          caret.deleteContents();
+          caret.collapse(true);
         }
-        const range = document.createRange();
-        if (next?.parentNode === editor) {
-          range.setStartBefore(next);
-        } else if (previous?.parentNode === editor) {
-          range.setStartAfter(previous);
+        const trailing = caret.cloneRange();
+        trailing.setEnd(text, text.childNodes.length);
+        const trailingContent = trailing.extractContents();
+        if (!text.hasChildNodes()) {
+          text.appendChild(document.createElement('br'));
+        }
+        const line = document.createElement('div');
+        if (trailingContent.hasChildNodes()) {
+          line.appendChild(trailingContent);
         } else {
-          range.setStart(editor, 0);
+          line.appendChild(document.createElement('br'));
         }
+        editor.insertBefore(line, choice.nextSibling);
+        const range = document.createRange();
+        range.selectNodeContents(line);
         range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);
         sync();
-        return;
       }
-    }
-    if (e.key !== 'Enter' || e.shiftKey) {
       return;
     }
-    if (!(line instanceof HTMLElement)) {
+    if (e.key !== 'Backspace' || e.shiftKey) {
       return;
     }
-    const radio = line.querySelector<HTMLInputElement>('input[type="radio"]');
-    if (radio != null) {
-      e.preventDefault();
-      const option = document.createElement('label');
-      const input = document.createElement('input');
-      input.type = 'radio';
-      input.name = radio.name;
-      input.contentEditable = 'false';
-      const text = document.createTextNode('选项');
-      option.append(input, text, document.createTextNode('\u200B'));
-      editor?.insertBefore(option, line.nextSibling);
-      const range = document.createRange();
-      range.selectNodeContents(text);
-      selection?.removeAllRanges();
-      selection?.addRange(range);
-      sync();
+    if (!selection?.isCollapsed || selection.rangeCount === 0) {
       return;
     }
-    if (line.querySelector('input') != null) {
-      e.preventDefault();
-      insertLayoutBreak();
+    const text = findVillageRuleChoiceText(editor, selection.anchorNode);
+    const choice = text?.parentElement;
+    if (text == null || choice == null || text.textContent) {
+      return;
     }
+    const beforeCaret = selection.getRangeAt(0).cloneRange();
+    beforeCaret.selectNodeContents(text);
+    beforeCaret.setEnd(selection.anchorNode!, selection.anchorOffset);
+    if (beforeCaret.toString()) {
+      return;
+    }
+    e.preventDefault();
+    const previous = choice.previousSibling;
+    const next = choice.nextSibling;
+    choice.remove();
+    const range = document.createRange();
+    const previousText =
+      previous instanceof HTMLElement
+        ? previous.querySelector<HTMLElement>('.village-rules-choice-text')
+        : null;
+    const nextText =
+      next instanceof HTMLElement
+        ? next.querySelector<HTMLElement>('.village-rules-choice-text')
+        : null;
+    if (previousText != null) {
+      range.selectNodeContents(previousText);
+      range.collapse(false);
+    } else if (nextText != null) {
+      range.selectNodeContents(nextText);
+      range.collapse(true);
+    } else if (previous?.parentNode === editor) {
+      range.setStartAfter(previous);
+      range.collapse(true);
+    } else if (next?.parentNode === editor) {
+      range.setStartBefore(next);
+      range.collapse(true);
+    } else {
+      range.setStart(editor, 0);
+      range.collapse(true);
+    }
+    selection.removeAllRanges();
+    selection.addRange(range);
+    sync();
+  };
+  const handleEditorMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    const editor = e.currentTarget;
+    const target = e.target as HTMLElement;
+    if (target.closest('.village-rules-choice') != null) {
+      return;
+    }
+    const choice = Array.from(
+      editor.querySelectorAll<HTMLElement>('.village-rules-choice'),
+    )
+      .filter(option => {
+        const rect = option.getBoundingClientRect();
+        return (
+          e.clientX >= rect.right &&
+          e.clientY >= rect.top &&
+          e.clientY <= rect.bottom
+        );
+      })
+      .sort(
+        (left, right) =>
+          right.getBoundingClientRect().right -
+          left.getBoundingClientRect().right,
+      )[0];
+    const text = choice?.querySelector<HTMLElement>(
+      '.village-rules-choice-text',
+    );
+    if (text == null) {
+      return;
+    }
+    e.preventDefault();
+    editor.focus();
+    const range = document.createRange();
+    range.selectNodeContents(text);
+    range.collapse(false);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
   };
   const insertChoice = (type: 'checkbox' | 'radio') => {
-    editorRef.current?.focus();
-    const checkbox = '<input type="checkbox" contenteditable="false">';
-    const radioGroup = `village-rule-radio-${Date.now()}`;
-    const radio = `<input type="radio" name="${radioGroup}" contenteditable="false">`;
-    const content =
-      type === 'checkbox'
-        ? `<label>${checkbox}选项\u200B</label>`
-        : `<label>${radio}选项一\u200B</label><label>${radio}选项二\u200B</label>`;
-    document.execCommand('insertHTML', false, content);
+    const editor = editorRef.current;
+    if (editor == null) {
+      return;
+    }
+    editor.focus();
+    const selection = window.getSelection();
+    const currentText = findVillageRuleChoiceText(
+      editor,
+      selection?.anchorNode || null,
+    );
+    const currentChoice = currentText?.parentElement || null;
+    const currentInput = currentChoice?.querySelector<HTMLInputElement>(
+      'input',
+    );
+    const { choice: option, text } = createVillageRuleChoice(
+      type,
+      type === 'radio' && currentInput?.type === 'radio'
+        ? currentInput.name
+        : type === 'radio'
+        ? `village-rule-radio-${Date.now()}`
+        : '',
+      '选项',
+    );
+    if (currentInput?.type === type) {
+      editor.insertBefore(option, currentChoice!.nextSibling);
+    } else {
+      const currentLine = findVillageRuleTopLevelNode(
+        editor,
+        selection?.anchorNode || null,
+      );
+      editor.insertBefore(option, currentLine?.nextSibling || null);
+    }
+    const range = document.createRange();
+    range.selectNodeContents(text);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
     sync();
   };
 
@@ -432,7 +561,8 @@ function VillageRulesRichTextEditor({
         aria-multiline="true"
         onInput={sync}
         onChange={sync}
-        onKeyDown={handleEditorKeyDown}
+        onKeyDown={handleChoiceKeyDown}
+        onMouseDown={handleEditorMouseDown}
         onPaste={e => {
           e.preventDefault();
           document.execCommand(

@@ -39,7 +39,7 @@ render_village_rules = (panel, content)->
             node.style.fontWeight = 'bold'
             append_village_rule_inline node, heading[2]
         else if checkbox or radio
-            node = document.createElement 'label'
+            node = document.createElement 'span'
             node.style.display = 'inline-flex'
             node.style.alignItems = 'center'
             node.style.margin = '0 0.75em 0.3em 0'

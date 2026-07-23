@@ -77,11 +77,16 @@ export const VillageRulesRichEditorSurface = styled.div`
     margin-top: 0;
   }
 
-  label {
+  .village-rules-choice {
     display: inline-flex;
     align-items: center;
     margin: 0 0.75em 0.3em 0;
     white-space: nowrap;
+  }
+
+  .village-rules-choice-text {
+    display: inline-block;
+    min-width: 0.5em;
   }
 
   input {
