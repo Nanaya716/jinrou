@@ -312,6 +312,18 @@ fixed9=(number)->
         Immoral:2
     }
 
+allsides12=(number)->
+    {
+        Diviner:2
+        Psychic:2
+        Guard:1
+        Werewolf:2
+        Madman:1
+        Fanatic:1
+        Fox:2
+        Immoral:1
+    }
+
 fixed11=(number)->
     {
         Diviner:1
@@ -1054,6 +1066,12 @@ exports.jobrules=[
         fixedNumber:11
         minNumber:11
         rule:butaotoko11
+      }
+      {
+        name:"12全面战争"
+        fixedNumber:12
+        minNumber:12
+        rule:allsides12
       }
     ]
   }
