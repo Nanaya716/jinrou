@@ -7,7 +7,7 @@ module.exports=
     # 主题的作者
     author:"05q、人生"
     # 修改时间
-    lastModified:"2026-07-19T01:34:01.162Z"
+    lastModified:"2026-07-25T12:58:41.132Z"
     vote:""
     sunrise:""
     sunset:""
@@ -178,11 +178,11 @@ module.exports=
             avatar:"https://i.postimg.cc/d1hRZ5S9/IMG-20260717-192821.png"
             name:"丸善斯基"
             prize:"Super Car"
-        fsqj:
+        fsqs:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
             avatar:"https://i.postimg.cc/7651JKQd/IMG-20260717-192917.png"
-            name:"富士奇迹"
+            name:"富士奇石"
             prize:"华丽的三冠赛马娘"
         xlm:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
@@ -909,7 +909,7 @@ module.exports=
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
             avatar:"https://i.postimg.cc/ZRwWcBVM/IMG-20260718-212650.png"
             name:"安心泽刺刺美"
-            prize:""
+            prize:"庸医神医一念之间"
         xqyj:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
@@ -922,11 +922,11 @@ module.exports=
             avatar:"https://i.postimg.cc/9MLDpRJB/IMG-20260718-210218.png"
             name:"微苦糖渍"
             prize:""
-        yblz:
+        jblz:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
             # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
             avatar:"https://i.postimg.cc/tTBs5Z2K/IMG-20260718-212716.png"
-            name:"樱本理子"
+            name:"樫本理子"
             prize:""
         ghzy:
             # 头像链接 和 称号 可以是字符串数组，也可以是字符串
