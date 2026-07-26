@@ -872,7 +872,7 @@ dictatorVillage=(number)->
         ret.MadDictator=1
         ret.Madman=3
         if number==14
-            ret.Doppleganger=1
+            ret.DualPersonality=1 
     else if number==12
         ret.Diviner=2
         ret.Dictator=2
@@ -880,7 +880,7 @@ dictatorVillage=(number)->
         ret.Werewolf=2
         ret.Sorcerer=1
         ret.Madman=3
-        ret.Doppleganger=1
+        ret.DualPersonality=1
     else if number==11
         ret.Diviner=1
         ret.Dictator=2
@@ -889,7 +889,7 @@ dictatorVillage=(number)->
         ret.Sorcerer=1
         ret.WhisperingMad=1
         ret.Madman=3
-        ret.Doppleganger=1
+        ret.DualPersonality=1
     else if number>=9
         ret.Diviner=1
         ret.Dictator=2
