@@ -1,0 +1,166 @@
+section.manual.gm-test
+  h1 GM测试
+  p 以下内容以文档中【禁止行为】为底线依据，并结合正常情况下GM的职责范围，基本属于公认的行为准则。
+  p GM必须熟读【禁止行为】；原则上自己的村有特定规则最好写到村规模板里或者开村时说明。
+  form#gm-test-form
+    h2 多选
+    h3 开村前后管理类
+    fieldset(data-answer="A,C,D,F")
+      legend 1. 以下属于 GM 开村前需要做的是？
+      label
+        input(type="checkbox", name="q1", value="A")
+        | A. 确认玩家在线状态，检查是否生面孔
+      label
+        input(type="checkbox", name="q1", value="B")
+        | B. 在群里 @人敲人
+      label
+        input(type="checkbox", name="q1", value="C")
+        | C. 确认本村的基本配置和其余规则（场内说明或填写村规模板）
+      label
+        input(type="checkbox", name="q1", value="D")
+        | D. 私聊敲人
+      label
+        input(type="checkbox", name="q1", value="E")
+        | E. 规则设为区分咒杀与袭击
+      label
+        input(type="checkbox", name="q1", value="F")
+        | F. 预制村或无好友电话通知渠道时，必要告知后踢出不在场玩家
+      p.result
+      p.explanation 前略；F中是建议行为，GM无法确认本人是否在的情况下建议尝试联系无果后直接踢出。
+    fieldset(data-answer="B,C,D,E")
+      legend 2. 默认情况下，GM在赛前发现有新人/生面孔时，GM分内的职责是？
+      label
+        input(type="checkbox", name="q2", value="A")
+        | A. 开启希望制并要求其选择村人
+      label
+        input(type="checkbox", name="q2", value="B")
+        | B. 确认新人是否已经基本理解公认规则和基本术语，并评估其是否是完全理解不了的程度，如是，说明原因并考虑让其退村。
+      label
+        input(type="checkbox", name="q2", value="C")
+        | C. 对B中描写的情况，推荐做法是在村规模板等地方补上“√\× 初心者欢迎”
+      label
+        input(type="checkbox", name="q2", value="D")
+        | D. 提醒其自己（以及GM本人）不要在场内（包括开始前）暴露新人身份。
+      label
+        input(type="checkbox", name="q2", value="E")
+        | E. 视实际情况私聊说明利弊后让新人自己选择正常随机职业，或希望职业制并强制希望村人。
+      p.result
+      p.explanation 原则上对初心者欢迎的村，新人入村还是采用自愿希望村人的原则，但界限是本人不能出现完全不理解游戏基础的情况（比如10问的程度）；出现此类情况考虑到其他人游戏体验，由GM决定强制希望村人还是建议其退村；此为GM职责的一环。
+    h3 游戏内管理类
+    fieldset(data-answer="A,C,D,E,G")
+      legend 3. 以下局内发言/行为，需要警告的有？
+      label
+        input(type="checkbox", name="q3", value="A")
+        | A. a：你狼有啥可恶心的，差点赢了还不好
+      label
+        input(type="checkbox", name="q3", value="B")
+        | B. 在共欠/无欠等情况下，职业看见对抗 CO 而不 CO（且理由荒唐），导致非人职业做实
+      label
+        input(type="checkbox", name="q3", value="C")
+        | C. a：b如果你是真占你赛后想想怎么感谢c吧
+      label
+        input(type="checkbox", name="q3", value="D")
+        | D. 刷屏
+      label
+        input(type="checkbox", name="q3", value="E")
+        | E. 在群聊中讨论正在进行中的游戏
+      label
+        input(type="checkbox", name="q3", value="F")
+        | F. 共有者相方死亡后经提醒次日内不 CO 出
+      label
+        input(type="checkbox", name="q3", value="G")
+        | G. （白天）a：不好意思我是新人，所以xxxxxx
+      p.result
+      p.explanation A：跳脸。B、F算作利敌行为，原则上即废村，原因是几乎100%可预见的争端，行为也不符合正逻辑，归类为利敌。C：贴脸。D：不解释。E：存在场外信息。G：等于新人CO，警告即可。跳脸、贴脸原则上归类为即废村级别；但实际情况可能存在本人没意识到的无意识行为，GM可视行为恶劣情况决定公开警告或即废村。
+    fieldset(data-answer="A,B,C,D")
+      legend 4. 以下局内发言/行为，需要即废村的有？
+      label
+        input(type="checkbox", name="q4", value="A")
+        | A. 第二次及以上贴脸/人身攻击发言，或者恶劣情况极其严重的第一次发言（如“我操你傻逼吧”）
+      label
+        input(type="checkbox", name="q4", value="B")
+        | B. 在规则不允许的村里，村骗/职业骗/结果骗
+      label
+        input(type="checkbox", name="q4", value="C")
+        | C. 在共欠/无欠等情况下，职业看见对抗 CO 而不 CO（且理由荒唐），导致非人职业做实
+      label
+        input(type="checkbox", name="q4", value="D")
+        | D. 共有者相方死亡后经提醒次日内不 CO 出
+      label
+        input(type="checkbox", name="q4", value="E")
+        | E. 这a 2w身内也是真敢玩，不会是（中之人名称）吧
+      label
+        input(type="checkbox", name="q4", value="F")
+        | F. 任何行为故意进入犹豫
+      p.result
+      p.explanation A、B：不解释。C、D同上。E：场外中之人推理，一般警告，除非态度恶劣。F：此前统一延长各阶段时间后原则上不允许出现犹豫情况，出现犹豫情况GM可视情况处罚警告，除非不听劝。
+    fieldset(data-answer="C,D,E")
+      legend 5. 如果GM决定提供下班通知服务，以下玩家不应该收到下班通知的有？
+      label
+        input(type="checkbox", name="q5", value="A")
+        | A. 被咒杀的狐狸
+      label
+        input(type="checkbox", name="q5", value="B")
+        | B. 被人狼袭击的猎人
+      label
+        input(type="checkbox", name="q5", value="C")
+        | C. 在猎人还没有决定守护目标时，被人狼袭击的玩家
+      label
+        input(type="checkbox", name="q5", value="D")
+        | D. 共有相方还活着的共有者
+      label
+        input(type="checkbox", name="q5", value="E")
+        | E. 咬猫的狼
+      p.result
+      p.explanation 略。
+    h2 单选
+    fieldset(data-answer="C")
+      legend 6. 游戏中有人突然离线
+      label
+        input(type="radio", name="q6", value="A")
+        | A. 即废村
+      label
+        input(type="radio", name="q6", value="B")
+        | B. 猝死后继续
+      label
+        input(type="radio", name="q6", value="C")
+        | C. 试图与其联系，联系不上时征求场内意见处死
+      label
+        input(type="radio", name="q6", value="D")
+        | D. 处死后继续
+      p.result
+      p.explanation 以前的处理办法是：离线人是村人，猝死不减吊的情况下可以继续进行。但实际游戏中比较复杂，不能继续也没必要硬着头继续。
+    fieldset(data-answer="C")
+      legend 7. 占卜师【因为手误】占了自己、重复占过的人或者替身君，手足无措
+      label
+        input(type="radio", name="q7", value="A")
+        | A. 告诉他发自己占自己了就行
+      label
+        input(type="radio", name="q7", value="B")
+        | B. 废村
+      label
+        input(type="radio", name="q7", value="C")
+        | C. 手动给占卜师发结果，假如逻辑上会咒杀，即废村
+      p.result
+      p.explanation 北圣千古。
+    fieldset(data-answer="C")
+      legend 8. 存在妖狐、恋人等第三方存活时，人狼侧告知 GM 需要交牌投降时，GM的合理行为
+      label
+        input(type="radio", name="q8", value="A")
+        | A. 直接处死人狼
+      label
+        input(type="radio", name="q8", value="B")
+        | B. 直接处死妖狐和人狼
+      label
+        input(type="radio", name="q8", value="C")
+        | C. 告知其无法交牌，无论原因
+      label
+        input(type="radio", name="q8", value="D")
+        | D. 告知其无法交牌且第三方在场
+      label
+        input(type="radio", name="q8", value="E")
+        | E. 除必要回复外不予理会
+      p.result
+      p.explanation 虽然一般情况下，狼侧夜晚达成一致，告知无法交牌≈告知第三方在场，但有时是白天欲交牌所以自言自语向GM询问；这时候得依次向其他同侧队友包括狂人询问意见，所以不告知原因的话，可能存在队友不想交牌的情况，所以最好是不告知原因。E选项不建议的原因是可能会认为GM不在。
+    button(type="submit") 确认并批改
+    p#gm-test-summary(role="status")
