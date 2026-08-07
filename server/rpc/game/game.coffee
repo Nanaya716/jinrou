@@ -4881,7 +4881,7 @@ class NineTailedFox extends Fox
     constructor:->
         super
         @setFlag null
-    sleeping:->@target?
+    sleeping:->true
     jobdone:(game)-> @flag? || @target?
     sunset:(game)->
         super
