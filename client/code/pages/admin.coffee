@@ -82,6 +82,20 @@ tabs=
                     else
                         $("#abandonRoomResult").get(0).style.color=""
                         $("#abandonRoomResult").text result.result
+    drawRoom:
+        init:->
+            $("#drawRoomForm").submit (je)->
+                je.preventDefault()
+                query=Index.util.formQuery je.target
+                unless window.confirm "确定要将 #{query.roomid} 号进行中房间强制结算为平局吗？"
+                    return
+                ss.rpc "admin.drawRoom", query,(result)->
+                    if result.error
+                        $("#drawRoomResult").get(0).style.color="red"
+                        $("#drawRoomResult").text result.error
+                    else
+                        $("#drawRoomResult").get(0).style.color=""
+                        $("#drawRoomResult").text result.result
     shutdownExpireRooms:
         init:->
             $("#shutdownExpireRoomsForm").submit (je)->

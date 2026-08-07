@@ -242,6 +242,21 @@ module.exports=
         game=new Game ss,room
         games[room.id]=game
         M.games.insertOne game.serialize(), {w: 1}, cb
+    forceDraw: (roomid,ss,cb)->
+        loadGame roomid, ss, (err,game)->
+            if err?
+                cb err
+                return
+            unless game?
+                cb new Error "游戏不存在。"
+                return
+            if game.finished
+                cb new Error "游戏已经结束。"
+                return
+            unless game.forceDraw()
+                cb new Error "无法将游戏结算为平局。"
+                return
+            cb null
     # ゲームオブジェクトを読み込んで使用可能にする
     ###
     loadDB:(roomid,ss,cb)->
@@ -2444,7 +2459,10 @@ class Game
                 @werewolf_target_remain = 0
 
     # 勝敗決定
-    judge:->
+    forceDraw:->
+        @judge true
+
+    judge:(forceDraw=false)->
         # 既に終了している場合は再度判定しない
         if @finished
             return true
@@ -2625,7 +2643,9 @@ class Game
             if @players.some(isDevilWinner)
                 team="Devil"
 
-        if @revote_num>=4 && !team?
+        if forceDraw
+            team="Draw"
+        else if @revote_num>=4 && !team?
             # 再投票多すぎ
             team="Draw" # 引き分け
 

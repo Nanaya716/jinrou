@@ -195,6 +195,30 @@ exports.actions =(req,res,ss)->
                     libready.unregister roomid, pl
                 libgame.deletedlog ss,room
                 res {result: "已废弃 #{roomid} 号房间。"}
+    #   将进行中的房间结算为平局
+    drawRoom: (query)->
+        unless req.session.maintenance
+            res {error: i18n.t "error.notAdmin"}
+            return
+        roomid=parseInt query?.roomid, 10
+        unless roomid > 0
+            res {error: i18n.t "common:error.invalidInput"}
+            return
+        M.rooms.findOne {id:roomid}, (err, room)->
+            if err?
+                res {error: err.message ? err}
+                return
+            unless room?
+                res {error: "房间不存在。"}
+                return
+            unless room.mode == "playing"
+                res {error: "只能将进行中的房间结算为平局。"}
+                return
+            libgame.forceDraw roomid, ss, (err)->
+                if err?
+                    res {error: err.message ? err}
+                    return
+                res {result: "已将 #{roomid} 号房间结算为平局。"}
     #   关闭陈旧房间
     # 关闭陈旧房间
     shutdownExpireRooms: ->
