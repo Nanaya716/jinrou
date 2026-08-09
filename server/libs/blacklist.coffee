@@ -243,45 +243,11 @@ exports.handleBanRequest = (banid, userid, ip, cb)->
                 else
                     cb doc
             return
-        # 既存のBANから探す
-        fq = if userid? then {
-            $or: [
-                {userid: userid},
-                {ip: ip}
-            ]
-        } else {ip: ip}
-        M.blacklist.findOne fq, (err, doc)->
-            if err?
-                cb {error: err}
-                return
-            if doc?
-                # これに追加
-                updateq = updateBanQuery userid, ip, doc
-                if updateq?
-                    M.blacklist.update {
-                        _id: doc._id
-                    }, updateq, {w: 1}, (err)->
-                        if err?
-                            cb {error: err}
-                            return
-                        cb doc
-                else
-                    cb doc
-                return
-            # 既存のBAN履歴がない
-            newid = makeBanId()
-            newdoc = {
-                id: newid
-                userid: if userid? then [userid] else []
-                ip: [ip]
-                types: BANTYPES
-                reason: "Ban Request"
-            }
-            M.blacklist.insert newdoc, {w: 1}, (err)->
-                if err?
-                    cb {error: err}
-                else
-                    cb newdoc
+        # 不明なBAN IDは失効済みとしてクライアント側の記録を解除する
+        cb {
+            forgive: true
+        }
+        return
 
 # アクセス制限を確認
 exports.checkPermission = (action, ban)->
