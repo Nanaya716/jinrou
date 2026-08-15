@@ -3,7 +3,7 @@ module.exports=
     opening:"ZZZ"
     skin_tip:"你的身份"
     author:"05q、人生"
-    lastModified:"2026-08-02T15:00:15.916Z"
+    lastModified:"2026-08-07T09:00:17.729Z"
     vote:""
     sunrise:""
     sunset:""
@@ -16,7 +16,7 @@ module.exports=
     skins:
         character_3:
             avatar:"https://i.postimg.cc/L5b8ZHQn/IMG-20260801-110550.png"
-            name:"妮可"
+            name:"妮可·德玛拉"
             prize:"狡兔屋"
         character_4:
             avatar:"https://i.postimg.cc/4ySxhJ29/IMG-20260801-110725.png"
@@ -52,7 +52,7 @@ module.exports=
             prize:"维多利亚家政"
         character_12:
             avatar:"https://i.postimg.cc/MZPTLD6L/IMG-20260801-111019.png"
-            name:"可琳·威斯克"
+            name:"可琳·威克斯"
             prize:"维多利亚家政"
         character_13:
             avatar:"https://i.postimg.cc/DfjZNgvD/IMG-20260801-111108.png"
