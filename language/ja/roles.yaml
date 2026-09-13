@@ -7,6 +7,7 @@ jobname:
   Diviner: '占卜师'
   Psychic: '灵能者'
   Madman: '狂人'
+  RebelliousMadman: '反逆的狂人'
   Guard: '猎人'
   Couple: '共有者'
   Fox: '妖狐'
@@ -477,6 +478,8 @@ Dog:
 Dictator:
   # Select a punishment target.
   select: '独裁者 {{name}} 宣布将要处刑 {{target}}。'
+RebelliousMadman:
+  reflect: '反逆的意志阻止了独裁，{{target}} 将处刑自己。'
   sunset: '独裁者 {{name}} 宣布，现在天黑了。'
 
 # SeersMama
