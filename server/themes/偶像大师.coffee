@@ -15,182 +15,182 @@ module.exports=
         return true
     skins:
         character_1:
-            avatar:"https://i.postimg.cc/V6ncsWLN/IMG-20260808-193540.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/cJBb8ABu.png"
             name:"花海咲季"
             prize:"Re;IRIS"
         character_2:
-            avatar:"https://i.postimg.cc/DZLKfPyy/IMG-20260808-193727.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/dl8ZOnzq.png"
             name:"月村手毬﻿"
             prize:"Re;IRIS"
         character_3:
-            avatar:"https://i.postimg.cc/bJkjY9NJ/IMG-20260808-193749.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/l6z3kQPU.png"
             name:"藤田琴音"
             prize:"Re;IRIS"
         character_4:
-            avatar:"https://i.postimg.cc/TwgX2JYp/IMG-20260808-193846.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/HtgLWfKF.png"
             name:"葛城莉莉娅"
             prize:"REVERSI"
         character_5:
-            avatar:"https://i.postimg.cc/wvLdxQTy/IMG-20260808-194143.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/CssulHTp.png"
             name:"仓本千奈"
             prize:"梦之感应"
         character_6:
-            avatar:"https://i.postimg.cc/ZRphYxKv/IMG-20260808-194219.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/QwNQnSnd.png"
             name:"紫云清夏"
             prize:"REVERSI"
         character_7:
-            avatar:"https://i.postimg.cc/bJkjY9N2/IMG-20260808-194307.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/90npuxPI.png"
             name:"﻿篠泽广"
             prize:"梦之感应"
         character_8:
-            avatar:"https://i.postimg.cc/ydcz6yY0/IMG-20260808-194436.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/gw7YWYdS.png"
             name:"姫崎莉波"
             prize:"Ripple Sign"
         character_9:
-            avatar:"https://i.postimg.cc/xCMSj3TH/IMG-20260808-194540.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/D9ghyufv.png"
             name:"﻿花海佑芽﻿"
             prize:"Begrazia"
         character_10:
-            avatar:"https://i.postimg.cc/FR3QFVs3/IMG-20260808-194647.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/Pufg1Ymr.png"
             name:"十王星南"
             prize:"Begrazia"
         character_11:
-            avatar:"https://i.postimg.cc/3RmHrFJg/IMG-20260808-194808.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/iAhTlM6G.png"
             name:"秦谷美铃"
             prize:"Begrazia"
         character_12:
-            avatar:"https://i.postimg.cc/85MVkmPc/IMG-20260808-193807.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/I1en6KXc.png"
             name:"有村麻央"
             prize:"Ripple Sign"
         character_13:
-            avatar:"https://i.postimg.cc/J08CsHGs/IMG-20260808-195242.jpg"
+            avatar:"https://s3.bmp.ovh/2026/08/12/jyPHC9Sv.jpg"
             name:"贺阳燐羽"
             prize:"SyngUp!"
         character_14:
-            avatar:"https://i.postimg.cc/kGCP2RBR/IMG-20260808-195156.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/oP6DwamL.png"
             name:"真城优"
             prize:"初星学园"
         character_15:
-            avatar:"https://i.postimg.cc/D0h3S48J/IMG-20260808-194826.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/pruzAGvG.png"
             name:"雨夜燕"
             prize:"初星学园"
         character_16:
-            avatar:"https://i.postimg.cc/GtRn4THB/IMG-20260808-194937.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/511SijBG.png"
             name:"根绪亚纱里"
             prize:"初星学园"
         character_17:
-            avatar:"https://i.postimg.cc/mgnxQ5PY/IMG-20260808-195429.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/e0VwjX3N.png"
             name:"樱木真乃"
             prize:"illumination STARS"
         character_18:
-            avatar:"https://i.postimg.cc/2Stp4K1n/IMG-20260808-195544.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/XN1XGeDx.png"
             name:"风野灯织"
             prize:"illumination STARS"
         character_19:
-            avatar:"https://i.postimg.cc/rwH6SPDx/IMG-20260808-195603.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/OxnOvthR.png"
             name:"八宫巡"
             prize:"illumination STARS"
         character_20:
-            avatar:"https://i.postimg.cc/wjrKhG1h/IMG-20260808-203155.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/kAlgp2m1.png"
             name:"月冈恋钟"
             prize:"L'Antica"
         character_21:
-            avatar:"https://i.postimg.cc/PqvgKQDv/IMG-20260808-195936.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/99aq47kN.png"
             name:"田中摩美美"
             prize:"L'Antica"
         character_22:
-            avatar:"https://i.postimg.cc/y8GqFbDX/IMG-20260808-200030.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/dUqt2Vii.png"
             name:"白濑咲耶"
             prize:"L'Antica"
         character_23:
-            avatar:"https://i.postimg.cc/nL9yTGmQ/IMG-20260808-200107.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/4Bvx2n8U.png"
             name:"三峰结华"
             prize:"L'Antica"
         character_24:
-            avatar:"https://i.postimg.cc/nL9yTGmD/IMG-20260808-203253.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/GcMI1fyC.png"
             name:"幽谷雾子"
             prize:"L'Antica"
         character_25:
-            avatar:"https://i.postimg.cc/YSL58zFF/IMG-20260808-203308.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/JBtD9ptf.png"
             name:"小宫果穗"
             prize:"放学后CLIMAX GIRLS"
         character_26:
-            avatar:"https://i.postimg.cc/cJtpTB3w/IMG-20260808-203341.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/ul3BN2Bt.png"
             name:"园田智代子"
             prize:"放学后CLIMAX GIRLS"
         character_27:
-            avatar:"https://i.postimg.cc/7LJFXnzS/IMG-20260808-203408.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/JhIYnozq.png"
             name:"西城树里"
             prize:"放学后CLIMAX GIRLS"
         character_28:
-            avatar:"https://i.postimg.cc/VN0x4Wt9/IMG-20260808-203449.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/ykoJNyF7.png"
             name:"杜野凛世"
             prize:"放学后CLIMAX GIRLS"
         character_29:
-            avatar:"https://i.postimg.cc/VN0x4WtW/IMG-20260808-202411.png"
+            avatar:"https://s3.bmp.ovh/2026/08/12/3EUyReGQ.png"
             name:"有栖川夏叶"
             prize:"放学后CLIMAX GIRLS"
         character_30:
-            avatar:"https://i.postimg.cc/g0LC4HhD/IMG-20260808-202436.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/GHsX5eK3.png"
             name:"大崎甘奈"
             prize:"ALSTROEMERIA"
         character_31:
-            avatar:"https://i.postimg.cc/R0JkGLts/IMG-20260808-202458.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/FotwTjFz.png"
             name:"大崎甜花"
             prize:"ALSTROEMERIA"
         character_32:
-            avatar:"https://i.postimg.cc/0NKTZ0SX/IMG-20260808-203558.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/Qwr0HV09.png"
             name:"桑山千雪"
             prize:"ALSTROEMERIA"
         character_33:
-            avatar:"https://i.postimg.cc/wTxnnpJ9/IMG-20260808-203638.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/2btFMi3A.png"
             name:"芹泽朝日"
             prize:"Straylight"
         character_34:
-            avatar:"https://i.postimg.cc/3JrzzTph/IMG-20260808-202638.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/X3VF1UMn.png"
             name:"黛冬优子"
             prize:"Straylight"
         character_35:
-            avatar:"https://i.postimg.cc/xTjBB2H2/IMG-20260808-203709.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/M3Itdpn1.png"
             name:"和泉爱依"
             prize:"Straylight"
         character_36:
-            avatar:"https://i.postimg.cc/sDfbbrSR/IMG-20260808-203730.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/tosGPRcS.png"
             name:"浅仓透"
             prize:"noctchill"
         character_37:
-            avatar:"https://i.postimg.cc/fTW11NXy/IMG-20260808-203801.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/3DidSfyc.png"
             name:"樋口圆香"
             prize:"noctchill"
         character_38:
-            avatar:"https://i.postimg.cc/Prf00jZP/IMG-20260808-202812.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/oOpk3ftk.png"
             name:"福丸小糸"
             prize:"noctchill"
         character_39:
-            avatar:"https://i.postimg.cc/bNY44hbZ/IMG-20260808-202822.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/fjcbGfi1.png"
             name:"市川雏菜"
             prize:"noctchill"
         character_40:
-            avatar:"https://i.postimg.cc/025hhsmr/IMG-20260808-203857.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/2qcdLuH6.png"
             name:"七草日花"
             prize:"SHHis"
         character_41:
-            avatar:"https://i.postimg.cc/CLM99gDq/IMG-20260808-203946.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/4QmIFE7l.png"
             name:"绯田美琴"
             prize:"SHHis"
         character_42:
-            avatar:"https://i.postimg.cc/ncVNNJ77/IMG-20260808-203050.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/FYiOx4HR.png"
             name:"斑鸠路加"
             prize:"CoMETIK"
         character_43:
-            avatar:"https://i.postimg.cc/QxNvv357/IMG-20260808-202956.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/HJ2pTRFK.png"
             name:"铃木羽那"
             prize:"CoMETIK"
         character_44:
-            avatar:"https://i.postimg.cc/vH8CCs9f/IMG-20260808-203009.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/7OucOFB1.png"
             name:"郁田阳希"
             prize:"CoMETIK"
         character_45:
-            avatar:"https://i.postimg.cc/yY622H9m/IMG-20260808-203230.png"
+            avatar:"https://s3.bmp.ovh/2026/08/13/OHWAOBke.png"
             name:"七草叶月"
             prize:"283事务所"

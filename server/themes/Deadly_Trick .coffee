@@ -3,7 +3,7 @@ module.exports=
     opening:""
     skin_tip:"你的身份"
     author:"一只小逗比"
-    lastModified:"2026-08-15T07:29:36.745Z"
+    lastModified:"2026-08-16T14:15:53.897Z"
     vote:""
     sunrise:""
     sunset:""
@@ -17,48 +17,60 @@ module.exports=
         character_1:
             avatar:"https://pic1.imgdb.cn/i/0347S1oll3AB7ZKwsQzTrm.png"
             name:"华帆"
-            prize:""
+            prize:"我会盯着你的"
         character_2:
             avatar:"https://pic1.imgdb.cn/i/0347S1oejrD35rLIEk7gWc.png"
             name:"杰里米"
-            prize:""
+            prize:"不确定跳跃"
         character_3:
             avatar:"https://pic1.imgdb.cn/i/0347S1oMPad2YcaUec86sQ.png"
             name:"连"
-            prize:""
+            prize:"灵魂感知"
         character_4:
             avatar:"https://pic1.imgdb.cn/i/0347S3YPdXhLR6FlFRKL63.png"
             name:"莉莉安娜"
-            prize:""
+            prize:"超级位置转换器 EX-098"
         character_5:
             avatar:"https://pic1.imgdb.cn/i/0347S1ohf0IMIyk49J78Mg.png"
             name:"凛"
-            prize:""
+            prize:"玛丽安娜"
         character_6:
             avatar:"https://pic1.imgdb.cn/i/0347S3YOGrkNl2QaZOlHV2.png"
             name:"露娜"
-            prize:""
+            prize:"即使在不幸中"
         character_7:
             avatar:"https://pic1.imgdb.cn/i/0347S1pDLHfxNGjFmBlcB6.png"
             name:"路易斯"
-            prize:""
+            prize:"诱饵陷阱"
         character_8:
             avatar:"https://pic1.imgdb.cn/i/0347S1pKGcJd6MZg9wCcvz.png"
             name:"美幸"
-            prize:""
+            prize:"细节检察"
         character_9:
             avatar:"https://pic1.imgdb.cn/i/0347S1oKGZlSG5M6Qagm3v.png"
             name:"诺埃尔"
-            prize:""
+            prize:"转换心情"
         character_10:
             avatar:"https://pic1.imgdb.cn/i/0347S1pOeXrHp3N1GRvkoY.png"
             name:"素伊"
-            prize:""
+            prize:"规则破坏者"
         character_11:
             avatar:"https://pic1.imgdb.cn/i/0347S1pL8is08LqLzTAM6e.png"
             name:"夏诚"
-            prize:""
+            prize:"RAAS RUSH"
         character_12:
             avatar:"https://pic1.imgdb.cn/i/0347S1pSeBDRrp1LLRm0v5.png"
             name:"雪"
-            prize:""
+            prize:"等、等一下！"
+        character_13:
+            avatar:"https://pic1.imgdb.cn/i/0348BWqzLpUi6Utpod99Y5.png"
+            name:"梅德林"
+            prize:"黑幕"
+        character_14:
+            avatar:"https://pic1.imgdb.cn/i/0348BXmoTZQIOBRg5rXqFc.png"
+            name:"本杰明"
+            prize:"玛丽安娜的管家"
+        character_15:
+            avatar:["https://pic1.imgdb.cn/i/0348BXqQsR3WqQJ2Aqlikn.png","https://pic1.imgdb.cn/i/0348BXo0es26UaPIZmS8or.png","https://pic1.imgdb.cn/i/0348BXomiYqMmbjpJAHsIP.png","https://pic1.imgdb.cn/i/0348BXoNAzqKy0RiT8NFox.png","https://pic1.imgdb.cn/i/0348BXnNfXcthISJzbXfzc.png","https://pic1.imgdb.cn/i/0348BXoz00QTBeFiuxWzFg.png"]
+            name:"提亚马特"
+            prize:"裁判长"
