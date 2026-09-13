@@ -4406,6 +4406,73 @@ class WolfDiviner extends Werewolf
         return res
 
 
+class NormalWolfDiviner extends Werewolf
+    type:"NormalWolfDiviner"
+    midnightSort:120
+    isReviver:->!@dead
+    constructor:->
+        super
+        @setFlag {results: [], target: null}
+    sunset:(game)->
+        @setTarget null
+        @setFlag {results: @flag.results, target: null}
+        super
+    sleeping:(game)->game.werewolf_target_remain<=0
+    jobdone:(game)->game.werewolf_target_remain<=0 && @flag?.target?
+    job:(game,playerid,query)->
+        return super if query.jobtype!="NormalWolfDiviner"
+        return game.i18n.t "error.common.alreadyUsed" if @flag.target?
+        pl=game.getPlayer playerid
+        return game.i18n.t "error.common.nonexistentPlayer" unless pl?
+        @setFlag {results: @flag.results, target: playerid}
+        pl.touched game,@id
+        splashlog game.id,game,{mode:"skill",to:@id,comment:game.i18n.t "roles:NormalWolfDiviner.select", {name: @name, target: pl.name}}
+        if game.rule.divineresult=="immediate"
+            @dodivine game
+            @showdivineresult game, playerid
+        null
+    sunrise:(game)->
+        super
+        @showdivineresult game, @flag.target unless game.rule.divineresult=="immediate"
+    midnight:(game,midnightSort)->
+        super
+        @dodivine game unless game.rule.divineresult=="immediate"
+        @divineeffect game
+    divineeffect:(game)->
+        target = game.skillTargetHook.get @flag.target
+        p=game.getPlayer target
+        if p?
+            p.divined game,this
+            @die game, "curse", p.id if p.isJobType "Diviner"
+        p=game.getPlayer target
+        if p?.getTeam() == "Werewolf" && (p?.isJobType("Madman") || p?.isJobType("Fanatic")) && p.isHuman() && !p.dead
+            for targetpl in p.accessMainLevel()
+                [_, mainpl] = constructMainChain targetpl
+                continue unless mainpl.getTeam() == "Werewolf" && (mainpl.isJobType("Madman") || mainpl.isJobType("Fanatic")) && mainpl.isHuman()
+                newpl = Player.factory "HearMadman", game
+                targetpl.transProfile newpl
+                targetpl.transferData newpl, true
+                targetpl.transform game,newpl,false
+                splashlog game.id,game,{mode:"skill",to:p.id,comment:game.i18n.t "system.changeRole", {name: p.name, result: newpl.getJobDisp()}}
+    showdivineresult:(game)->
+        r=@flag.results[@flag.results.length-1]
+        return unless r?
+        resday = if game.rule.divineresult == "immediate" then game.day else game.day - 1
+        return if r.day != resday
+        splashlog game.id,game,{mode:"skill",to:@id,comment:r.result}
+    dodivine:(game)->
+        target = game.skillTargetHook.get @flag.target
+        p=game.getPlayer target
+        origp = game.getPlayer @flag.target
+        if p?
+            @setFlag {results: @flag.results.concat {player: origp.publicinfo(), result: game.i18n.t "roles:NormalWolfDiviner.resultlog", {name: @name, target: origp.name, result: p.getMainJobname()}, day: game.day}, target: @flag.target}
+            @addGamelog game,"wolfdivine",null, p.id
+    getOpenForms:(game)->
+        res = super
+        if Phase.isNight(game.phase) && !@flag?.target?
+            res.push {type: @type, options: @makeJobSelection(game, false), formType: FormType.optional, objid: @objid}
+        res
+
 class Fugitive extends Player
     type:"Fugitive"
     formType: FormType.required
@@ -13889,6 +13956,7 @@ jobs=
     Magician:Magician
     Spy:Spy
     WolfDiviner:WolfDiviner
+    NormalWolfDiviner:NormalWolfDiviner
     Fugitive:Fugitive
     Merchant:Merchant
     QueenSpectator:QueenSpectator
@@ -14148,6 +14216,7 @@ jobStrength=
     Magician:14
     Spy:14
     WolfDiviner:60
+    NormalWolfDiviner:60
     Fugitive:8
     Merchant:18
     QueenSpectator:20
