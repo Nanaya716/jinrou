@@ -346,6 +346,7 @@ module.exports=
                 newpl.setProfile {
                     id:player.userid
                     realid:player.realid
+                    realname:player.realname
                     name:player.name
                 }
                 # Waiting 不在 jobs 列表中，需要手动设置 jobname
@@ -366,6 +367,7 @@ module.exports=
                 newpl.setProfile {
                     id:player.userid
                     realid:player.realid
+                    realname:player.realname
                     name:player.name
                 }
                 newpl.setTarget null
@@ -513,6 +515,7 @@ class Game
                     gmpl.setProfile {
                         id: gmpls[0].userid
                         realid: gmpls[0].realid
+                        realname: gmpls[0].realname
                         name: gmpls[0].name
                     }
                     @participants.push gmpl
@@ -741,6 +744,7 @@ class Game
                     newpl.setProfile {
                         id:plobj.userid
                         realid:plobj.realid
+                        realname:plobj.realname
                         name:plobj.name
                     }
                     newpl.setTarget null
@@ -784,6 +788,8 @@ class Game
                 if obj?.gm || not (@rule?.blind=="complete" || (@rule?.blind=="yes" && !@finished))
                     # 公開してもよい
                     r.realid=x.realid
+                if obj?.gm
+                    r.realname=x.realname
                 r
             day:@day
             # for backward compatibility
@@ -1005,6 +1011,7 @@ class Game
                     newpl.setProfile {
                         id:pl.userid
                         realid:pl.realid
+                        realname:pl.realname
                         name:pl.name
                     }
                     @players.push newpl
@@ -1156,6 +1163,7 @@ class Game
                 gm.setProfile {
                     id:pl.userid
                     realid:pl.realid
+                    realname:pl.realname
                     name:pl.name
                 }
                 @participants.push gm
@@ -1170,6 +1178,7 @@ class Game
                 helper.setProfile {
                     id:pl.realid
                     realid:pl.realid
+                    realname:pl.realname
                     name:pl.name
                 }
                 helper.setFlag ppl.id  # ヘルプ先
@@ -3349,6 +3358,7 @@ class Player
             type:@type
             id:@id
             realid:@realid
+            realname:@realname
             name:@name
             dead:@dead
             scapegoat:@scapegoat
@@ -3887,6 +3897,7 @@ class Player
     setProfile:(obj={})->
         @id=obj.id
         @realid=obj.realid
+        @realname=obj.realname
         @name=obj.name
     # 個人情報的なことを移動
     transProfile:(newpl)->
@@ -17805,6 +17816,7 @@ module.exports.actions=(req,res,ss)->
                         newpl.setProfile {
                             id:plobj.userid
                             realid:plobj.realid
+                            realname:plobj.realname
                             name:plobj.name
                         }
                         newpl.setTarget null

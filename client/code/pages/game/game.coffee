@@ -423,6 +423,7 @@ exports.start=(roomid)->
                             else
                                 "playing"
                             watchspeak: obj.game.watchspeak
+                            isGM: obj.type == "GameMaster"
                         }
                     else
                         undefined
@@ -678,16 +679,29 @@ exports.start=(roomid)->
                 village_rules_panel_cleanup = null
         $("#roomname").append roomnumber, iconlist
         if room.mode=="waiting"
-            game_view.store.resetPlayers room.players.map convertRoomPlayerToPlayerInfo
+            game_view.store.resetPlayers room.players.map (pl)-> convertRoomPlayerToPlayerInfo pl, !!room.blind
 
         userid=Index.app.userid()
+        gm_realnames = {}
         #========================================
 
         # 誰かが参加した!!!!
         socket_ids.push Index.socket.on "join","room#{roomid}",(msg,channel)->
+            if gm_realnames[msg.userid]?
+                msg.realname = gm_realnames[msg.userid]
             room.players.push msg
             forminfo()
-            game_view.store.addPlayer convertRoomPlayerToPlayerInfo msg
+            game_view.store.addPlayer convertRoomPlayerToPlayerInfo msg, !!room.blind
+        # Account nicknames for anonymous-room players are delivered only to
+        # the GM channel. Cache them in case this arrives before the join event.
+        socket_ids.push Index.socket.on "playerRealName","room#{roomid}_gamemaster",(msg,channel)->
+            gm_realnames[msg.userid] = msg.realname
+            for pl in room.players
+                if pl.userid == msg.userid
+                    pl.realname = msg.realname
+            game_view.store.updatePlayer msg.userid, {
+                realname: msg.realname
+            }
         # 誰かが出て行った!!!
         socket_ids.push Index.socket.on "unjoin","room#{roomid}",(msg,channel)->
             room.players=room.players.filter (x)->x.userid!=msg
@@ -786,7 +800,7 @@ exports.start=(roomid)->
         game_view?.store.addLog log
 
     formplayers=(players)-> #jobflg: 1:生存の人 2:死人
-        game_view?.store.resetPlayers players.map convertGamePlayerToPlayerInfo
+        game_view?.store.resetPlayers players.map (pl)-> convertGamePlayerToPlayerInfo pl, !!room.blind
 
     # タイマー情報をもらった
     gettimer=(msg,mode)->
@@ -987,11 +1001,12 @@ convertToJobNumbers = (obj) ->
         result[key] = obj[key].number
     result
 # Convert game.players to PlayerInfo
-convertGamePlayerToPlayerInfo = (pl) ->
+convertGamePlayerToPlayerInfo = (pl, anonymous=false) ->
     {
         id: pl.id
         realid: pl.realid || null
-        anonymous: !pl.realid
+        realname: pl.realname || null
+        anonymous: anonymous
         name: pl.name
         dead: pl.dead
         icon: pl.icon || null
@@ -1000,11 +1015,12 @@ convertGamePlayerToPlayerInfo = (pl) ->
         flags: if pl.norevive then ['norevive'] else []
     }
 # Convert room.players to PlayerInfo
-convertRoomPlayerToPlayerInfo = (pl) ->
+convertRoomPlayerToPlayerInfo = (pl, anonymous=false) ->
     {
         id: pl.userid
         realid: pl.realid || null
-        anonymous: !pl.realid
+        realname: pl.realname || null
+        anonymous: anonymous
         name: pl.name
         dead: false
         icon: pl.icon || null

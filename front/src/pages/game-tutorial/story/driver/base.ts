@@ -95,10 +95,12 @@ export abstract class DriverBase {
       type,
       objid,
       formType,
-      options = innerStore.players.filter(pl => !pl.dead).map(pl => ({
-        name: pl.name,
-        value: pl.id,
-      })),
+      options = innerStore.players
+        .filter(pl => !pl.dead)
+        .map(pl => ({
+          name: pl.name,
+          value: pl.id,
+        })),
       data = undefined,
     } = form;
     this.setRoleInfo({
@@ -230,6 +232,7 @@ export abstract class DriverBase {
       emitLog: true,
       id: userInfo.userid,
       realid: userInfo.userid,
+      realname: userInfo.name,
       name: userInfo.name,
       anonymous: false,
       dead: false,
@@ -379,8 +382,8 @@ export abstract class DriverBase {
         pl.id === loser
           ? this.t('roles:jobname.Werewolf')
           : pl.id === userInfo.userid
-            ? this.t('roles:jobname.Diviner')
-            : this.t('roles:jobname.Human'),
+          ? this.t('roles:jobname.Diviner')
+          : this.t('roles:jobname.Human'),
     }));
 
     innerStore.resetPlayers(players);

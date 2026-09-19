@@ -29,6 +29,10 @@ export interface GameInfo {
    * Whether watcher's speech is allowed.
    */
   watchspeak: boolean;
+  /**
+   * Whether this client is the room's game master.
+   */
+  isGM?: boolean;
 }
 
 /**
@@ -77,6 +81,10 @@ export interface PlayerInfo {
    * realid of player.
    */
   realid: string | null;
+  /**
+   * Account nickname, available only to a game master in anonymous rooms.
+   */
+  realname: string | null;
   /**
    * Whether this player is anonymized.
    */

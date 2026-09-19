@@ -12,6 +12,7 @@ import { TranslationFunction } from '../../../i18n';
 export interface IPropPlayerBox {
   t: TranslationFunction;
   player: PlayerInfo;
+  showRealNames?: boolean;
   onEnableFilter(): void;
   onInsertName?(name: string): void;
 }
@@ -26,6 +27,7 @@ export class PlayerBox extends React.Component<IPropPlayerBox, {}> {
       player: {
         id,
         realid,
+        realname,
         icon,
         name,
         anonymous,
@@ -35,13 +37,19 @@ export class PlayerBox extends React.Component<IPropPlayerBox, {}> {
         flags,
       },
       onInsertName,
+      showRealNames,
     } = this.props;
     return (
       <Wrapper dead={dead} hasIcon={icon != null}>
         <Icon t={t} icon={icon} dead={dead} />
         <Name dead={dead}>
           {anonymous ? (
-            name
+            <>
+              {name}
+              {showRealNames && realname != null && !flags.includes('gm') ? (
+                <RealName>{realname}</RealName>
+              ) : null}
+            </>
           ) : (
             <a href={`/user/${realid ? realid : id}`}>{name}</a>
           )}
@@ -129,6 +137,13 @@ const Name = styled.span<{ dead: boolean }>`
   grid-column: 2;
   grid-row: 1;
   text-decoration: ${props => (props.dead ? 'line-through' : 'none')};
+`;
+
+const RealName = styled.span`
+  display: block;
+  font-size: 0.8em;
+  font-weight: normal;
+  opacity: 0.7;
 `;
 
 const ToolIcons = styled.span`

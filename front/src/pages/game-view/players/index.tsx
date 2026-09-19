@@ -13,6 +13,10 @@ export interface IPropPlayers {
    */
   players: PlayerInfo[];
   /**
+   * Whether account nicknames may be shown for anonymous players.
+   */
+  showRealNames?: boolean;
+  /**
    * Callback for filtering specific player.
    */
   onFilter(userid: string): void;
@@ -26,13 +30,14 @@ export interface IPropPlayers {
  */
 export class Players extends React.Component<IPropPlayers, {}> {
   public render() {
-    const { players, onFilter, onInsertName } = this.props;
+    const { players, onFilter, onInsertName, showRealNames } = this.props;
     return (
       <I18n>
         {t => (
           <PlayersInner
             t={t}
             players={players}
+            showRealNames={showRealNames}
             onFilter={onFilter}
             onInsertName={onInsertName}
           />
@@ -54,7 +59,7 @@ class PlayersInner extends React.Component<
 > {
   private filterHandlers = new CachedBinder<string, undefined>();
   public render() {
-    const { t, players, onInsertName } = this.props;
+    const { t, players, onInsertName, showRealNames } = this.props;
     return (
       <Wrapper>
         {players.map(pl => {
@@ -67,6 +72,7 @@ class PlayersInner extends React.Component<
               t={t}
               key={pl.id}
               player={pl}
+              showRealNames={showRealNames}
               onEnableFilter={filterHandler}
               onInsertName={onInsertName}
             />

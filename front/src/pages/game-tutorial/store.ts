@@ -66,6 +66,7 @@ export class GameTutorialStore {
     this.innerStore.addPlayer({
       id: '身代わりくん',
       realid: '身代わりくん',
+      realname: '身代わりくん',
       name: this.t('guide.name'),
       anonymous: false,
       dead: false,

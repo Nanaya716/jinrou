@@ -44,6 +44,7 @@ sanitizeRoomForList = (room, userid)->
         if p.realid == userid
             p.me = true
         p.realid = undefined
+        p.realname = undefined
     unless room.watchspeak?
         # old rooms do not have watchspeak set.
         # watchspeak defaults to true.
@@ -240,6 +241,7 @@ module.exports.actions=(req,res,ss)->
                     delete x.owner
                     x.players.forEach (p)->
                         delete p.realid
+                        delete p.realname
                 unless x.watchspeak?
                     # old rooms do not have watchspeak set.
                     # watchspeak defaults to true.
@@ -415,6 +417,8 @@ module.exports.actions=(req,res,ss)->
             result.players.forEach (p)->
                 unless result.blind == "" || pl?.mode == "gm"
                     delete p.realid
+                unless pl?.mode == "gm"
+                    delete p.realname
                 delete p.ip
             delete result.quitfromtheme
             # ふるいかどうか
@@ -533,6 +537,7 @@ module.exports.actions=(req,res,ss)->
                 room.players.push {
                     userid: req.session.user.userid
                     realid: req.session.user.userid
+                    realname: req.session.user.name
                     name:su.name
                     ip:su.ip
                     icon:su.icon
@@ -624,6 +629,9 @@ module.exports.actions=(req,res,ss)->
             user=
                 userid:req.session.userId
                 realid:req.session.userId
+                # Preserve the account nickname separately from the anonymous
+                # theme name so that it can be shown to the GM only.
+                realname:su.name
                 name:sanitizeName su.name.trim()
                 ip:su.ip
                 icon:su.icon
@@ -832,10 +840,18 @@ module.exports.actions=(req,res,ss)->
                     delete user.ip
                     Server.game.game.inlog room,user
                     delete user.tpr
+                    gmPlayerRealName =
+                        userid: user.userid
+                        realname: user.realname
                     if room.blind
                         delete user.realid
+                        delete user.realname
                     if room.mode!="playing"
                         ss.publish.channel "room#{roomid}", "join", user
+                    # The public join event must remain anonymous. Send the
+                    # account nickname through the GM-only channel instead.
+                    if room.blind && room.gm
+                        ss.publish.channel "room#{roomid}_gamemaster", "playerRealName", gmPlayerRealName
     # 部屋から出る
     unjoin: (roomid,quitThemeRoom)->
         unless req.session.userId
@@ -1126,6 +1142,7 @@ module.exports.actions=(req,res,ss)->
                                 console.log "room fatal error ID:"+x.id
                                 return
                             delete p.realid
+                            delete p.realname
                 res docs
     suddenDeathPunish:(roomid,banIDs)->
         # banIDs = ["someID","someID"]
