@@ -86,7 +86,7 @@ export const phases: Partial<Record<number, Phase>> = {
         driver.addPlayer({
           id: realid,
           realid,
-          realname: realid,
+          realname: null,
           name: driver.t(`guide.npc${i + 1}`),
           anonymous: false,
           icon: null,

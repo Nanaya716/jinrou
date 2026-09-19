@@ -12,7 +12,6 @@ import { TranslationFunction } from '../../../i18n';
 export interface IPropPlayerBox {
   t: TranslationFunction;
   player: PlayerInfo;
-  showRealNames?: boolean;
   onEnableFilter(): void;
   onInsertName?(name: string): void;
 }
@@ -37,22 +36,19 @@ export class PlayerBox extends React.Component<IPropPlayerBox, {}> {
         flags,
       },
       onInsertName,
-      showRealNames,
     } = this.props;
     return (
       <Wrapper dead={dead} hasIcon={icon != null}>
         <Icon t={t} icon={icon} dead={dead} />
         <Name dead={dead}>
           {anonymous ? (
-            <>
-              {name}
-              {showRealNames && realname != null && !flags.includes('gm') ? (
-                <RealName>{realname}</RealName>
-              ) : null}
-            </>
+            name
           ) : (
             <a href={`/user/${realid ? realid : id}`}>{name}</a>
           )}
+          {realname != null && !flags.includes('gm') ? (
+            <RealName>{realname}</RealName>
+          ) : null}
         </Name>
         <ToolIcons>
           {/* Plus icon for name insertion - hidden but functional */}

@@ -239,9 +239,9 @@ module.exports.actions=(req,res,ss)->
                     delete x.password
                 if x.blind
                     delete x.owner
-                    x.players.forEach (p)->
-                        delete p.realid
-                        delete p.realname
+                x.players.forEach (p)->
+                    delete p.realname
+                    delete p.realid if x.blind
                 unless x.watchspeak?
                     # old rooms do not have watchspeak set.
                     # watchspeak defaults to true.
@@ -417,7 +417,7 @@ module.exports.actions=(req,res,ss)->
             result.players.forEach (p)->
                 unless result.blind == "" || pl?.mode == "gm"
                     delete p.realid
-                unless pl?.mode == "gm"
+                unless result.blind && pl?.mode == "gm"
                     delete p.realname
                 delete p.ip
             delete result.quitfromtheme
@@ -843,9 +843,10 @@ module.exports.actions=(req,res,ss)->
                     gmPlayerRealName =
                         userid: user.userid
                         realname: user.realname
+                    # realname is sent separately to the GM-only channel.
+                    delete user.realname
                     if room.blind
                         delete user.realid
-                        delete user.realname
                     if room.mode!="playing"
                         ss.publish.channel "room#{roomid}", "join", user
                     # The public join event must remain anonymous. Send the
@@ -1137,12 +1138,12 @@ module.exports.actions=(req,res,ss)->
                         delete x.password
                     if x.blind
                         delete x.owner
-                        x.players.forEach (p)->
-                            unless p?
-                                console.log "room fatal error ID:"+x.id
-                                return
-                            delete p.realid
-                            delete p.realname
+                    x.players.forEach (p)->
+                        unless p?
+                            console.log "room fatal error ID:"+x.id
+                            return
+                        delete p.realname
+                        delete p.realid if x.blind
                 res docs
     suddenDeathPunish:(roomid,banIDs)->
         # banIDs = ["someID","someID"]

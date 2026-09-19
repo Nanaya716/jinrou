@@ -247,7 +247,6 @@ export class Game extends React.Component<IPropGame, {}> {
             <RoomHeaderPart ref={this.playersElement}>
               <Players
                 players={players}
-                showRealNames={gameInfo.isGM === true}
                 onFilter={this.handleLogFilter}
                 onInsertName={this.handlePlayerNameClick}
               />

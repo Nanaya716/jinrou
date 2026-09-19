@@ -423,7 +423,6 @@ exports.start=(roomid)->
                             else
                                 "playing"
                             watchspeak: obj.game.watchspeak
-                            isGM: obj.type == "GameMaster"
                         }
                     else
                         undefined
@@ -679,7 +678,7 @@ exports.start=(roomid)->
                 village_rules_panel_cleanup = null
         $("#roomname").append roomnumber, iconlist
         if room.mode=="waiting"
-            game_view.store.resetPlayers room.players.map (pl)-> convertRoomPlayerToPlayerInfo pl, !!room.blind
+            game_view.store.resetPlayers room.players.map convertRoomPlayerToPlayerInfo
 
         userid=Index.app.userid()
         gm_realnames = {}
@@ -691,7 +690,7 @@ exports.start=(roomid)->
                 msg.realname = gm_realnames[msg.userid]
             room.players.push msg
             forminfo()
-            game_view.store.addPlayer convertRoomPlayerToPlayerInfo msg, !!room.blind
+            game_view.store.addPlayer convertRoomPlayerToPlayerInfo msg
         # Account nicknames for anonymous-room players are delivered only to
         # the GM channel. Cache them in case this arrives before the join event.
         socket_ids.push Index.socket.on "playerRealName","room#{roomid}_gamemaster",(msg,channel)->
@@ -800,7 +799,7 @@ exports.start=(roomid)->
         game_view?.store.addLog log
 
     formplayers=(players)-> #jobflg: 1:生存の人 2:死人
-        game_view?.store.resetPlayers players.map (pl)-> convertGamePlayerToPlayerInfo pl, !!room.blind
+        game_view?.store.resetPlayers players.map convertGamePlayerToPlayerInfo
 
     # タイマー情報をもらった
     gettimer=(msg,mode)->
@@ -1001,12 +1000,12 @@ convertToJobNumbers = (obj) ->
         result[key] = obj[key].number
     result
 # Convert game.players to PlayerInfo
-convertGamePlayerToPlayerInfo = (pl, anonymous=false) ->
+convertGamePlayerToPlayerInfo = (pl) ->
     {
         id: pl.id
         realid: pl.realid || null
         realname: pl.realname || null
-        anonymous: anonymous
+        anonymous: !pl.realid
         name: pl.name
         dead: pl.dead
         icon: pl.icon || null
@@ -1015,12 +1014,12 @@ convertGamePlayerToPlayerInfo = (pl, anonymous=false) ->
         flags: if pl.norevive then ['norevive'] else []
     }
 # Convert room.players to PlayerInfo
-convertRoomPlayerToPlayerInfo = (pl, anonymous=false) ->
+convertRoomPlayerToPlayerInfo = (pl) ->
     {
         id: pl.userid
         realid: pl.realid || null
         realname: pl.realname || null
-        anonymous: anonymous
+        anonymous: !pl.realid
         name: pl.name
         dead: false
         icon: pl.icon || null

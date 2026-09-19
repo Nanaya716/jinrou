@@ -788,7 +788,7 @@ class Game
                 if obj?.gm || not (@rule?.blind=="complete" || (@rule?.blind=="yes" && !@finished))
                     # 公開してもよい
                     r.realid=x.realid
-                if obj?.gm
+                if obj?.gm && @rule?.blind
                     r.realname=x.realname
                 r
             day:@day

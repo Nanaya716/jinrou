@@ -232,7 +232,7 @@ export abstract class DriverBase {
       emitLog: true,
       id: userInfo.userid,
       realid: userInfo.userid,
-      realname: userInfo.name,
+      realname: null,
       name: userInfo.name,
       anonymous: false,
       dead: false,

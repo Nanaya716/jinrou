@@ -29,10 +29,6 @@ export interface GameInfo {
    * Whether watcher's speech is allowed.
    */
   watchspeak: boolean;
-  /**
-   * Whether this client is the room's game master.
-   */
-  isGM?: boolean;
 }
 
 /**
