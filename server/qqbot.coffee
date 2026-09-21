@@ -10,6 +10,7 @@ OP_HELLO = 10
 OP_HEARTBEAT_ACK = 11
 GROUP_AND_C2C_EVENT = 1 << 25
 ROOMS_URL = 'https://www.jinrou.icu/rooms'
+SITE_URL = 'https://www.jinrou.icu'
 
 accessToken = null
 accessTokenExpiresAt = 0
@@ -29,6 +30,33 @@ exports.start = ->
         .catch (err)->
             console.error '[QQBot] Failed to connect gateway.'
             console.error err.stack || err
+
+exports.sendGroupMessage = (content, keyboard)->
+    config = Config.qqbot
+    groupOpenIDs = config?.groupOpenIDs
+    if !groupOpenIDs? || (Array.isArray(groupOpenIDs) && groupOpenIDs.length == 0)
+        groupOpenIDs = config?.groupOpenID
+    groupOpenIDs = [groupOpenIDs] unless Array.isArray groupOpenIDs
+    groupOpenIDs = groupOpenIDs.map (groupOpenID)-> String(groupOpenID ? '').trim()
+    groupOpenIDs = groupOpenIDs.filter (groupOpenID)-> groupOpenID.length > 0
+    return Promise.resolve [] unless config?.enable && groupOpenIDs.length > 0
+    return Promise.reject new Error '[QQBot] appID and appSecret are required.' unless config.appID && config.appSecret
+
+    getAccessToken(config).then (token)->
+        sends = groupOpenIDs.map (groupOpenID)->
+            body =
+                msg_type: 2
+                markdown:
+                    content: content
+            body.keyboard = keyboard if keyboard?
+            requestJSON {
+                hostname: apiHost config
+                path: "/v2/groups/#{encodeURIComponent groupOpenID}/messages"
+                method: 'POST'
+                headers:
+                    Authorization: "QQBot #{token}"
+            }, body
+        Promise.all sends
 
 connectGateway = (config)->
     getAccessToken(config)
@@ -109,6 +137,7 @@ replyToGroupAtMessage = (eventData, config)->
     unless groupOpenID && msgID
         console.error '[QQBot] GROUP_AT_MESSAGE_CREATE is missing group_openid or id.'
         return
+    console.log '[QQBot] group_openid =', groupOpenID
     buildWaitingRoomsMessage()
         .then (content)->
             replyGroupMessage groupOpenID, msgID, content, config
@@ -196,6 +225,31 @@ roomListKeyboard = ->
                 ]
             }
         ]
+
+roomKeyboard = (url, label)->
+    content:
+        rows: [
+            {
+                buttons: [
+                    {
+                        id: 'rooms'
+                        render_data:
+                            label: label
+                            visited_label: label
+                            style: 1
+                        action:
+                            type: 0
+                            permission:
+                                type: 2
+                            data: url
+                            unsupport_tips: url
+                    }
+                ]
+            }
+        ]
+
+exports.gameRoomKeyboard = (roomID)->
+    roomKeyboard "#{SITE_URL}/room/#{encodeURIComponent roomID}", '进入房间'
 
 getGateway = (token)->
     requestJSON {

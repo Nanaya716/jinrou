@@ -85,6 +85,7 @@ module.exports =
     appID:""
     appSecret:""
     sandbox:false
+    groupOpenIDs:[]
   weibo:
     enable:false
     oauth:

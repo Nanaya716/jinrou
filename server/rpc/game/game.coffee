@@ -12,9 +12,57 @@ libgame      = require '../../libs/game.coffee'
 libcasting   = require '../../libs/casting.coffee'
 libtime      = require '../../libs/time.coffee'
 libspeak     = require '../../libs/speak.coffee'
+qqbot       = require '../../qqbot.coffee'
 
 cron=require 'cron'
 i18n = libi18n.getWithDefaultNS "game"
+
+formatQQRoleCounts = (game)->
+    roleInfos = []
+    humanCount = 0
+    for obj in Shared.game.categoryList
+        for job in obj.roles
+            num = game.joblist[job]
+            continue unless num > 0
+            if job == "Human" || job in HUMAN_DISP_JOBS
+                humanCount += num
+            else
+                roleInfos.push "#{game.i18n.t "roles:jobname.#{job}"}: #{num}"
+    if humanCount > 0
+        roleInfos.unshift "#{game.i18n.t "roles:jobname.Human"}: #{humanCount}"
+    for type of Shared.game.categories
+        num = game.joblist["category_#{type}"]
+        if num > 0
+            roleInfos.push "#{game.i18n.t "roles:categoryName.#{type}"}: #{num}"
+    roleInfos.join " "
+
+formatQQPublicRuleInfo = (game, ruleInfo)->
+    return null unless ruleInfo?
+    ruleName = ruleInfo.trim().split(" / ")[0]
+    roleInfo = formatQQRoleCounts game
+    if roleInfo != ""
+        "#{ruleName} / #{roleInfo}"
+    else
+        ruleName
+
+QQBOT_GAME_START_EXCLUDED_RULES = [
+    "特殊规则.黑暗火锅"
+    "特殊规则.手调黑暗火锅"
+    "特殊规则.easyYaminabe"
+    "特殊规则.Endless黑暗火锅"
+]
+
+notifyQQGameStarted = (room, game, ruleInfo)->
+    return if game.rule?.jobrule in QQBOT_GAME_START_EXCLUDED_RULES
+    roomName = room.name ? "房间#{room.id}"
+    playerCount = (game.startplayers ? []).length
+    playerCount++ if game.startoptions?.scapegoat == "on"
+    content = "## 游戏已开始 \n【##{room.id}】 #{roomName}"
+    if ruleInfo? && ruleInfo.trim() != ""
+        content += "\n【配役】#{playerCount}人 - #{ruleInfo.trim()}"
+    qqbot.sendGroupMessage(content, qqbot.gameRoomKeyboard room.id).catch (err)->
+        console.error '[QQBot] Failed to send game-start notification.'
+        console.error err.stack || err
 
 # 身代わりセーフティありのときの除外役職一覧
 SAFETY_EXCLUDED_JOBS = Shared.game.SAFETY_EXCLUDED_JOBS
@@ -17779,6 +17827,7 @@ module.exports.actions=(req,res,ss)->
             if err?
                 res err
                 return
+            publicRuleInfo = formatQQPublicRuleInfo game, ruleinfo_str if query.yaminabe_hidejobs == ""
 
             if ruleobj.rolerequest=="on" && !(query.jobrule in ["特殊规则.黑暗火锅","特殊规则.手调黑暗火锅","特殊规则.量子人狼","特殊规则.Endless黑暗火锅"])
                 # 希望役職制あり
@@ -17833,6 +17882,7 @@ module.exports.actions=(req,res,ss)->
                 # 保存游戏状态到数据库（サーバー再起動後は全プレイヤーが含まれる）
                 game.save()
                 game.timer()
+                notifyQQGameStarted room, game, publicRuleInfo
                 ss.publish.channel "room#{roomid}","refresh",{id:roomid}
             else
                 game.setplayers (result)->
@@ -17845,6 +17895,7 @@ module.exports.actions=(req,res,ss)->
                             }
                         }
                         game.nextturn()
+                        notifyQQGameStarted room, game, publicRuleInfo
                         res null
                         ss.publish.channel "room#{roomid}","refresh",{id:roomid}
                     else
