@@ -56,7 +56,7 @@ notifyQQGameStarted = (room, game, ruleInfo)->
     return if game.rule?.jobrule in QQBOT_GAME_START_EXCLUDED_RULES
     roomName = room.name ? "房间#{room.id}"
     playerCount = (game.startplayers ? []).length
-    playerCount++ if game.startoptions?.scapegoat == "on"
+    playerCount++ if game.rule?.scapegoat == "on"
     content = "## 游戏已开始 \n【##{room.id}】 #{roomName}"
     if ruleInfo? && ruleInfo.trim() != ""
         content += "\n【配役】#{playerCount}人 - #{ruleInfo.trim()}"
