@@ -166,7 +166,7 @@ replyToGroupAtMessage = (eventData, config)->
         return
     console.log '[QQBot] group_openid =', groupOpenID
     text = String(eventData.content ? '').trim()
-    if /^[\/／]?出名单(?:\s|$)/.test text
+    if /^[\/／]?使绊子(?:\s|$)/.test text
         replyToRandomCasting groupOpenID, msgID, text, config
         return
     buildWaitingRoomsMessage()
@@ -189,10 +189,10 @@ replyToRandomCasting = (groupOpenID, msgID, text, config)->
     # QQ 指令面板和手动 @ 都进入同一群消息事件；回复绑定原消息，
     # 不广播到配置的其他群，也不需要主动消息额度。
     Promise.resolve().then ->
-        match = text.match /^[\/／]?出名单(?:\s+([0-9]+))?$/
+        match = text.match /^[\/／]?使绊子(?:\s+([0-9]+))?$/
         number = if match?[1]? then Number match[1] else undefined
         unless match? && (!number? || 12 <= number <= 30)
-            return '用法：/出名单（随机12–30人），或 /出名单 18（指定12–30人）。'
+            return '用法：/使绊子（随机12–30人），或 /使绊子 18（指定12–30人）。'
         randomCasting.buildMessage number
     .catch (err)->
         console.error '[QQBot] Failed to generate random casting.'

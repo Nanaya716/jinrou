@@ -72,7 +72,7 @@ const receive = (content, id, group = 'source') => sockets[0].emit('message', JS
   assert.strictEqual(sockets.length, 1);
   assert.strictEqual(scheduled.length, 1);
   assert.deepStrictEqual(Array.from(scheduled[0][1]()), ['target-a', 'target-b']);
-  receive(' /出名单 ', 'random');
+  receive(' /使绊子 ', 'random');
   await flush();
   assert.strictEqual(generated.length, 1);
   assert.strictEqual(generated[0], undefined);
@@ -82,28 +82,30 @@ const receive = (content, id, group = 'source') => sockets[0].emit('message', JS
   assert.strictEqual(message.body.msg_id, 'random');
   assert.strictEqual(message.body.msg_seq, 1);
   assert(!message.body.markdown && !message.body.keyboard);
-  receive('/出名单', 'random');
+  receive('/使绊子', 'random');
   await flush();
   assert.strictEqual(messages().length, 1);
-  receive('/出名单 18', 'specified');
-  receive('出名单 12', 'bare');
-  receive('／出名单 30', 'fullwidth');
+  receive('/使绊子 18', 'specified');
+  receive('使绊子 12', 'bare');
+  receive('／使绊子 30', 'fullwidth');
   await flush();
   assert.deepStrictEqual(generated, [undefined, 18, 12, 30]);
-  for (const text of ['/出名单 11', '/出名单 31', '/出名单 12.5', '/出名单 abc', '/出名单 18 extra']) {
+  for (const text of ['/使绊子 11', '/使绊子 31', '/使绊子 12.5', '/使绊子 abc', '/使绊子 18 extra']) {
     receive(text, `invalid-${text}`);
   }
   await flush();
   assert.strictEqual(generated.length, 4);
   assert(messages().slice(-5).every(r => r.body.content.startsWith('用法：')));
   failGeneration = true;
-  receive('/出名单', 'failure');
+  receive('/使绊子', 'failure');
   await flush();
   assert.strictEqual(messages().at(-1).body.content, '生成名单失败，请稍后再试。');
   failGeneration = false;
+  // The replaced command no longer triggers random casting.
+  receive('/出名单', 'old-command');
   receive('房间列表', 'rooms');
   await flush();
-  assert.strictEqual(roomQueries, 1);
+  assert.strictEqual(roomQueries, 2);
   message = messages().at(-1);
   assert.strictEqual(message.body.msg_type, 2);
   assert(message.body.keyboard && message.body.markdown);
