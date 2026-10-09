@@ -1,6 +1,7 @@
 https = require 'https'
 WebSocket = require 'ws'
 dailyCasting = require './libs/qqbot-daily-casting.coffee'
+randomCasting = require './libs/random-casting.coffee'
 
 OP_DISPATCH = 0
 OP_HEARTBEAT = 1
@@ -19,6 +20,8 @@ ws = null
 heartbeatTimer = null
 lastSeq = null
 reconnectTimer = null
+# 只对新配役指令防重，避免重复事件再次生成不同名单。
+castingMessages = new Map
 
 exports.start = ->
     config = Config.qqbot
@@ -162,6 +165,10 @@ replyToGroupAtMessage = (eventData, config)->
         console.error '[QQBot] GROUP_AT_MESSAGE_CREATE is missing group_openid or id.'
         return
     console.log '[QQBot] group_openid =', groupOpenID
+    text = String(eventData.content ? '').trim()
+    if /^[\/／]?出名单(?:\s|$)/.test text
+        replyToRandomCasting groupOpenID, msgID, text, config
+        return
     buildWaitingRoomsMessage()
         .then (content)->
             replyGroupMessage groupOpenID, msgID, content, config
@@ -170,6 +177,32 @@ replyToGroupAtMessage = (eventData, config)->
         .catch (err)->
             console.error '[QQBot] Failed to reply group mention.'
             console.error err.stack || err
+
+replyToRandomCasting = (groupOpenID, msgID, text, config)->
+    now = Date.now()
+    castingMessages.forEach (receivedAt, key)->
+        castingMessages.delete key if now - receivedAt >= 5 * 60 * 1000
+    key = "#{groupOpenID}:#{msgID}"
+    return if castingMessages.has key
+    castingMessages.set key, now
+
+    # QQ 指令面板和手动 @ 都进入同一群消息事件；回复绑定原消息，
+    # 不广播到配置的其他群，也不需要主动消息额度。
+    Promise.resolve().then ->
+        match = text.match /^[\/／]?出名单(?:\s+([0-9]+))?$/
+        number = if match?[1]? then Number match[1] else undefined
+        unless match? && (!number? || 12 <= number <= 30)
+            return '用法：/出名单（随机12–30人），或 /出名单 18（指定12–30人）。'
+        randomCasting.buildMessage number
+    .catch (err)->
+        console.error '[QQBot] Failed to generate random casting.'
+        console.error err.stack || err
+        '生成名单失败，请稍后再试。'
+    .then (content)->
+        sendTextGroupMessage groupOpenID, content, config, msgID
+    .catch (err)->
+        console.error '[QQBot] Failed to reply random casting.'
+        console.error err.stack || err
 
 replyGroupMessage = (groupOpenID, msgID, content, config)->
     getAccessToken(config).then (token)->
