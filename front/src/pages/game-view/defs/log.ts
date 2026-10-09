@@ -51,6 +51,10 @@ export interface NormalLog extends LogBase {
    */
   comment: string;
   /**
+   * Rich display format for the opening village rules system message.
+   */
+  contentType?: 'villageRules';
+  /**
    * Userid.
    */
   userid: string;

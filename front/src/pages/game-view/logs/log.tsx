@@ -9,6 +9,7 @@ import { phone, notPhone } from '../../../common/media';
 import { Theme } from '../../../theme';
 import { FixedSizeLogRow } from './elements';
 import { CommentContent } from './comment';
+import { VillageRulesContent } from './village-rules';
 import { StoredLog } from './log-store';
 import { themeStore } from '../../../theme';
 
@@ -285,17 +286,22 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
         ...partAttrs(log.mode),
       };
       // Server's bug? comment may actually be null
-      const comment = autolinkLogType.includes(log.mode) ? (
-        <Comment {...commentProps}>
-          <CommentContent
-            comment={log.comment || ''}
-            supplement={log.mode === 'nextturn' ? undefined : log.supplement}
-            resolveLogById={resolveLogById}
-          />
-        </Comment>
-      ) : (
-        <Comment {...commentProps}>{sanitizeLog(log.comment)}</Comment>
-      );
+      const comment =
+        log.mode === 'system' && log.contentType === 'villageRules' ? (
+          <Comment {...commentProps}>
+            <VillageRulesContent content={sanitizeLog(log.comment || '')} />
+          </Comment>
+        ) : autolinkLogType.includes(log.mode) ? (
+          <Comment {...commentProps}>
+            <CommentContent
+              comment={log.comment || ''}
+              supplement={log.mode === 'nextturn' ? undefined : log.supplement}
+              resolveLogById={resolveLogById}
+            />
+          </Comment>
+        ) : (
+          <Comment {...commentProps}>{sanitizeLog(log.comment)}</Comment>
+        );
       return renderLine(
         log.mode,
         <>
