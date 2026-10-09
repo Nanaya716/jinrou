@@ -9,7 +9,13 @@ for job in roleNames
     jobs[job] = true
 
 exports.generate = (number)->
-    number ?= 12 + Math.floor Math.random() * 19
+    # 未指定人数时先按区间抽签，再在区间内等概率选人数。
+    # 12–18 人合计 70%，19–30 人合计 30%；指定人数不走这次抽签。
+    unless number?
+        number = if Math.random() < 0.7
+            12 + Math.floor Math.random() * 7
+        else
+            19 + Math.floor Math.random() * 12
     unless Number.isInteger(number) && 12 <= number <= 30
         throw new Error '人数必须是 12–30 之间的整数。'
 

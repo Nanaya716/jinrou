@@ -50,6 +50,26 @@ try {
       }
     }
   }
+  // Stratify the probability draw to verify the 70/30 split without a flaky frequency test.
+  const ranges = [0, 0];
+  for (let sample = 0; sample < 100; sample++) {
+    const draws = [(sample + 0.5) / 100, 0.5];
+    Math.random = () => draws.length ? draws.shift() : previousRandom();
+    const result = casting.generate();
+    assert.strictEqual(result.number, sample < 70 ? 15 : 25);
+    ranges[result.number <= 18 ? 0 : 1]++;
+    checked++;
+  }
+  assert.deepStrictEqual(ranges, [70, 30]);
+  // Verify every possible population within each interval, including 12/18 and 19/30.
+  for (const [probability, first, size] of [[0.7 - Number.EPSILON, 12, 7], [0.7, 19, 12]]) {
+    for (let index = 0; index < size; index++) {
+      const draws = [probability, (index + 0.5) / size];
+      Math.random = () => draws.length ? draws.shift() : previousRandom();
+      assert.strictEqual(casting.generate().number, first + index);
+      checked++;
+    }
+  }
   Math.random = () => 0;
   // Test random population separately; a constant RNG cannot exercise role selection.
   const originalGenerate = require('../server/libs/yaminabe.coffee').generate;
@@ -85,4 +105,4 @@ try {
 } finally {
   Math.random = previousRandom;
 }
-console.log(`Random casting passed: ${checked} samples, Human quotas, guaranteed diviners, population bounds and invalid inputs.`);
+console.log(`Random casting passed: ${checked} samples, Human quotas, guaranteed diviners, 70/30 population weights, interval bounds and invalid inputs.`);
