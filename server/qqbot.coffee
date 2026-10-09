@@ -1,5 +1,6 @@
 https = require 'https'
 WebSocket = require 'ws'
+dailyCasting = require './libs/qqbot-daily-casting.coffee'
 
 OP_DISPATCH = 0
 OP_HEARTBEAT = 1
@@ -26,6 +27,9 @@ exports.start = ->
     unless config.appID && config.appSecret
         console.error '[QQBot] appID and appSecret are required.'
         return
+    # 定时主动发送不依赖网关连接状态，沿用开局通知的目标群配置。
+    dailyCasting.start config, (-> getGroupOpenIDs config), (groupOpenID, content)->
+        sendTextGroupMessage groupOpenID, content, config
     connectGateway config
         .catch (err)->
             console.error '[QQBot] Failed to connect gateway.'
@@ -33,12 +37,7 @@ exports.start = ->
 
 exports.sendGroupMessage = (content, keyboard)->
     config = Config.qqbot
-    groupOpenIDs = config?.groupOpenIDs
-    if !groupOpenIDs? || (Array.isArray(groupOpenIDs) && groupOpenIDs.length == 0)
-        groupOpenIDs = config?.groupOpenID
-    groupOpenIDs = [groupOpenIDs] unless Array.isArray groupOpenIDs
-    groupOpenIDs = groupOpenIDs.map (groupOpenID)-> String(groupOpenID ? '').trim()
-    groupOpenIDs = groupOpenIDs.filter (groupOpenID)-> groupOpenID.length > 0
+    groupOpenIDs = getGroupOpenIDs config
     return Promise.resolve [] unless config?.enable && groupOpenIDs.length > 0
     return Promise.reject new Error '[QQBot] appID and appSecret are required.' unless config.appID && config.appSecret
 
@@ -57,6 +56,31 @@ exports.sendGroupMessage = (content, keyboard)->
                     Authorization: "QQBot #{token}"
             }, body
         Promise.all sends
+
+# 与既有开局播报共用群列表解析，兼容旧的单群 groupOpenID 配置。
+getGroupOpenIDs = (config)->
+    groupOpenIDs = config?.groupOpenIDs
+    if !groupOpenIDs? || (Array.isArray(groupOpenIDs) && groupOpenIDs.length == 0)
+        groupOpenIDs = config?.groupOpenID
+    groupOpenIDs = [groupOpenIDs] unless Array.isArray groupOpenIDs
+    groupOpenIDs = groupOpenIDs.map (groupOpenID)-> String(groupOpenID ? '').trim()
+    groupOpenIDs = groupOpenIDs.filter (groupOpenID)-> groupOpenID.length > 0
+    groupOpenIDs
+
+# 新功能使用纯文本，不改变既有开局播报的 Markdown 和按钮。
+sendTextGroupMessage = (groupOpenID, content, config, msgID)->
+    getAccessToken(config).then (token)->
+        body = {msg_type: 0, content}
+        if msgID?
+            body.msg_id = msgID
+            body.msg_seq = 1
+        requestJSON {
+            hostname: apiHost config
+            path: "/v2/groups/#{encodeURIComponent groupOpenID}/messages"
+            method: 'POST'
+            headers:
+                Authorization: "QQBot #{token}"
+        }, body
 
 connectGateway = (config)->
     getAccessToken(config)

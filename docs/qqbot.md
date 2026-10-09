@@ -1,0 +1,45 @@
+# QQ 群机器人
+
+机器人沿用现有官方 QQ API 接入、AppID/AppSecret 和 `groupOpenIDs`，支持房间列表与开局通知。
+
+## 每日配役
+
+启用 `qqbot.enable` 并配置目标群后，默认每天北京时间 **10:00** 推送一份配置：
+
+- 配置总人数在 **12–30** 人中均匀随机选择，不另加替身名额。
+- 使用黑暗火锅 **高安全性（high）** 原算法，默认公开职业、非化学、非两阵营、非败北村。
+- 展示每个真实职业的名称及人数，不创建房间、不改变对局。
+- 一次推送的所有目标群收到同一份名单。
+
+无需新增依赖或配置字段即可启用。若需单独关闭每日推送，在现有本地配置的 `qqbot` 下添加：
+
+```coffee
+    dailyCasting: false
+```
+
+目标群复用 `groupOpenIDs`，兼容旧的单群 `groupOpenID`。每日消息使用纯文本，不改变既有开局播报的 Markdown 或按钮。
+
+调度固定 `Asia/Shanghai`，不受服务器时区影响，启动时不补发错过的推送。MongoDB 自动使用新集合 `qqbot_daily_castings`，按北京时间日期和群 OpenID 记录发送状态；其 `_id` 唯一索引防止同一天重复发送，也适用于多实例。无需手动建表或索引。
+
+为避免群消息重复，发送失败或进程在发送途中退出不会自动重试当天该群的推送。可在服务日志及集合中检查 `sending`、`sent`、`failed` 状态。服务必须在 10:00 运行且数据库可用。
+
+## 验证
+
+```sh
+node tests/random-casting.js
+node tests/qqbot-daily-casting.js
+```
+
+测试在本地生成配置并模拟数据库和 QQ 发送，不会连接 QQ 或发送群消息。算法抽取时另以 720 组固定随机序列对照原开局实现，涵盖原有安全等级、普通/手调/简易火锅，结果一致。
+
+## 官方接入文档
+
+核对日期：2026-10-09。
+
+- [消息收发概述](https://bot.q.qq.com/wiki/develop/api-v2/server-inter/message/overview.html)：主动消息及群内主动发送开关。
+- [发送群聊消息](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_groups_group_openid_messages.post.html)：主动发送、纯文本、`msg_id` 和 `msg_seq`。
+- [群 @ 机器人消息](https://bot.q.qq.com/wiki/develop/api-v2/autogen/event/group_at_message_create.html)：群事件、正文及消息 ID。
+- [事件接入](https://bot.q.qq.com/wiki/develop/api-v2/dev-prepare/interface-framework/event-emit.html)：现有 WebSocket 与群消息 Intent。
+- [官方变更记录](https://bot.q.qq.com/wiki/develop/api-v2/changelog.html)：指令面板管理 API 等新增能力。
+
+本次功能沿用已可工作的 API 域名和网关接入，未迁移域名或更换事件传输方式。
