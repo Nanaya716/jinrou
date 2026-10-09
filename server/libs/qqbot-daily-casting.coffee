@@ -21,7 +21,6 @@ exports.run = (groupOpenIDs, send, now = new Date)->
         collection = DB.collection 'qqbot_daily_castings'
         # 同一次推送的所有目标群收到同一份名单。
         content = randomCasting.buildMessage()
-        content = "【每日配役 · #{date}】\n#{content}"
         results = []
         groups.reduce ((pending, groupOpenID)->
             pending.then ->

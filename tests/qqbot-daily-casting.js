@@ -48,7 +48,8 @@ const daily = moduleObject.exports;
   await Promise.all([daily.run(['a', 'b', 'a'], send, now), daily.run(['a', 'b'], send, now)]);
   assert.strictEqual(sent.length, 2);
   assert.deepStrictEqual(sent.map(x => x.group).sort(), ['a', 'b']);
-  assert(sent.every(x => x.content.includes('2026-10-09')));
+  // Daily sends preserve the same single-line body as command replies.
+  assert(sent.every(x => /^casting [0-9]+$/.test(x.content)));
   assert.strictEqual(records.get('2026-10-09:a').status, 'sent');
   assert.strictEqual(records.get('2026-10-09:b').status, 'sent');
   await daily.run(['a', 'b'], send, now);

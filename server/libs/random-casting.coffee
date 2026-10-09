@@ -64,7 +64,13 @@ exports.buildMessage = (number)->
     casting = exports.generate number
     # 延迟取得翻译实例，与站点使用同一份中文职业名称，保留思念系真实职业名。
     i18n = require('./i18n.coffee').getWithDefaultNS 'roles'
-    lines = []
-    for job in roleNames when casting.joblist[job] > 0
-        lines.push "#{i18n.t "jobname.#{job}"} × #{casting.joblist[job]}"
-    "【随机职业配置】#{casting.number}人\n黑暗火锅 · 高安全性\n#{lines.join '\n'}"
+    # 按村人阵营、人狼系、狂人系、妖狐系等现有分类排列，
+    # 未分类职业补在末尾，避免隐藏职业遗漏或跨分类重复显示。
+    orderedJobs = []
+    for category in Shared.categoryList
+        orderedJobs.push category.roles...
+    orderedJobs = Array.from new Set orderedJobs.concat roleNames
+    parts = []
+    for job in orderedJobs when casting.joblist[job] > 0
+        parts.push "#{i18n.t "jobname.#{job}"}: #{casting.joblist[job]}"
+    "#{casting.number}人 - 使绊子 / #{parts.join ' '}"
