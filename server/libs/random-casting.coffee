@@ -8,6 +8,16 @@ jobs = {}
 for job in roleNames
     jobs[job] = true
 
+# 阵营按开局职业统计；Others 内各独立胜利职业分别算一种。
+# 同时属于两种第三方的职业会占用两种，不能绕过单第三方限制。
+thirdPartyTeams = (job)->
+    memberships = []
+    for team, members of Shared.teams when team not in ['Human', 'Werewolf'] && job in members
+        memberships.push if team == 'Others' then job else team
+    if job not in Shared.teams.Human && job not in Shared.teams.Werewolf && memberships.length == 0
+        memberships.push job
+    memberships
+
 # 指定人数沿用实际游戏开局下限与本站房间上限；随机推荐仍只抽 12–30 人。
 exports.minPlayers = 6
 exports.maxPlayers = 40
@@ -40,9 +50,15 @@ exports.generate = (number)->
     # 不提前塞职业，避免 SP/无谋与原有 75% 普通占卜师步骤叠加。
     diviners = ['Diviner', 'SuperDiviner', 'MumouDiviner']
 
+    # 每份名单只抽一次限制分支，重试不能把 90% 分支悄悄降为宽松分支。
+    singleThirdParty = Math.random() < 0.9
+    excludedJobs = []
+    allowedThirdParty = null
+    maxNonHumans = Math.ceil((number - 1) / 2) - 1
+
     # 原算法有尝试次数上限，极端情况下可能留下未分配名额。
     # 仅返回完整的职业配置；有限重试后报错，避免把残缺名单发到群里。
-    for attempt in [0...10]
+    for attempt in [0...50]
         joblist = {}
         for job in roleNames
             joblist[job] = 0
@@ -57,6 +73,8 @@ exports.generate = (number)->
             frees: number - humanCount - 1
             fixedJobs: ['Human']
             guaranteeDiviner: true
+            minHumanTeam: number - maxNonHumans
+            excludedJobs: excludedJobs
             jobStrength: {}
             humanDisplayJobs: ['Oracle', 'Fate', 'Sleepwalker', 'Dreamer']
         }
@@ -66,7 +84,21 @@ exports.generate = (number)->
         unresolved = Object.keys(counts).some (key)->
             /^(category_|team_)/.test(key) && counts[key] > 0
         hasDiviner = diviners.some (job)-> counts[job] > 0
-        if total == number && !unresolved && counts.Human == humanCount && hasDiviner
+        # 使用开局阵营表，狂人属于人狼阵营；未知阵营保守计为非村人。
+        # Others 是多个独立胜利职业的集合，不能把它们当作同一个第三方。
+        nonHumans = 0
+        thirdParties = new Set
+        for job in roleNames when counts[job] > 0 && job not in Shared.teams.Human
+            nonHumans += counts[job]
+            thirdParties.add team for team in thirdPartyTeams job
+        if singleThirdParty && thirdParties.size > 1 && !allowedThirdParty?
+            # 先沿用高安全性抽一次，若出现多种第三方，从已抽到的阵营中
+            # 等概率保留一种，再限制候选池重抽，不在成品名单里替换职业。
+            teams = Array.from thirdParties
+            allowedThirdParty = teams[Math.floor Math.random() * teams.length]
+            excludedJobs = roleNames.filter (job)->
+                thirdPartyTeams(job).some (team)-> team != allowedThirdParty
+        if total == number && !unresolved && counts.Human == humanCount && hasDiviner && nonHumans <= maxNonHumans && (!singleThirdParty || thirdParties.size <= 1)
             return {number, joblist: counts}
     throw new Error '未能生成完整职业配置，请稍后重试。'
 

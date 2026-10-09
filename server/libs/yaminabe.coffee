@@ -12,7 +12,7 @@ copyObject = (obj)->
 # 从开局流程抽出的原算法。调用方提供职业池、初始人数和规则，
 # 不创建房间、不操作玩家、不读写数据库，也不发送游戏日志。
 # 高安全性仍使用 high；原有其他安全等级与手调火锅也走同一流程。
-exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, humanDisplayJobs, fixedJobs, guaranteeDiviner})->
+exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, humanDisplayJobs, fixedJobs, guaranteeDiviner, minHumanTeam, excludedJobs})->
     # 独立推荐可预留固定职业；调用方先填 joblist 并从 frees 扣除名额。
     # 固定职业不再参与抽取，但不当作禁用职业，避免连带禁用思念系等角色。
     # 实际开局不传 fixedJobs，仍沿用原候选池与随机流程。
@@ -99,7 +99,11 @@ exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, hu
     ]
     exceptions.push special_exceptions...
     # ユーザーが指定した入れないの
-    excluded_exceptions=[]
+    # 独立推荐可限制第三方种类；同时约束预分配和分类抽取。
+    # 未传此选项的游戏开局不受影响。
+    excluded_exceptions=(excludedJobs ? []).slice()
+    exceptions.push excluded_exceptions...
+    special_exceptions.push excluded_exceptions...
     # カテゴリをまとめてexceptionに追加する関数
     addCategoryToExceptions = (category)->
         for job in Shared.game.categories[category]
@@ -412,7 +416,11 @@ exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, hu
             # count current number of Human team.
             # we rely on the fact that Human category is a subset of Human team.
             currentHuman = countTeam("Human") + joblist["category_Human"]
-            diff = Math.min(frees, humanteam_n) - currentHuman
+            # 独立推荐可要求村人阵营占严格多数；普通开局保留原计算方式。
+            diff = if minHumanTeam?
+                Math.min frees, Math.max(0, Math.max(humanteam_n, minHumanTeam) - currentHuman)
+            else
+                Math.min(frees, humanteam_n) - currentHuman
             if diff > 0
                 joblist.team_Human += diff
                 frees -= diff
@@ -720,6 +728,11 @@ exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, hu
     )(new Date)
 
     possibility=Object.keys(jobs).filter (x)->!(x in exceptions) && !(x in fixedJobs)
+    if possibility.length == 0 && minHumanTeam?
+        # 第三方限制可能清空普通候选池；用村人阵营分类的同一筛选条件补位，
+        # 避免原有 Human 兜底突破独立推荐固定的村人数。
+        possibility = Shared.game.teams.Human.filter (job)->
+            !(job in excluded_exceptions) && !(job in special_exceptions) && !(job in fixedJobs)
     if possibility.length == 0
         # 0はまずい
         possibility.push "Human"

@@ -5,6 +5,19 @@ const Shared = require('../client/code/shared/game.coffee');
 const casting = require('../server/libs/random-casting.coffee');
 const roleNames = Shared.jobs.concat(Shared.hiddenJobs);
 let checked = 0;
+const nonHumanCount = counts => roleNames.filter(job => !Shared.teams.Human.includes(job))
+  .reduce((sum, job) => sum + counts[job], 0);
+const thirdPartyKinds = counts => {
+  const kinds = new Set();
+  for (const job of roleNames) {
+    if (!counts[job] || Shared.teams.Human.includes(job)) continue;
+    const teams = Object.entries(Shared.teams).filter(([team, jobs]) =>
+      !['Human', 'Werewolf'].includes(team) && jobs.includes(job));
+    for (const [team] of teams) kinds.add(team === 'Others' ? job : team);
+    if (!teams.length && !Shared.teams.Werewolf.includes(job)) kinds.add(job);
+  }
+  return kinds.size;
+};
 for (let number = 6; number <= 40; number++) {
   for (let sample = 0; sample < 100; sample++) {
     const result = casting.generate(number);
@@ -16,6 +29,7 @@ for (let number = 6; number <= 40; number++) {
       total += count;
     }
     assert.strictEqual(total, number);
+    assert(nonHumanCount(result.joblist) < (number - 1) / 2);
     assert(result.joblist.Human >= Math.ceil(number * 0.1));
     assert(result.joblist.Human <= Math.floor(number * 0.4));
     assert(['Diviner', 'SuperDiviner', 'MumouDiviner'].some(job => result.joblist[job] > 0));
@@ -89,6 +103,18 @@ try {
       checked++;
     }
   }
+  // Force both probability branches without changing the branch on retries.
+  for (let number = 6; number <= 40; number++) {
+    for (const branch of [0.9 - Number.EPSILON, 0.9]) {
+      for (let sample = 0; sample < 10; sample++) {
+        const draws = [previousRandom(), branch]; // Human quota, then third-party rule.
+        Math.random = () => draws.length ? draws.shift() : previousRandom();
+        const result = casting.generate(number);
+        assert(nonHumanCount(result.joblist) < (number - 1) / 2);
+        if (branch < 0.9) assert(thirdPartyKinds(result.joblist) <= 1);
+      }
+    }
+  }
   Math.random = () => 0;
   // Test random population separately; a constant RNG cannot exercise role selection.
   const originalGenerate = require('../server/libs/yaminabe.coffee').generate;
@@ -105,7 +131,9 @@ try {
     assert.strictEqual(joblist.Diviner + joblist.SuperDiviner + joblist.MumouDiviner, 0);
     joblist.category_Human = 0;
     joblist.Diviner = 1;
-    joblist.Werewolf = options.frees;
+    assert.strictEqual(options.minHumanTeam, options.playersnumber - Math.ceil((options.playersnumber - 1) / 2) + 1);
+    joblist.Werewolf = 1;
+    joblist.Guard = options.frees - 1;
     return {joblist};
   };
   try {
@@ -130,7 +158,39 @@ try {
   } finally {
     yaminabe.generate = originalGenerate;
   }
+  // A fixed first draw must retain 90/10 semantics even when a candidate is rejected.
+  for (const [branch, expectedAttempts] of [[0.9 - Number.EPSILON, 2], [0.9, 1]]) {
+    const draws = [0, branch, 0];
+    Math.random = () => draws.length ? draws.shift() : 0;
+    let attempts = 0;
+    yaminabe.generate = options => {
+      attempts++;
+      const joblist = options.joblist;
+      joblist.category_Human = 0;
+      joblist.Diviner = 1;
+      joblist.Werewolf = 1;
+      joblist.Fox = 1;
+      joblist.Devil = attempts === 1 ? 1 : 0;
+      joblist.Guard = 12 - joblist.Human - 3 - joblist.Devil;
+      if (attempts === 2) {
+        assert(options.excludedJobs.includes('Devil'));
+        assert(options.excludedJobs.includes('FoxMatchmaker')); // Fox + Friend.
+        assert(options.excludedJobs.includes('Bat'));
+        assert(options.excludedJobs.includes('Tanner')); // Distinct independent winners.
+        assert(!options.excludedJobs.includes('Fox'));
+        assert(!options.excludedJobs.includes('Immoral')); // Same Fox team is allowed.
+      }
+      return {joblist};
+    };
+    try {
+      const result = casting.generate(12);
+      assert.strictEqual(attempts, expectedAttempts);
+      assert.strictEqual(thirdPartyKinds(result.joblist), branch < 0.9 ? 1 : 2);
+    } finally {
+      yaminabe.generate = originalGenerate;
+    }
+  }
 } finally {
   Math.random = previousRandom;
 }
-console.log(`Random casting passed: ${checked} samples, Human quotas, guaranteed diviners, 70/30 population weights, interval bounds and invalid inputs.`);
+console.log(`Random casting passed: ${checked} samples, Human quotas, guaranteed diviners, 70/30 population weights, strict non-Human minority, 90% single-third-party branch, interval bounds and invalid inputs.`);
