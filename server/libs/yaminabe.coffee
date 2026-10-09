@@ -12,7 +12,7 @@ copyObject = (obj)->
 # 从开局流程抽出的原算法。调用方提供职业池、初始人数和规则，
 # 不创建房间、不操作玩家、不读写数据库，也不发送游戏日志。
 # 高安全性仍使用 high；原有其他安全等级与手调火锅也走同一流程。
-exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, humanDisplayJobs, fixedJobs})->
+exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, humanDisplayJobs, fixedJobs, guaranteeDiviner})->
     # 独立推荐可预留固定职业；调用方先填 joblist 并从 frees 扣除名额。
     # 固定职业不再参与抽取，但不当作禁用职业，避免连带禁用思念系等角色。
     # 实际开局不传 fixedJobs，仍沿用原候选池与随机流程。
@@ -526,12 +526,24 @@ exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, hu
                 if Math.random()<0.50
                     addTeamToExceptions "Duel"
 
-    # 占い確定
-    if (safety.teams || safety.jobs) && joblist.Diviner == 0
+    # 独立推荐把占卜保底合入原高安全性步骤，不在运行算法前另塞一名。
+    # 保留原步骤普通占卜师 75% 的概率，其余 25% 平分给 SP 与无谋。
+    # 实际游戏开局未开启此选项，仍走原来的职业选择函数。
+    # 三选一只占一个名额，已有这三种职业之一时不再补另一名。
+    hasRequiredDiviner = joblist.Diviner > 0 || (guaranteeDiviner && (joblist.SuperDiviner > 0 || joblist.MumouDiviner > 0))
+    if (safety.teams || safety.jobs) && !hasRequiredDiviner
         # 村人陣営
         # 占い師いてほしい
-        selected = if safety.jobs then selectJob ["Diviner", "ApprenticeSeer"], [0.75, 0.05]
-        else selectJob ["Diviner"], [0.75]
+        selected = if guaranteeDiviner
+            # 保底一次抽签必定选中一名，不叠加第二次保底。
+            roll = Math.random()
+            if roll < 0.75 then "Diviner"
+            else if roll < 0.875 then "SuperDiviner"
+            else "MumouDiviner"
+        else if safety.jobs
+            selectJob ["Diviner", "ApprenticeSeer"], [0.75, 0.05]
+        else
+            selectJob ["Diviner"], [0.75]
         if selected?
             if joblist.category_Human > 0
                 joblist[selected]++

@@ -36,19 +36,38 @@ for (const value of [0, 5, 41, 9.5, '9', NaN, Infinity]) {
 }
 const previousRandom = Math.random;
 try {
-  // Force both Human quota bounds and all three guaranteed diviners through the real algorithm.
-  const diviners = ['Diviner', 'SuperDiviner', 'MumouDiviner'];
+  // Force both Human quota bounds through the real high-safety algorithm.
   for (let number = 6; number <= 40; number++) {
     for (const upper of [false, true]) {
-      for (let index = 0; index < diviners.length; index++) {
-        const draws = [upper ? 1 - Number.EPSILON : 0, (index + 0.5) / diviners.length];
-        Math.random = () => draws.length ? draws.shift() : previousRandom();
-        const result = casting.generate(number);
-        assert.strictEqual(result.joblist.Human, upper ? Math.floor(number * 0.4) : Math.ceil(number * 0.1));
-        assert(result.joblist[diviners[index]] >= 1);
-        checked++;
-      }
+      const draws = [upper ? 1 - Number.EPSILON : 0];
+      Math.random = () => draws.length ? draws.shift() : previousRandom();
+      const result = casting.generate(number);
+      assert.strictEqual(result.joblist.Human, upper ? Math.floor(number * 0.4) : Math.ceil(number * 0.1));
+      assert(['Diviner', 'SuperDiviner', 'MumouDiviner'].some(job => result.joblist[job] > 0));
+      checked++;
     }
+  }
+  // Exercise the actual high-safety selection step at each weight boundary.
+  // This six-player fixture has only one diviner slot, so any stacking is visible.
+  const yaminabeForWeights = require('../server/libs/yaminabe.coffee');
+  const jobs = Object.fromEntries(roleNames.map(job => [job, true]));
+  for (const [roll, selected] of [[0, 'Diviner'], [0.75 - Number.EPSILON, 'Diviner'],
+    [0.75, 'SuperDiviner'], [0.875 - Number.EPSILON, 'SuperDiviner'],
+    [0.875, 'MumouDiviner'], [1 - Number.EPSILON, 'MumouDiviner']]) {
+    Math.random = () => roll;
+    const joblist = Object.fromEntries(roleNames.map(job => [job, 0]));
+    for (const category of Object.keys(Shared.categories)) joblist[`category_${category}`] = 0;
+    joblist.Human = 2;
+    joblist.category_Human = 1;
+    const result = yaminabeForWeights.generate({
+      joblist, jobs, frees: 3, playersnumber: 6,
+      query: {jobrule: '特殊规则.黑暗火锅', yaminabe_safety: 'high', yaminabe_hidejobs: '',
+        chemical: '', ushi: '', losemode: ''},
+      jobStrength: {}, humanDisplayJobs: ['Oracle', 'Fate', 'Sleepwalker', 'Dreamer'],
+      fixedJobs: ['Human'], guaranteeDiviner: true,
+    });
+    assert.strictEqual(result.joblist[selected], 1);
+    assert.strictEqual(result.joblist.Diviner + result.joblist.SuperDiviner + result.joblist.MumouDiviner, 1);
   }
   // Stratify the probability draw to verify the 70/30 split without a flaky frequency test.
   const ranges = [0, 0];
@@ -78,9 +97,14 @@ try {
   yaminabe.generate = options => {
     requested.push(options.playersnumber);
     const joblist = options.joblist;
-    // Leave the reserved villagers and diviner intact; fill only remaining places.
+    // The diviner is an unassigned Human-category slot until the high-safety step.
     assert.strictEqual(options.frees, options.playersnumber - joblist.Human - 1);
     assert.deepStrictEqual(options.fixedJobs, ['Human']);
+    assert.strictEqual(options.guaranteeDiviner, true);
+    assert.strictEqual(joblist.category_Human, 1);
+    assert.strictEqual(joblist.Diviner + joblist.SuperDiviner + joblist.MumouDiviner, 0);
+    joblist.category_Human = 0;
+    joblist.Diviner = 1;
     joblist.Werewolf = options.frees;
     return {joblist};
   };
@@ -93,15 +117,15 @@ try {
     const upper = casting.generate();
     assert.strictEqual(upper.number, 30);
     assert.strictEqual(upper.joblist.Human, 12);
-    assert.strictEqual(upper.joblist.MumouDiviner, 1);
+    assert.strictEqual(upper.joblist.Diviner, 1);
     Math.random = () => 0.5;
     const middle = casting.generate(18);
     assert.strictEqual(middle.joblist.Human, 5);
-    assert.strictEqual(middle.joblist.SuperDiviner, 1);
+    assert.strictEqual(middle.joblist.Diviner, 1);
     const specified = casting.generate(9);
     assert.strictEqual(specified.number, 9);
     assert.strictEqual(specified.joblist.Human, 2);
-    assert.strictEqual(specified.joblist.SuperDiviner, 1);
+    assert.strictEqual(specified.joblist.Diviner, 1);
     assert.deepStrictEqual(requested, [12, 30, 18, 9]);
   } finally {
     yaminabe.generate = originalGenerate;

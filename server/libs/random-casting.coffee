@@ -36,10 +36,9 @@ exports.generate = (number)->
     minHumans = Math.ceil number * 0.1
     maxHumans = Math.floor number * 0.4
     humanCount = minHumans + Math.floor Math.random() * (maxHumans - minHumans + 1)
-    # 至少一位占卜师/SP占卜师/无谋占卜师，三种保底职业等概率选择。
-    # 预留名额后仍允许原算法额外抽取占卜职业，不限制其总数。
+    # 预留一个村人阵营名额，在高安全性原本的占卜选择步骤中三选一。
+    # 不提前塞职业，避免 SP/无谋与原有 75% 普通占卜师步骤叠加。
     diviners = ['Diviner', 'SuperDiviner', 'MumouDiviner']
-    guaranteedDiviner = diviners[Math.floor Math.random() * diviners.length]
 
     # 原算法有尝试次数上限，极端情况下可能留下未分配名额。
     # 仅返回完整的职业配置；有限重试后报错，避免把残缺名单发到群里。
@@ -51,12 +50,13 @@ exports.generate = (number)->
             joblist["category_#{category}"] = 0
         # 先固定新规则，再让高安全性算法填充剩余位置；不在生成后替换职业。
         joblist.Human = humanCount
-        joblist[guaranteedDiviner] = 1
+        joblist.category_Human = 1
         result = yaminabe.generate {
             joblist, query, jobs
             playersnumber: number
             frees: number - humanCount - 1
             fixedJobs: ['Human']
+            guaranteeDiviner: true
             jobStrength: {}
             humanDisplayJobs: ['Oracle', 'Fate', 'Sleepwalker', 'Dreamer']
         }
