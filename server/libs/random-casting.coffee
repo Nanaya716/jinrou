@@ -21,6 +21,16 @@ exports.generate = (number)->
         ushi: ''
         losemode: ''
 
+    # 人数离散化后仍须严格落在 10%–40%，只统计真实 Human，
+    # 不把 Oracle/Fate 等显示为村人的职业计入；重试时保持同一目标人数。
+    minHumans = Math.ceil number * 0.1
+    maxHumans = Math.floor number * 0.4
+    humanCount = minHumans + Math.floor Math.random() * (maxHumans - minHumans + 1)
+    # 至少一位占卜师/SP占卜师/无谋占卜师，三种保底职业等概率选择。
+    # 预留名额后仍允许原算法额外抽取占卜职业，不限制其总数。
+    diviners = ['Diviner', 'SuperDiviner', 'MumouDiviner']
+    guaranteedDiviner = diviners[Math.floor Math.random() * diviners.length]
+
     # 原算法有尝试次数上限，极端情况下可能留下未分配名额。
     # 仅返回完整的职业配置；有限重试后报错，避免把残缺名单发到群里。
     for attempt in [0...10]
@@ -29,10 +39,14 @@ exports.generate = (number)->
             joblist[job] = 0
         for category of Shared.categories
             joblist["category_#{category}"] = 0
+        # 先固定新规则，再让高安全性算法填充剩余位置；不在生成后替换职业。
+        joblist.Human = humanCount
+        joblist[guaranteedDiviner] = 1
         result = yaminabe.generate {
             joblist, query, jobs
             playersnumber: number
-            frees: number
+            frees: number - humanCount - 1
+            fixedJobs: ['Human']
             jobStrength: {}
             humanDisplayJobs: ['Oracle', 'Fate', 'Sleepwalker', 'Dreamer']
         }
@@ -41,7 +55,8 @@ exports.generate = (number)->
         total = roleNames.reduce ((sum, job)-> sum + counts[job]), 0
         unresolved = Object.keys(counts).some (key)->
             /^(category_|team_)/.test(key) && counts[key] > 0
-        if total == number && !unresolved
+        hasDiviner = diviners.some (job)-> counts[job] > 0
+        if total == number && !unresolved && counts.Human == humanCount && hasDiviner
             return {number, joblist: counts}
     throw new Error '未能生成完整职业配置，请稍后重试。'
 

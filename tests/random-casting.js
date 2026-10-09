@@ -16,6 +16,9 @@ for (let number = 12; number <= 30; number++) {
       total += count;
     }
     assert.strictEqual(total, number);
+    assert(result.joblist.Human >= Math.ceil(number * 0.1));
+    assert(result.joblist.Human <= Math.floor(number * 0.4));
+    assert(['Diviner', 'SuperDiviner', 'MumouDiviner'].some(job => result.joblist[job] > 0));
     for (const excluded of ['Thief', 'MinionSelector', 'QuantumPlayer',
       'SpaceWerewolfCrew', 'SpaceWerewolfImposter', 'BloodyMary', 'Spy2',
       'SpiritPossessed', 'MadWolf', 'DarkClown']) {
@@ -33,6 +36,20 @@ for (const value of [11, 31, 12.5, '18', NaN, Infinity]) {
 }
 const previousRandom = Math.random;
 try {
+  // Force both Human quota bounds and all three guaranteed diviners through the real algorithm.
+  const diviners = ['Diviner', 'SuperDiviner', 'MumouDiviner'];
+  for (let number = 12; number <= 30; number++) {
+    for (const upper of [false, true]) {
+      for (let index = 0; index < diviners.length; index++) {
+        const draws = [upper ? 1 - Number.EPSILON : 0, (index + 0.5) / diviners.length];
+        Math.random = () => draws.length ? draws.shift() : previousRandom();
+        const result = casting.generate(number);
+        assert.strictEqual(result.joblist.Human, upper ? Math.floor(number * 0.4) : Math.ceil(number * 0.1));
+        assert(result.joblist[diviners[index]] >= 1);
+        checked++;
+      }
+    }
+  }
   Math.random = () => 0;
   // Test random population separately; a constant RNG cannot exercise role selection.
   const originalGenerate = require('../server/libs/yaminabe.coffee').generate;
@@ -41,18 +58,31 @@ try {
   yaminabe.generate = options => {
     requested.push(options.playersnumber);
     const joblist = options.joblist;
-    joblist.Human = options.playersnumber;
+    // Leave the reserved villagers and diviner intact; fill only remaining places.
+    assert.strictEqual(options.frees, options.playersnumber - joblist.Human - 1);
+    assert.deepStrictEqual(options.fixedJobs, ['Human']);
+    joblist.Werewolf = options.frees;
     return {joblist};
   };
   try {
-    assert.strictEqual(casting.generate().number, 12);
+    const lower = casting.generate();
+    assert.strictEqual(lower.number, 12);
+    assert.strictEqual(lower.joblist.Human, 2);
+    assert.strictEqual(lower.joblist.Diviner, 1);
     Math.random = () => 1 - Number.EPSILON;
-    assert.strictEqual(casting.generate().number, 30);
-    assert.deepStrictEqual(requested, [12, 30]);
+    const upper = casting.generate();
+    assert.strictEqual(upper.number, 30);
+    assert.strictEqual(upper.joblist.Human, 12);
+    assert.strictEqual(upper.joblist.MumouDiviner, 1);
+    Math.random = () => 0.5;
+    const middle = casting.generate(18);
+    assert.strictEqual(middle.joblist.Human, 5);
+    assert.strictEqual(middle.joblist.SuperDiviner, 1);
+    assert.deepStrictEqual(requested, [12, 30, 18]);
   } finally {
     yaminabe.generate = originalGenerate;
   }
 } finally {
   Math.random = previousRandom;
 }
-console.log(`Random casting passed: ${checked} samples, population bounds and invalid inputs.`);
+console.log(`Random casting passed: ${checked} samples, Human quotas, guaranteed diviners, population bounds and invalid inputs.`);

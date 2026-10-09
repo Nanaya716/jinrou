@@ -12,7 +12,11 @@ copyObject = (obj)->
 # 从开局流程抽出的原算法。调用方提供职业池、初始人数和规则，
 # 不创建房间、不操作玩家、不读写数据库，也不发送游戏日志。
 # 高安全性仍使用 high；原有其他安全等级与手调火锅也走同一流程。
-exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, humanDisplayJobs})->
+exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, humanDisplayJobs, fixedJobs})->
+    # 独立推荐可预留固定职业；调用方先填 joblist 并从 frees 扣除名额。
+    # 固定职业不再参与抽取，但不当作禁用职业，避免连带禁用思念系等角色。
+    # 实际开局不传 fixedJobs，仍沿用原候选池与随机流程。
+    fixedJobs ?= []
     # 内部用にチームによる役職指定
     for team of Shared.game.teams
         joblist["team_#{team}"] = 0
@@ -703,7 +707,7 @@ exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, hu
                 frees--
     )(new Date)
 
-    possibility=Object.keys(jobs).filter (x)->!(x in exceptions)
+    possibility=Object.keys(jobs).filter (x)->!(x in exceptions) && !(x in fixedJobs)
     if possibility.length == 0
         # 0はまずい
         possibility.push "Human"
@@ -791,7 +795,7 @@ exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, hu
             for type,arr of Shared.game.categories
                 if joblist["category_#{type}"]>0
                     # カテゴリの中から候補をしぼる
-                    arr2 = arr.filter (x)->!(x in excluded_exceptions) && !(x in special_exceptions)
+                    arr2 = arr.filter (x)->!(x in excluded_exceptions) && !(x in special_exceptions) && !(x in fixedJobs)
                     if arr2.length > 0
                         r=Math.floor Math.random()*arr2.length
                         job=arr2[r]
@@ -807,7 +811,7 @@ exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, hu
             unless job?
                 for type,arr of Shared.game.teams
                     if joblist["team_#{type}"]>0
-                        arr2 = arr.filter (x)->!(x in excluded_exceptions) && !(x in special_exceptions)
+                        arr2 = arr.filter (x)->!(x in excluded_exceptions) && !(x in special_exceptions) && !(x in fixedJobs)
                         if arr2.length > 0
                             r=Math.floor Math.random()*arr2.length
                             job=arr2[r]
