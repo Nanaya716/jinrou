@@ -191,8 +191,9 @@ replyToRandomCasting = (groupOpenID, msgID, text, config)->
     Promise.resolve().then ->
         match = text.match /^[\/／]?使绊子(?:\s+([0-9]+))?$/
         number = if match?[1]? then Number match[1] else undefined
-        unless match? && (!number? || 12 <= number <= 30)
-            return '用法：/使绊子（随机12–30人），或 /使绊子 18（指定12–30人）。'
+        # 不带参数走推荐权重；带参数只校验游戏支持的范围，直接按该人数生成。
+        unless match? && (!number? || randomCasting.minPlayers <= number <= randomCasting.maxPlayers)
+            return "用法：/使绊子（按流程随机12–30人），或 /使绊子 9（指定#{randomCasting.minPlayers}–#{randomCasting.maxPlayers}人）。"
         randomCasting.buildMessage number
     .catch (err)->
         console.error '[QQBot] Failed to generate random casting.'

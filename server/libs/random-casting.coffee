@@ -8,6 +8,10 @@ jobs = {}
 for job in roleNames
     jobs[job] = true
 
+# 指定人数沿用实际游戏开局下限与本站房间上限；随机推荐仍只抽 12–30 人。
+exports.minPlayers = 6
+exports.maxPlayers = 40
+
 exports.generate = (number)->
     # 未指定人数时先按区间抽签，再在区间内等概率选人数。
     # 12–18 人合计 70%，19–30 人合计 30%；指定人数不走这次抽签。
@@ -16,8 +20,8 @@ exports.generate = (number)->
             12 + Math.floor Math.random() * 7
         else
             19 + Math.floor Math.random() * 12
-    unless Number.isInteger(number) && 12 <= number <= 30
-        throw new Error '人数必须是 12–30 之间的整数。'
+    unless Number.isInteger(number) && exports.minPlayers <= number <= exports.maxPlayers
+        throw new Error "人数必须是 #{exports.minPlayers}–#{exports.maxPlayers} 之间的整数。"
 
     query =
         jobrule: '特殊规则.黑暗火锅'

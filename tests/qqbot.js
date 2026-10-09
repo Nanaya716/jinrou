@@ -45,7 +45,7 @@ vm.runInNewContext(coffee.compile(fs.readFileSync('server/qqbot.coffee', 'utf8')
     if (name === 'https') return https;
     if (name === 'ws') return Socket;
     if (name === './libs/qqbot-daily-casting.coffee') return {start: (...args) => scheduled.push(args)};
-    if (name === './libs/random-casting.coffee') return {buildMessage: number => {
+    if (name === './libs/random-casting.coffee') return {minPlayers: 6, maxPlayers: 40, buildMessage: number => {
       if (failGeneration) throw new Error('Generation failed');
       generated.push(number);
       return `配役 ${number === undefined ? '随机12–30' : number}`;
@@ -86,15 +86,17 @@ const receive = (content, id, group = 'source') => sockets[0].emit('message', JS
   await flush();
   assert.strictEqual(messages().length, 1);
   receive('/使绊子 18', 'specified');
+  receive('/使绊子 9', 'specified-small');
+  receive('/使绊子 40', 'specified-large');
   receive('使绊子 12', 'bare');
   receive('／使绊子 30', 'fullwidth');
   await flush();
-  assert.deepStrictEqual(generated, [undefined, 18, 12, 30]);
-  for (const text of ['/使绊子 11', '/使绊子 31', '/使绊子 12.5', '/使绊子 abc', '/使绊子 18 extra']) {
+  assert.deepStrictEqual(generated, [undefined, 18, 9, 40, 12, 30]);
+  for (const text of ['/使绊子 5', '/使绊子 41', '/使绊子 9.5', '/使绊子 abc', '/使绊子 18 extra']) {
     receive(text, `invalid-${text}`);
   }
   await flush();
-  assert.strictEqual(generated.length, 4);
+  assert.strictEqual(generated.length, 6);
   assert(messages().slice(-5).every(r => r.body.content.startsWith('用法：')));
   failGeneration = true;
   receive('/使绊子', 'failure');

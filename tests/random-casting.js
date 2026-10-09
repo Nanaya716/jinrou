@@ -5,7 +5,7 @@ const Shared = require('../client/code/shared/game.coffee');
 const casting = require('../server/libs/random-casting.coffee');
 const roleNames = Shared.jobs.concat(Shared.hiddenJobs);
 let checked = 0;
-for (let number = 12; number <= 30; number++) {
+for (let number = 6; number <= 40; number++) {
   for (let sample = 0; sample < 100; sample++) {
     const result = casting.generate(number);
     assert.strictEqual(result.number, number);
@@ -31,14 +31,14 @@ for (let number = 12; number <= 30; number++) {
     checked++;
   }
 }
-for (const value of [11, 31, 12.5, '18', NaN, Infinity]) {
+for (const value of [0, 5, 41, 9.5, '9', NaN, Infinity]) {
   assert.throws(() => casting.generate(value), /人数/);
 }
 const previousRandom = Math.random;
 try {
   // Force both Human quota bounds and all three guaranteed diviners through the real algorithm.
   const diviners = ['Diviner', 'SuperDiviner', 'MumouDiviner'];
-  for (let number = 12; number <= 30; number++) {
+  for (let number = 6; number <= 40; number++) {
     for (const upper of [false, true]) {
       for (let index = 0; index < diviners.length; index++) {
         const draws = [upper ? 1 - Number.EPSILON : 0, (index + 0.5) / diviners.length];
@@ -98,7 +98,11 @@ try {
     const middle = casting.generate(18);
     assert.strictEqual(middle.joblist.Human, 5);
     assert.strictEqual(middle.joblist.SuperDiviner, 1);
-    assert.deepStrictEqual(requested, [12, 30, 18]);
+    const specified = casting.generate(9);
+    assert.strictEqual(specified.number, 9);
+    assert.strictEqual(specified.joblist.Human, 2);
+    assert.strictEqual(specified.joblist.SuperDiviner, 1);
+    assert.deepStrictEqual(requested, [12, 30, 18, 9]);
   } finally {
     yaminabe.generate = originalGenerate;
   }
