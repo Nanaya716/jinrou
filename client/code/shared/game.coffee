@@ -99,7 +99,7 @@ exports.jobs=["Human","Werewolf","Diviner","Psychic","MindPsychic","Madman","Reb
 # オリジナル
 "WerewolfDescendant",
 # オリジナル
-"SantaClaus","Reindeer",
+"SantaClaus","Reindeer","Lorelei",
 "Pyrotechnist","MagicalGirl","Patissiere","Shishimai","Idol","LurkingMad",
 "DecoyWolf","Hooligan","HomeComer","DragonKnight","Poet","Sacrifice",
 "Synesthete","Streamer","RemoteWorker","Disguised","Acrobat","Hanami",
@@ -107,7 +107,7 @@ exports.jobs=["Human","Werewolf","Diviner","Psychic","MindPsychic","Madman","Reb
 ]
 # 隠されていて自分で入れることができない役職
 exports.hiddenJobs = [
-    "Light", "Neet", "MinionSelector", "QuantumPlayer","HolyMarked","Lorelei",
+    "Light", "Neet", "MinionSelector", "QuantumPlayer","HolyMarked",
     # 宇宙人狼
     "SpaceWerewolfCrew", "SpaceWerewolfImposter", "SpaceWerewolfObserver","SpaceWerewolfGuard","SpaceWerewolfSabotage"
 ]
