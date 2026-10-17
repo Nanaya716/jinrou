@@ -208,6 +208,7 @@ system:
   # Logs related to voting box
   votingbox:
     voted: '{{name}} 向 {{target}} 投票了。'
+    unvoted: '尚未投票的玩家（{{count}}人）：{{names}}'
   # Quantum werewolf logs
   quantum:
     breakdown: '世界崩坏，概率无法定义。'

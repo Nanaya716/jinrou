@@ -6,6 +6,8 @@ ObjectID=require('mongodb').ObjectID
 
 libblacklist = require '../libs/blacklist.coffee'
 libi18n      = require '../libs/i18n.coffee'
+libready     = require '../libs/ready.coffee'
+libgame      = require './game/game.coffee'
 
 i18n = libi18n.getWithDefaultNS 'admin'
 
@@ -141,6 +143,52 @@ exports.actions =(req,res,ss)->
         args=cmd.split " "
         comm=args.shift()
         pro= child_process.spawn comm,args
+    #   刷新房间创建时间
+    refreshRoomMade: (query)->
+        unless req.session.maintenance
+            res {error: i18n.t "error.notAdmin"}
+            return
+        roomid=parseInt query?.roomid, 10
+        unless roomid > 0
+            res {error: i18n.t "common:error.invalidInput"}
+            return
+        made=Date.now()
+        M.rooms.findOne {id:roomid}, (err, room)->
+            if err?
+                res {error: err.message ? err}
+                return
+            unless room?
+                res {error: "房间不存在。"}
+                return
+            M.rooms.update {id:roomid}, {$set:{made:made}}, {safe:true}, (err)->
+                if err?
+                    res {error: err.message ? err}
+                    return
+                res {result: "已将 #{roomid} 号房间创建时间刷新为 #{new Date(made).toLocaleString()}。"}
+    #   将进行中的房间结算为平局
+    drawRoom: (query)->
+        unless req.session.maintenance
+            res {error: i18n.t "error.notAdmin"}
+            return
+        roomid=parseInt query?.roomid, 10
+        unless roomid > 0
+            res {error: i18n.t "common:error.invalidInput"}
+            return
+        M.rooms.findOne {id:roomid}, (err, room)->
+            if err?
+                res {error: err.message ? err}
+                return
+            unless room?
+                res {error: "房间不存在。"}
+                return
+            unless room.mode == "playing"
+                res {error: "只能将进行中的房间结算为平局。"}
+                return
+            libgame.forceDraw roomid, ss, (err)->
+                if err?
+                    res {error: err.message ? err}
+                    return
+                res {result: "已将 #{roomid} 号房间结算为平局。"}
     #   关闭陈旧房间
     # 关闭陈旧房间
     shutdownExpireRooms: ->

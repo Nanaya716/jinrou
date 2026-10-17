@@ -280,6 +280,21 @@ module.exports=
         game.usedShortIds.add log.shortId
         game.digitsCount[log.shortId.length] = 1
         M.gamelogs.insertOne log, {w: 1}, saveGame
+    forceDraw: (roomid,ss,cb)->
+        loadGame roomid, ss, (err,game)->
+            if err?
+                cb err
+                return
+            unless game?
+                cb new Error "游戏不存在。"
+                return
+            if game.finished
+                cb new Error "游戏已经结束。"
+                return
+            unless game.forceDraw()
+                cb new Error "无法将游戏结算为平局。"
+                return
+            cb null
     # ゲームオブジェクトを読み込んで使用可能にする
     ###
     loadDB:(roomid,ss,cb)->
@@ -2401,7 +2416,10 @@ class Game
                 @werewolf_target_remain = 0
 
     # 勝敗決定
-    judge:->
+    forceDraw:->
+        @judge true
+
+    judge:(forceDraw=false)->
         # 既に終了している場合は再度判定しない
         if @finished
             return true
@@ -2582,7 +2600,9 @@ class Game
             if @players.some(isDevilWinner)
                 team="Devil"
 
-        if @revote_num>=4 && !team?
+        if forceDraw
+            team="Draw"
+        else if @revote_num>=4 && !team?
             # 再投票多すぎ
             team="Draw" # 引き分け
 
@@ -3041,6 +3061,16 @@ class VotingBox
             to:player.id
             comment: @game.i18n.t "system.votingbox.voted", {name: player.name, target: pl.name}
         splashlog @game.id,@game,log
+        # GM用：未投票のプレイヤーを通知
+        votedIds = @votes.map (x)->x.player.id
+        unvoted = @game.players.filter (x)->!x.dead && x.id not in votedIds
+        if unvoted.length > 0
+            unvotedNames = unvoted.map((x)->x.name).join("、")
+            hiddenLog =
+                mode:"hidden"
+                to:-1
+                comment: @game.i18n.t "system.votingbox.unvoted", {names: unvotedNames, count: unvoted.length}
+            splashlog @game.id,@game,hiddenLog
         null
     # その人の投票オブジェクトを得る
     getHisVote:(player)->

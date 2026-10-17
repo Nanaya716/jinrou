@@ -56,6 +56,32 @@ tabs=
                             Index.util.message "错误",result.error
                             return
                         window.open result.file
+    refreshRoomMade:
+        init:->
+            $("#refreshRoomMadeForm").submit (je)->
+                je.preventDefault()
+                query=Index.util.formQuery je.target
+                ss.rpc "admin.refreshRoomMade", query,(result)->
+                    if result.error
+                        $("#refreshRoomMadeResult").get(0).style.color="red"
+                        $("#refreshRoomMadeResult").text result.error
+                    else
+                        $("#refreshRoomMadeResult").get(0).style.color=""
+                        $("#refreshRoomMadeResult").text result.result
+    drawRoom:
+        init:->
+            $("#drawRoomForm").submit (je)->
+                je.preventDefault()
+                query=Index.util.formQuery je.target
+                unless window.confirm "确定要将 #{query.roomid} 号进行中房间强制结算为平局吗？"
+                    return
+                ss.rpc "admin.drawRoom", query,(result)->
+                    if result.error
+                        $("#drawRoomResult").get(0).style.color="red"
+                        $("#drawRoomResult").text result.error
+                    else
+                        $("#drawRoomResult").get(0).style.color=""
+                        $("#drawRoomResult").text result.result
     shutdownExpireRooms:
         init:->
             $("#shutdownExpireRoomsForm").submit (je)->
@@ -122,7 +148,7 @@ exports.start=->
         if t.dataset.opener && to=tabs[t.dataset.opener]
             unless to.inited    # 初回
                 to.init()
-                to.inied=true
+                to.inited=true
             e=$("##{t.dataset.opener}").get 0
             e.hidden=!e.hidden
         

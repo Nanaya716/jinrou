@@ -1,4 +1,20 @@
 exports.start=->
+	form=$("#gm-test-form")
+	if form.get 0
+		form.bind "submit",(event)->
+			event.preventDefault()
+			correct=0
+			form.find("fieldset").each ->
+				fieldset=$(this)
+				answer=fieldset.data("answer").split(",")
+				selected=fieldset.find("input:checked").map(-> this.value).get().sort()
+				isCorrect=answer.length is selected.length and answer.every (value,index)-> value is selected[index]
+				fieldset.toggleClass "is-correct",isCorrect
+				fieldset.toggleClass "is-incorrect",not isCorrect
+				fieldset.find(".result").text if isCorrect then "回答正确。" else "回答错误。正确答案：#{answer.join('、')}。"
+				fieldset.find(".explanation").show()
+				correct++ if isCorrect
+			form.find("#gm-test-summary").text "答对 #{correct} / #{form.find('fieldset').length} 题。可直接修改答案后再次确认。"
 	# 役職数
 	$("#number_of_jobs").text Shared.game.jobs.length
 
