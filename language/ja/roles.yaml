@@ -232,6 +232,7 @@ jobname:
   MajoantiBrainwash: '洗脑'
   MajoantiFloat: '漂浮'
   MajoantiClairvoyance: '千里眼'
+  MajoantiGazeGuide: '视线引导'
   MajoantiFlame: '火焰操纵'
   MajoantiDeathRecall: '死亡回溯'
 # Name of categories.
@@ -1383,6 +1384,9 @@ MajoantiFloat:
 MajoantiClairvoyance:
   name: '千里眼'
   jobname: '{{jobname}}（千里眼）'
+MajoantiGazeGuide:
+  name: '视线引导'
+  jobname: '{{jobname}}（视线引导）'
 MajoantiFlame:
   name: '火焰操纵'
   jobname: '{{jobname}}（火焰操纵）'
