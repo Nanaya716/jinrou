@@ -127,7 +127,15 @@ export interface SpeakQuery {
   /**
    * Size of comment.
    */
-  size: 'big' | '' | 'small';
+  size:
+    | 'big'
+    | ''
+    | 'small'
+    | 'skyblue'
+    | 'darkblue'
+    | 'brown'
+    | 'green'
+    | 'purple';
 }
 
 /**

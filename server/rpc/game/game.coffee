@@ -15903,7 +15903,7 @@ module.exports.actions=(req,res,ss)->
             name:player?.name ? req.session.user.name
             to:null
             supplement: if supplement.length > 0 then supplement else undefined
-        if query.size in ["big","small"]
+        if query.size in ["big","small","skyblue","darkblue","purple","green","brown"]
             log.size=query.size
         # ログを流す
         dosp=->

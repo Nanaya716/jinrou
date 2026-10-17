@@ -11,6 +11,7 @@ import { FixedSizeLogRow } from './elements';
 import { CommentContent } from './comment';
 import { VillageRulesContent } from './village-rules';
 import { StoredLog } from './log-store';
+import { themeStore } from '../../../theme';
 
 const SHORT_ID_DOUBLE_CLICK_DELAY = 300;
 let currentShortIdClick: ((shortId: string) => void) | undefined;
@@ -281,6 +282,7 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
         size,
         mode: log.mode,
         noName,
+        coloredBold: themeStore.savedTheme.phoneUI.coloredFontBold !== false,
         ...partAttrs(log.mode),
       };
       // Server's bug? comment may actually be null
@@ -967,7 +969,22 @@ interface IPropComment {
   /**
    * Changed size of comment.
    */
-  size?: 'big' | 'small';
+  size?:
+    | 'big'
+    | 'small'
+    | 'skyblue'
+    | 'darkblue'
+    | 'purple'
+    | 'green'
+    | 'brown';
+  /**
+   * Log mode for color application.
+   */
+  mode?: Log['mode'];
+  /**
+   * Whether colored font should apply bold.
+   */
+  coloredBold?: boolean;
 }
 
 const getFontSize = (
@@ -981,20 +998,99 @@ const getFontSize = (
     | 'brown',
 ) =>
   size === 'big'
-    ? 'calc(1.2 * var(--base-font-size))'
+    ? 'calc(1.07 * var(--base-font-size))'
     : size === 'small'
-      ? 'calc(0.8 * var(--base-font-size))'
-      : 'var(--base-font-size)';
-const getLineHeight = (size: 'big' | 'small' | undefined) =>
-  size === 'big' ? '1' : size === 'small' ? '1.3' : '1';
+    ? 'calc(1.25 * var(--base-font-size))'
+    : 'var(--base-font-size)';
+
+/**
+ * Get font color based on size.
+ */
+const getFontColor = (
+  size?:
+    | 'big'
+    | 'small'
+    | 'skyblue'
+    | 'darkblue'
+    | 'purple'
+    | 'green'
+    | 'brown',
+): string => {
+  switch (size) {
+    case 'skyblue':
+      return '#00008B';
+    case 'darkblue':
+      return '#FFFFFF';
+    case 'purple':
+      return '#FFFFFF';
+    case 'green':
+      return '#FFFFFF';
+    case 'brown':
+      return '#FFFFFF';
+    default:
+      return 'inherit';
+  }
+};
+
+/**
+ * Get background color based on size.
+ */
+const getBackgroundColor = (
+  size?:
+    | 'big'
+    | 'small'
+    | 'skyblue'
+    | 'darkblue'
+    | 'purple'
+    | 'green'
+    | 'brown',
+): string => {
+  switch (size) {
+    case 'skyblue':
+      return '#87CEEB';
+    case 'darkblue':
+      return '#00008B';
+    case 'purple':
+      return '#800080';
+    case 'green':
+      return '#228B22';
+    case 'brown':
+      return '#8B4513';
+    default:
+      return 'inherit';
+  }
+};
+
 /**
  * Log comment box.
  */
 const Comment = styled(Main)<IPropComment>`
   white-space: pre-wrap;
   font-size: ${({ size }) => getFontSize(size)};
-  line-height: ${({ size }) => getLineHeight(size)};
-  ${({ size }) => (size === 'big' ? 'font-weight: bold;' : '')};
+  letter-spacing: 0.02em;
+  ${({ size, mode, coloredBold }) => {
+    if (mode === 'day' || mode === 'gm') {
+      const boldStyle = coloredBold !== false ? ' font-weight: bold;' : '';
+      if (size === 'skyblue') {
+        return `color: rgb(199, 21, 133) !important;${boldStyle}`;
+      } else if (size === 'darkblue') {
+        return `color: #0000CD !important;${boldStyle}`;
+      } else if (size === 'purple') {
+        return `color: #9400D3 !important;${boldStyle}`;
+      } else if (size === 'green') {
+        return `color: #04682f !important;${boldStyle}`;
+      } else if (size === 'brown') {
+        return `color: #A0522D !important;${boldStyle}`;
+      }
+    }
+    return '';
+  }}
+  ${({ size }) =>
+    size === 'big'
+      ? 'font-weight: bold; line-height: 1.3;'
+      : size === 'small'
+      ? 'text-decoration: underline; font-weight: bold; line-height: 1.3;'
+      : 'line-height: 1.3'};
 `;
 
 /**

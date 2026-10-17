@@ -4,7 +4,7 @@ import { ColorName } from './color-profile';
  * Content of tabs.
  * @package
  */
-export type Tab = ColorSettingTab | PhoneUITab;
+export type Tab = ColorSettingTab | PhoneUITab | CustomizeTab;
 
 /**
  * Name of tab.
@@ -16,13 +16,7 @@ export type TabName = Tab['page'];
  */
 export interface ColorSettingTab {
   page: 'color';
-  /**
-   * Whether current profile is being edited.
-   */
   editing: boolean;
-  /**
-   * Currently edited color.
-   */
   colorFocus: null | {
     key: ColorName;
     type: 'color' | 'bg';
@@ -34,4 +28,11 @@ export interface ColorSettingTab {
  */
 export interface PhoneUITab {
   page: 'phone';
+}
+
+/**
+ * Customize settings tab.
+ */
+export interface CustomizeTab {
+  page: 'customize';
 }

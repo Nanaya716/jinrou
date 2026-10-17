@@ -6,6 +6,7 @@ import { I18nProvider, i18n } from '../../i18n';
 import { ColorProfileDisp } from './color-profile';
 import { makeRouter } from '../../common/router';
 import { PhoneUIDisp } from './phone-ui';
+import { CustomizeDisp } from './customize';
 import { TabSelect } from './tab-select';
 import { Tab } from './defs/tabs';
 
@@ -27,6 +28,7 @@ const TabRouter = makeRouter<
   {
     color: ColorProfileDisp,
     phone: PhoneUIDisp,
+    customize: CustomizeDisp,
   },
   'page',
 );

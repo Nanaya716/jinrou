@@ -2,6 +2,7 @@ import '../../util/mobx-config';
 import { action, computed, observable, makeObservable } from 'mobx';
 
 import { Rule } from '../../defs';
+import { themeStore } from '../../theme';
 import {
   GameInfo,
   RoleInfo,
@@ -93,7 +94,9 @@ export class GameStore {
   speakState: SpeakState = {
     size: 'normal',
     kind: '',
-    multiline: false,
+    multiline: (
+      themeStore.savedTheme.phoneUI.multiline || { defaultEnabled: false }
+    ).defaultEnabled,
     willOpen: false,
     noteOpen: false,
     widePage: JSON.parse(

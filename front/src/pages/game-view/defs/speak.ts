@@ -45,7 +45,15 @@ export interface SpeakState {
   /**
    * Size of comment.
    */
-  size: 'small' | 'normal' | 'big';
+  size:
+    | 'small'
+    | 'normal'
+    | 'big'
+    | 'skyblue'
+    | 'darkblue'
+    | 'purple'
+    | 'green'
+    | 'brown';
   /**
    * Kind of speech.
    */

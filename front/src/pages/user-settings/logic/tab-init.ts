@@ -1,5 +1,11 @@
 import { assertNever } from '../../../util/assert-never';
-import { TabName, Tab, ColorSettingTab, PhoneUITab } from '../defs/tabs';
+import {
+  TabName,
+  Tab,
+  ColorSettingTab,
+  PhoneUITab,
+  CustomizeTab,
+} from '../defs/tabs';
 
 /**
  * Initialize a tab of given kind.
@@ -18,6 +24,12 @@ export function initTab<P extends TabName>(page: P): Extract<Tab, { page: P }> {
     case 'phone': {
       const res: PhoneUITab = {
         page: 'phone',
+      };
+      return res as any;
+    }
+    case 'customize': {
+      const res: CustomizeTab = {
+        page: 'customize',
       };
       return res as any;
     }
