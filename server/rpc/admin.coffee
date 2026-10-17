@@ -2,6 +2,7 @@
 crypto=require('crypto')
 child_process=require('child_process')
 settings=Config.mongo
+ObjectID=require('mongodb').ObjectID
 
 libblacklist = require '../libs/blacklist.coffee'
 libi18n      = require '../libs/i18n.coffee'
@@ -210,6 +211,9 @@ exports.actions =(req,res,ss)->
         unless req.session.maintenance
             res {error: i18n.t "error.notAdmin"}
             return
+        unless query?.message
+            res {error: i18n.t "common:error.invalidInput"}
+            return
         addquery=
             time:new Date()
             message:query.message
@@ -217,5 +221,55 @@ exports.actions =(req,res,ss)->
             unless doc?
                 M.news.insert addquery,{safe:true},(err,doc)->
                     res null
+            else
+                res null
+    updateNews:(query)->
+        unless req.session.maintenance
+            res {error: i18n.t "error.notAdmin"}
+            return
+        unless query?.id && query?.message
+            res {error: i18n.t "common:error.invalidInput"}
+            return
+        try
+            id=new ObjectID query.id
+        catch err
+            res {error: i18n.t "common:error.invalidInput"}
+            return
+        M.news.findOne {_id:id}, (err, doc)->
+            if err?
+                res {error: err.message ? err}
+                return
+            unless doc?
+                res {error: "通知不存在。"}
+                return
+            M.news.update {_id:id}, {$set:{message:query.message}}, {safe:true}, (err)->
+                if err?
+                    res {error: err.message ? err}
+                    return
+                res null
+    deleteNews:(query)->
+        unless req.session.maintenance
+            res {error: i18n.t "error.notAdmin"}
+            return
+        unless query?.id
+            res {error: i18n.t "common:error.invalidInput"}
+            return
+        try
+            id=new ObjectID query.id
+        catch err
+            res {error: i18n.t "common:error.invalidInput"}
+            return
+        M.news.findOne {_id:id}, (err, doc)->
+            if err?
+                res {error: err.message ? err}
+                return
+            unless doc?
+                res {error: "通知不存在。"}
+                return
+            M.news.remove {_id:id}, {safe:true}, (err)->
+                if err?
+                    res {error: err.message ? err}
+                    return
+                res null
 
 pro=null    # 现在のプロセス
