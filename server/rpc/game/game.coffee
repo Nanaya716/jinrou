@@ -4796,6 +4796,15 @@ class OldGuard extends Guard
         return false
 
 
+class Paladin extends Guard
+    type:"Paladin"
+    midnightSort: 70
+    divined:(game,player)->
+        super
+        # 妖狐呪殺
+        @die game,"curse", player.id
+        player.addGamelog game,"cursekill",null,@id # 呪殺した
+
 class SuperGuard extends Guard
     type:"SuperGuard"
     midnightSort:80
@@ -16016,6 +16025,7 @@ jobs=
     RebelliousMadman:RebelliousMadman
     SuperGuard:SuperGuard
     Guard:Guard
+    Paladin:Paladin
     Couple:Couple
     Fox:Fox
     NineTailedFox:NineTailedFox
@@ -16327,6 +16337,7 @@ jobStrength=
     RebelliousMadman:12
     Guard:23
     OldGuard:18
+    Paladin:20
     Couple:10
     Fox:25
     NineTailedFox:30
