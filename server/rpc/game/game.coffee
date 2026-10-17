@@ -14209,6 +14209,20 @@ class MajoantiClairvoyance extends Complex
         }
 
 # 13. 视线引导
+class MajoantiFlame extends Complex
+    cmplType:"MajoantiFlame"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiFlame.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiFlame.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiFlame.name"
+            type: "MajoantiFlame"
+        }
+
+# 15. 液体操纵
 class MajoantiDeathRecall extends Complex
     cmplType:"MajoantiDeathRecall"
     formType: FormType.optional
@@ -16044,6 +16058,7 @@ complexes=
     MajoantiBodySwap: MajoantiBodySwap
     MajoantiBrainwash: MajoantiBrainwash
     MajoantiClairvoyance: MajoantiClairvoyance
+    MajoantiFlame: MajoantiFlame
     MajoantiDeathRecall: MajoantiDeathRecall
 
     # 役職ごとの強さ
@@ -18423,6 +18438,7 @@ MAJOANTI_MAGICS = [
     "MajoantiBodySwap",       # 5. 身体交换
     "MajoantiBrainwash",      # 8. 洗脑
     "MajoantiClairvoyance",   # 12. 千里眼
+    "MajoantiFlame",          # 14. 火焰操纵
     "MajoantiDeathRecall",    # 19. 死亡回溯
 ]
 
