@@ -79,6 +79,13 @@ module.exports =
       # botアカウントのアクセストークン
       accessToken:"******"
       accessTokenSecret:"******"
+  qqbot:
+    # QQ 群机器人：房间列表、开局播报与每日随机配役。
+    enable:false
+    appID:""
+    appSecret:""
+    sandbox:false
+    groupOpenIDs:[]
   weibo:
     enable:false
     oauth:
