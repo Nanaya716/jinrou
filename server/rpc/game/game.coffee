@@ -5928,6 +5928,13 @@ class Immoral extends Player
         unless game.players.some((x)->!x.dead && x.isFox())
             @die game, "foxsuicide"
         return false
+    isPerfidiousVisible:->false
+    # 背徳者は妖狐が分かる
+    getVisibilityQuery:->
+        res = super
+        res.foxes = true
+        res.perfidious = true
+        res
 class Perfidious extends Player
     type:"Perfidious"
     team:"Fox"
