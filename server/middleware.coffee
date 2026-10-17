@@ -47,13 +47,14 @@ exports.jsonapi=(request, response, next)->
 exports.manualxhr=(request, response, next)->
     if r=request.url.match /^\/rawmanual\/([\w-]*)$/
         # マニュアルを送る
-        fs.readFile "./manual/#{r[1]}.jade","utf-8",(err,data)->
+        filename="./manual/#{r[1]}.jade"
+        fs.readFile filename,"utf-8",(err,data)->
             if err?
                 # ?
                 response.writeHead 404,{'Content-Type':'text/plain; charset=UTF-8'}
                 response.end err.toString()
                 return
-            fn=jade.compile data,{}
+            fn=jade.compile data,{filename}
             unless fn?
                 response.writeHead 500,{'Content-Type':'text/plain'}
                 response.end "500"
