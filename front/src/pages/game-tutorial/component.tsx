@@ -45,6 +45,7 @@ export const GameTutorial: React.FunctionComponent<IPropGameTutorial> = observer
       onRefuseRevival: noop,
       onJobQuery: noop,
       onWillChange: noop,
+      onNoteChange: noop,
       ...story.gameInput,
     };
     return (

@@ -14,6 +14,7 @@ import {
 
 import { LogVisibilityControl } from './log-visibility';
 import { WillForm } from './will-form';
+import { NoteForm } from './note-form';
 import { makeMapByKey } from '../../../util/map-by-key';
 import { AutocompleteDropdown, AutocompleteItem } from './autocomplete';
 
@@ -123,6 +124,10 @@ export interface IPropSpeakForm extends SpeakState {
    */
   onWillChange: (will: string) => void;
   /**
+   * Change the note.
+   */
+  onNoteChange: (note: string) => void;
+  /**
    * Current favorite state of this room.
    */
   favoriteState: FavoriteState;
@@ -213,6 +218,7 @@ export class SpeakForm extends React.PureComponent<
       kind,
       multiline,
       willOpen,
+      noteOpen,
       logVisibility,
       rule,
       widePage,
@@ -388,6 +394,12 @@ export class SpeakForm extends React.PureComponent<
                             ? t('game_client:speak.will.close')
                             : t('game_client:speak.will.open')}
                         </button>
+                        {/* Note open button. */}
+                        <button type="button" onClick={this.handleNoteClick}>
+                          {noteOpen
+                            ? t('game_client:speak.note.close')
+                            : t('game_client:speak.note.open')}
+                        </button>
                         {/* Show rule button. */}
                         <RuleButton
                           t={t}
@@ -448,6 +460,14 @@ export class SpeakForm extends React.PureComponent<
                       open={willOpen}
                       will={(roleInfo && roleInfo.will) || undefined}
                       onWillChange={this.handleWillChange}
+                    />
+                    <NoteForm
+                      hidden={othersHidden}
+                      t={t}
+                      open={noteOpen}
+                      note={undefined}
+                      players={players}
+                      onNoteChange={this.handleNoteChange}
                     />
                     {/* Autocomplete dropdown */}
                     {this.state.autocomplete.show && (
@@ -955,6 +975,27 @@ export class SpeakForm extends React.PureComponent<
       willOpen: false,
     });
     onWillChange(will);
+  }
+  /**
+   * Handle a click of note button.
+   */
+  @bind
+  protected handleNoteClick(): void {
+    this.props.onUpdate({
+      noteOpen: !this.props.noteOpen,
+    });
+  }
+  /**
+   * Handle a change to the note.
+   */
+  @bind
+  protected handleNoteChange(note: string): void {
+    const { onUpdate, onNoteChange } = this.props;
+    // close note form.
+    onUpdate({
+      noteOpen: false,
+    });
+    onNoteChange(note);
   }
   /**
    * Handle an update of log visibility.

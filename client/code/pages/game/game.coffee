@@ -163,6 +163,11 @@ exports.start=(roomid)->
                                     will: will
                                 }
                             }
+                onNoteChange:(note)->
+                    # User's note is updated (stored in localStorage, no server sync needed)
+                    # Note is already saved in localStorage by NoteForm component
+                    # This callback is just for future extensibility
+                    return
                 onReportFormSubmit:(query)->
                     query.room = roomid
                     query.userAgent = navigator.userAgent

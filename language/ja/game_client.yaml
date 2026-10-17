@@ -192,6 +192,42 @@ speak:
     # Message shown when a change is made to will
     # 'Press save button to save your new will'
     changed: '请点击保存按钮以更新你的遗言'
+  # note button.
+  note:
+    # click to open button.
+    open: '笔记'
+    # click to close button.
+    close: '折叠笔记'
+    # 'Input your note' message,
+    message: '游戏笔记'
+    # insert text hint.
+    insert: '快速插入'
+    # player names category.
+    players: '玩家'
+    # preset phrases category.
+    presets: '预设短语'
+    # note presets.
+    notePresets:
+      roles:
+        - 占卜师
+        - 灵能者
+        - 狂人
+        - 猎人
+        - 共有者
+        - 妖狐
+        - 人狼
+        - 村人
+        - 猫又
+        - 狂信者
+        - 背德者
+        - ○
+        - ●
+        - '-'
+        - '：'
+      newline: '换行'
+      undo: '撤回'
+      redo: '重做'
+      paste: '粘贴剪贴板'
   # show rule button.
   rule: '规则'
   # log visibility.

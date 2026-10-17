@@ -95,6 +95,7 @@ export class GameStore {
     kind: '',
     multiline: false,
     willOpen: false,
+    noteOpen: false,
     widePage: JSON.parse(
       localStorage.widepage == undefined ? true : localStorage.widepage,
     ),

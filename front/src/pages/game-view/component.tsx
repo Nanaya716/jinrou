@@ -165,6 +165,10 @@ interface IPropGame {
    */
   onWillChange: (will: string) => void;
   /**
+   * Handle a note update event.
+   */
+  onNoteChange: (note: string) => void;
+  /**
    * Handle a report form submit event.
    */
   onReportFormSubmit: (query: ReportFormQuery) => void;
@@ -215,6 +219,7 @@ export class Game extends React.Component<IPropGame, {}> {
       onJobQuery,
       onInvalidSpeakKind,
       onWillChange,
+      onNoteChange,
       onReportFormSubmit,
       onFavoriteToggle,
       roomControlHandlers,
@@ -295,6 +300,7 @@ export class Game extends React.Component<IPropGame, {}> {
                 onRefuseRevival={this.handleRefuseRevival}
                 onRuleOpen={this.handleRuleOpen}
                 onWillChange={onWillChange}
+                onNoteChange={onNoteChange}
                 favoriteState={favoriteState}
                 onFavoriteToggle={onFavoriteToggle}
                 onFocus={this.handleSpeakFocus}

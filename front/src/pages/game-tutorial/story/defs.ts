@@ -19,7 +19,7 @@ import {
  */
 export type StoryInputInterface = Pick<
   ComponentProps<typeof Game>,
-  'onSpeak' | 'onJobQuery' | 'onRefuseRevival' | 'onWillChange'
+  'onSpeak' | 'onJobQuery' | 'onRefuseRevival' | 'onWillChange' | 'onNoteChange'
 >;
 
 /**
