@@ -13,6 +13,7 @@ jobname:
   Couple: '共有者'
   Fox: '妖狐'
   Poisoner: '埋毒者'
+  NineTailedFox: '九尾狐'
   BigWolf: '大狼'
   DoubleHeadedWolf: '双头狼'
   TinyFox: '小狐'
@@ -804,6 +805,8 @@ Emma:
   result:
     # killed by werewolf
     werewolf: '{{name}} 成为了人狼的食物。'
+    # killed by NineTailedFox
+    nineTailedFox: '{{name}} 成为了九尾狐的食物。'
     # killed with poison
     poison: '{{name}} 由于中毒死去了。'
     # Killed by QueenSpectator
@@ -1150,6 +1153,9 @@ DestroyCraziest:
 
 Actress:
   existence: '{{name}} 从舞台谢幕了。'
+
+NineTailedFox:
+  select: '{{name}} 袭击了 {{target}}。'
 
 StraySheep:
   select: '{{name}} 决意替他人死去了。'
