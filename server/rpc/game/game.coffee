@@ -15820,10 +15820,12 @@ module.exports.actions=(req,res,ss)->
             # check whether this query is valid.
             if game.phase == Phase.rolerequesting || Phase.isNight(game.phase) || game.phase == Phase.hunter || query.jobtype!="_day"  # 昼の投票
                 # 夜
-                unless plobj.isFormTarget query.jobtype
+                isTarget = plobj.isFormTarget query.jobtype
+                unless isTarget
                     res {error: game.i18n.t "error.job.invalid"}
                     return
-                unless plobj.checkJobValidity game,query
+                isValid = plobj.checkJobValidity game,query
+                unless isValid
                     res {error: game.i18n.t "error.job.invalid"}
                     return
                 # Error-check whether his job is already done.
