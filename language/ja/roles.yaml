@@ -238,6 +238,7 @@ jobname:
   MajoantiFlame: '火焰操纵'
   MajoantiLiquid: '液体操纵'
   MajoantiRebel: '反逆者'
+  MajoantiRemains: '残骸'
   MajoantiGreatWitch: '大魔女'
   MajoantiDeathRecall: '死亡回溯'
   MajoantiGrudgeBite: '怨念反噬'
@@ -1409,6 +1410,9 @@ MajoantiLiquid:
 MajoantiRebel:
   name: '反逆者'
   jobname: '{{jobname}}（反逆者）'
+MajoantiRemains:
+  name: '残骸'
+  jobname: '{{jobname}}（残骸）'
 MajoantiGreatWitch:
   name: '大魔女'
   jobname: '{{jobname}}（大魔女）'

@@ -14321,6 +14321,20 @@ class MajoantiRebel extends Complex
         }
 
 # 17. 残骸
+class MajoantiRemains extends Complex
+    cmplType:"MajoantiRemains"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiRemains.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiRemains.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiRemains.name"
+            type: "MajoantiRemains"
+        }
+
+# 18. 大魔女
 class MajoantiGreatWitch extends Complex
     cmplType:"MajoantiGreatWitch"
     formType: FormType.optional
@@ -16206,6 +16220,7 @@ complexes=
     MajoantiFlame: MajoantiFlame
     MajoantiLiquid: MajoantiLiquid
     MajoantiRebel: MajoantiRebel
+    MajoantiRemains: MajoantiRemains
     MajoantiGreatWitch: MajoantiGreatWitch
     MajoantiDeathRecall: MajoantiDeathRecall
     MajoantiGrudgeBite: MajoantiGrudgeBite
@@ -18596,6 +18611,7 @@ MAJOANTI_MAGICS = [
     "MajoantiFlame",          # 14. 火焰操纵
     "MajoantiLiquid",         # 15. 液体操纵
     "MajoantiRebel",          # 16. 反逆者
+    "MajoantiRemains",        # 17. 残骸
     "MajoantiGreatWitch",     # 18. 大魔女
     "MajoantiDeathRecall",    # 19. 死亡回溯
     "MajoantiGrudgeBite",     # 20. 怨念反噬
