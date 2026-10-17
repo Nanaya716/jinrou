@@ -9,7 +9,7 @@ var mongo=require('mongodb');
 var db=new mongo.Db("werewolf",new mongo.Server("localhost",27017));
 
 //チーム分け
-var wolves=["Werewolf","BigWolf","WolfDiviner","Madman"];
+var wolves=["Werewolf","BigWolf","WolfDiviner","NormalWolfDiviner","Madman"];
 var foxes=["Fox","TinyFox"];
 
 

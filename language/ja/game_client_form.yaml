@@ -31,6 +31,7 @@ messages:
   _day: '请投票选择要处刑的对象'
   Waiting: '请选择希望就职的职业'
   WolfDiviner: '请选择要占卜的对象'
+  NormalWolfDiviner: '请选择要占卜的对象'
   GreedyWolf: '在希望满足自身贪欲的场合下请选择'
   Diviner: '请选择要占卜的对象'
   TinyFox: '请选择要占卜的对象'

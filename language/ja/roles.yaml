@@ -22,6 +22,7 @@ jobname:
   Magician: '魔术师'
   Spy: '间谍'
   WolfDiviner: '人狼占卜师'
+  NormalWolfDiviner: '人狼幻术师'
   Fugitive: '逃亡者'
   Merchant: '商人'
   QueenSpectator: '女王观战者'
@@ -325,6 +326,11 @@ Spy:
 WolfDiviner:
   select: '人狼占卜师 {{name}} 占卜了 {{target}} 的身份。'
   resultlog: '人狼占卜师 {{name}} 占卜了 {{target}} 的身份，他是 {{result}}。'
+
+# NormalWolfDiviner
+NormalWolfDiviner:
+  select: '人狼幻术师 {{name}} 占卜了 {{target}} 的身份。'
+  resultlog: '人狼幻术师 {{name}} 占卜了 {{target}} 的身份，他是 {{result}}。'
 
 # Fugitive
 Fugitive:

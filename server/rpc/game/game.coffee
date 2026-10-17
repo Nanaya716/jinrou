@@ -4780,7 +4780,134 @@ class WolfDiviner extends Werewolf
                 }
         return res
 
+class NormalWolfDiviner extends Werewolf
+    type:"NormalWolfDiviner"
+    midnightSort:120
+    isReviver:->!@dead
+    constructor:->
+        super
+        @setFlag {
+            # 占い結果のリスト
+            results: []
+            # 占い対象
+            target: null
+        }
+    sunset:(game)->
+        @setTarget null
+        @setFlag {
+            results: @flag.results
+            target: null
+        }
+        super
+    sleeping:(game)->game.werewolf_target_remain<=0 # 占いは必須ではない
+    jobdone:(game)->game.werewolf_target_remain<=0 && @flag?.target?
+    job:(game,playerid,query)->
+        if query.jobtype!="NormalWolfDiviner"
+            # 人狼の仕事
+            return super
+        # 占い
+        if @flag.target?
+            return game.i18n.t "error.common.alreadyUsed"
+        pl=game.getPlayer playerid
+        unless pl?
+            return game.i18n.t "error.common.nonexistentPlayer"
+        @setFlag {
+            results: @flag.results
+            target: playerid
+        }
+        pl.touched game,@id
+        log=
+            mode:"skill"
+            to:@id
+            comment: game.i18n.t "roles:NormalWolfDiviner.select", {name: @name, target: pl.name}
+        splashlog game.id,game,log
+        if game.rule.divineresult=="immediate"
+            @dodivine game
+            @showdivineresult game, playerid
+        null
+    sunrise:(game)->
+        super
+        unless game.rule.divineresult=="immediate"
+            @showdivineresult game, @flag.target
+    midnight:(game,midnightSort)->
+        super
+        unless game.rule.divineresult=="immediate"
+            @dodivine game
+        @divineeffect game
+    #占った影響を与える
+    divineeffect:(game)->
+        target = game.skillTargetHook.get @flag.target
+        p=game.getPlayer target
+        if p?
+            # 占いの影響を受ける
+            p.divined game,this
+            # 占い師を占っていたら逆呪殺
+            if p.isJobType "Diviner"
+                @die game, "curse", p.id
+        p=game.getPlayer target
+        # 狂人変化（死亡時は変化しない）
+        if p?.getTeam() == "Werewolf" && (p?.isJobType("Madman") || p?.isJobType("Fanatic")) && p.isHuman() && !p.dead
+            # inspect all target roles.
+            for targetpl in p.accessMainLevel()
+                [_, mainpl] = constructMainChain targetpl
+                # check whether this target should change.
+                unless mainpl.getTeam() == "Werewolf" && (mainpl.isJobType("Madman") || mainpl.isJobType("Fanatic")) && mainpl.isHuman()
+                    continue
+                newjob="HearMadman"
+                # convert this to new pl.
+                newpl = Player.factory newjob, game
+                targetpl.transProfile newpl
+                targetpl.transferData newpl, true
+                targetpl.transform game,newpl,false
+                log=
+                    mode:"skill"
+                    to:p.id
+                    comment: game.i18n.t "system.changeRole", {name: p.name, result: newpl.getJobDisp()}
+                splashlog game.id,game,log
+    showdivineresult:(game)->
+        r=@flag.results[@flag.results.length-1]
+        return unless r?
 
+        resday = (
+            if game.rule.divineresult == "immediate"
+                game.day
+            else
+                game.day - 1)
+        return if r.day != resday
+
+        log=
+            mode:"skill"
+            to:@id
+            comment:r.result
+        splashlog game.id,game,log
+    dodivine:(game)->
+        target = game.skillTargetHook.get @flag.target
+        p=game.getPlayer target
+        origp = game.getPlayer @flag.target
+        if p?
+            # 占い結果を記録
+            @setFlag {
+                results: @flag.results.concat {
+                    player: origp.publicinfo()
+                    result: game.i18n.t "roles:NormalWolfDiviner.resultlog", {name: @name, target: origp.name, result: p.getMainJobname()}
+                    day: game.day
+                }
+                target: @flag.target
+            }
+            @addGamelog game,"wolfdivine",null, p.id  # 占った
+    getOpenForms:(game)->
+        res = super
+        if Phase.isNight(game.phase)
+            unless @flag?.target?
+                # 占いが可能
+                res.push {
+                    type: @type
+                    options: @makeJobSelection game, false
+                    formType: FormType.optional
+                    objid: @objid
+                }
+        return res
+        
 class Fugitive extends Player
     type:"Fugitive"
     formType: FormType.required
@@ -14435,6 +14562,7 @@ jobs=
     Magician:Magician
     Spy:Spy
     WolfDiviner:WolfDiviner
+    NormalWolfDiviner:NormalWolfDiviner
     Fugitive:Fugitive
     Merchant:Merchant
     QueenSpectator:QueenSpectator
@@ -14708,6 +14836,7 @@ jobStrength=
     Magician:14
     Spy:14
     WolfDiviner:60
+    NormalWolfDiviner:60
     Fugitive:8
     Merchant:18
     QueenSpectator:20
