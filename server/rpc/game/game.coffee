@@ -5934,6 +5934,16 @@ class Perfidious extends Player
         res = super
         res.foxes = true
         res
+class Heretic extends Player
+    type:"Heretic"
+    team:"Fox"
+    beforebury:(game)->
+        return false if @dead
+        # 狐が全員死んでいたら自殺
+        unless game.players.some((x)->!x.dead && x.isFox())
+            @die game, "foxsuicide"
+        return false
+    isPerfidiousVisible:->true
     # 背徳者は妖狐が分かる
     getVisibilityQuery:->
         res = super
@@ -15713,6 +15723,7 @@ jobs=
     HearMadman:HearMadman
     Immoral:Immoral
     Perfidious:Perfidious
+    Heretic:Heretic
     Devil:Devil
     ToughGuy:ToughGuy
     Elder:Elder
@@ -16000,6 +16011,7 @@ jobStrength=
     HearMadman:25
     Immoral:5
     Perfidious:5
+    Heretic:5
     Devil:20
     ToughGuy:11
     Elder:18
