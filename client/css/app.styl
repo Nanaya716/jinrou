@@ -359,6 +359,47 @@ div.graph-area
   font-size 1.2rem
   letter-spacing 0.1rem
 
+#roomname span.roomname-village-rules
+  display inline-flex
+  align-items center
+  justify-content center
+  box-sizing border-box
+  min-width 2rem
+  min-height 2rem
+  padding 0.25rem
+  margin -0.25rem 0
+  vertical-align middle
+  cursor pointer
+  letter-spacing normal
+  outline none
+
+div.roomname-village-rules-panel
+  display none
+  position fixed
+  z-index 1000
+  top 4rem
+  right 1rem
+  bottom 2rem
+  left 1rem
+  box-sizing border-box
+  max-width 56rem
+  overflow auto
+  margin 0 auto
+  padding 0.75rem
+  border 1px solid #888
+  background #fff
+  color #000
+  box-shadow 0 2px 10px rgba(0, 0, 0, 0.25)
+  font-size 0.85rem
+  font-weight normal
+  line-height 1.5
+  text-align left
+  white-space pre-wrap
+  letter-spacing normal
+
+div.roomname-village-rules-panel.open
+  display block
+
 //logs (for lobby)
 #lobbyform
   input

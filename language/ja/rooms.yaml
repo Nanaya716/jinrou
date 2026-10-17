@@ -18,6 +18,8 @@ error:
     nameTooLong: "房间名过长"
     # Comment is too long.
     commentTooLong: "简介过长"
+    # Village rules are too long.
+    villageRulesTooLong: "村规说明过长"
     # Other parameter is invalid.
     invalidParameter: "参数无效"
     # Cannot make a room because banned

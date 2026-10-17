@@ -211,8 +211,27 @@ loadGame = (roomid, ss, callback)->
 module.exports=
     newGame: (room,ss, cb)->
         game=new Game ss,room
-        games[room.id]=game
-        M.games.insertOne game.serialize(), {w: 1}, cb
+        saveGame = (err)->
+            if err?
+                cb err
+                return
+            M.games.insertOne game.serialize(), {w: 1}, (err)->
+                games[room.id] = game unless err?
+                cb err
+        unless room.villageRules?.trim()
+            saveGame null
+            return
+        # Persist rules before exposing the game, including to concurrent visitors.
+        log =
+            gameid: game.id
+            mode: "system"
+            contentType: "villageRules"
+            comment: room.villageRules
+            time: Date.now()
+            shortId: game.generateShortId()
+        game.usedShortIds.add log.shortId
+        game.digitsCount[log.shortId.length] = 1
+        M.gamelogs.insertOne log, {w: 1}, saveGame
     # ゲームオブジェクトを読み込んで使用可能にする
     ###
     loadDB:(roomid,ss,cb)->

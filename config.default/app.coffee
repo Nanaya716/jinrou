@@ -102,6 +102,8 @@ module.exports =
     fresh:24*3
     # uplimit for Sudden Death Punishment(minutes).
     suddenDeathBAN:360
+    # default village rules text for new rooms.
+    defaultVillageRules: ""
   # ユーザーについて
   user:
     # The number of games required to publish a user's 戦績.
@@ -122,6 +124,8 @@ module.exports =
       name: 100
       # room comment
       comment: 300
+      # village rules
+      villageRules: 2000
     game:
       # game speak comment
       comment: 4096

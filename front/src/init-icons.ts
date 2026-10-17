@@ -8,6 +8,7 @@ import {
   faNewspaper,
 } from '@fortawesome/free-regular-svg-icons';
 import {
+  faPlus,
   faPlusSquare,
   faMinusSquare,
   faSquare,
@@ -55,6 +56,7 @@ import { faTwitter } from '@fortawesome/free-brands-svg-icons';
 library.add(
   faQuestionCircle,
   faIdCard,
+  faPlus,
   faPlusSquare,
   faMinusSquare,
   faSquare,

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { i18n, I18nProvider } from '../../i18n';
 import { NewRoom, ThemeDoc } from './component';
 import { NewRoomStore } from './store';
 import { showErrorDialog } from '../../dialog';
+import { mountReact } from '../../util/react-root';
 
 export interface IPlaceOptions {
   i18n: i18n;
@@ -19,6 +19,12 @@ export interface IPlaceOptions {
    * List of available themes.
    */
   themes: ThemeDoc[];
+  /**
+   * Defaults used for new rooms.
+   */
+  roomDefaults?: {
+    villageRules?: string;
+  };
 }
 export interface IPlaceResult {
   store: NewRoomStore;
@@ -30,6 +36,7 @@ export function place({
   node,
   onCreate,
   themes,
+  roomDefaults,
 }: IPlaceOptions): IPlaceResult {
   const store = new NewRoomStore();
   const createHandler = (query: unknown) => {
@@ -44,14 +51,19 @@ export function place({
   };
   const com = (
     <I18nProvider i18n={i18n}>
-      <NewRoom store={store} onCreate={createHandler} themes={themes} />
+      <NewRoom
+        store={store}
+        onCreate={createHandler}
+        themes={themes}
+        roomDefaults={roomDefaults}
+      />
     </I18nProvider>
   );
 
-  ReactDOM.render(com, node);
+  const root = mountReact(node, com);
 
   const unmount = () => {
-    ReactDOM.unmountComponentAtNode(node);
+    root.unmount();
   };
   return { store, unmount };
 }

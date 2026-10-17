@@ -15,6 +15,8 @@ exports.actions=(req,res,ss)->
                 maxLength: Config.maxlength.game.comment
                 mail: null
             })
+            roomDefaults:
+                villageRules: Config.rooms.defaultVillageRules ? ""
             shareButton: Config.shareButton
         }
     # 報告フォーム

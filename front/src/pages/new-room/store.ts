@@ -1,4 +1,5 @@
-import { observable, action } from 'mobx';
+import '../../util/mobx-config';
+import { observable, action, makeObservable } from 'mobx';
 
 type Blind = '' | 'yes' | 'complete';
 
@@ -6,6 +7,10 @@ type Blind = '' | 'yes' | 'complete';
  * Store of newroom page.
  */
 export class NewRoomStore {
+  constructor() {
+    makeObservable(this);
+  }
+
   /**
    * Whether description is shown.
    */

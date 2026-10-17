@@ -26,6 +26,16 @@ comment:
   title: "简介"
   description: "简介将于房间一览页面显示，可以留空。"
 
+# Village rules shown in the room.
+villageRules:
+  title: "村规说明"
+  description: "村规说明将在房间内标题旁以图标提示显示，可以留空。"
+  template:
+    none: "选择本地模板"
+    save: "保存为模板"
+    delete: "删除模板"
+  templateNamePrompt: "请输入模板名。同名模板会被覆盖。"
+
 # maximum number of room.
 maxnumber:
   title: "最大人数"
@@ -42,7 +52,7 @@ theme:
   title: "主题房间"
   description: "匿名模式下的主题房间，玩家的昵称将由系统随机分配。"
   # label for no theme.
-  none: "无"
+  none: "无（匿名时为开放主题）"
 
 
 # GM
