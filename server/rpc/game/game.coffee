@@ -253,8 +253,32 @@ loadGame = (roomid, ss, callback)->
                 # prevents duplicate instantiation of Game
                 callback null, games[roomid]
             else
-                games[roomid] = Game.unserialize doc, ss
-                callback null, games[roomid]
+                game = Game.unserialize doc, ss
+                # gamelogsから短IDを復元
+                if game.log_save_mode == "v2"
+                    M.gamelogs.find({ gameid: game.id }, { shortId: 1, _id: 0 }).toArray (err, docs)->
+                        if err?
+                            console.error err
+                        else
+                            game.usedShortIds = new Set(docs.map((d) -> d.shortId).filter((id) -> id?))
+                            # 最小桁数を計算
+                            if docs.length > 0
+                                lengths = docs.map((d) -> d.shortId?.length or 0)
+                                maxDigits = Math.max lengths...
+                                game.minDigits = maxDigits if maxDigits > game.minDigits
+                        games[roomid] = game
+                        callback null, game
+                else
+                    # v1モードではgames.logsから復元
+                    M.games.findOne { id: roomid }, { logs: { $slice: -10000 } }, (err, doc)->
+                        if doc?.logs
+                            game.usedShortIds = new Set(doc.logs.map((l) -> l.shortId).filter((id) -> id?))
+                            if doc.logs.length > 0
+                                lengths = doc.logs.map((l) -> l.shortId?.length or 0)
+                                maxDigits = Math.max lengths...
+                                game.minDigits = maxDigits if maxDigits > game.minDigits
+                        games[roomid] = game
+                        callback null, game
 #内部用
 module.exports=
     newGame: (room,ss, cb)->
@@ -302,12 +326,30 @@ module.exports=
             # 既に読み込んでいる
             cb games[roomid]
             return
-        M.games.find({finished:false}).each (err,doc)->
-            return unless doc?
-            if err?
-                console.log err
-                throw err
-            games[doc.id]=Game.unserialize doc,ss
+        M.games.find({finished:false}).toArray (err, docs)->
+            return if err?
+            for doc in docs
+                continue unless doc?
+                game = Game.unserialize doc, ss
+                # gamelogsから短IDを復元
+                do (game, doc)->
+                    if game.log_save_mode == "v2"
+                        M.gamelogs.find({ gameid: game.id }, { shortId: 1, _id: 0 }).toArray (err, logs)->
+                            return if err?
+                            game.usedShortIds = new Set(logs.map((d) -> d.shortId).filter((id) -> id?))
+                            if logs.length > 0
+                                lengths = logs.map((d) -> d.shortId?.length or 0)
+                                maxDigits = Math.max lengths...
+                                game.minDigits = maxDigits if maxDigits > game.minDigits
+                    else
+                        # v1モードではgames.logsから復元
+                        game.usedShortIds = new Set((doc.logs ? []).map((l) -> l.shortId).filter((id) -> id?))
+                        if doc.logs?.length > 0
+                            lengths = doc.logs.map((l) -> l.shortId?.length or 0)
+                            maxDigits = Math.max lengths...
+                            game.minDigits = maxDigits if maxDigits > game.minDigits
+                games[doc.id] = game
+            cb?()
     ###
     # Check whether a new user can enter an endless game
     # maxnum: a maximum player number of this room
@@ -605,6 +647,11 @@ class Game
         # 夜能力の対象選択に対するフック
         @skillTargetHook = new SkillTargetHook this
 
+        # 発言短ID生成（ランダムな数字、衝突時は桁数を増やす）
+        @usedShortIds = new Set()
+        @minDigits = 1  # 現在の最小桁数（1=1桁から開始）
+        @digitsCount = {}  # 各桁数の使用数を記録 { 1: 5, 2: 20, ... }
+
         @initTimeBasedEvent()
 
     initTimeBasedEvent:->
@@ -616,6 +663,38 @@ class Game
             # 時刻を0時にセット
             d.setHours 0, 0, 0, 0
             d
+
+    # 短IDを生成（ランダムな数字、衝突時は桁数を増やす、0埋めなし）
+    generateShortId:->
+        # TODO: テスト用 - 衝突テストのために固定範囲に制限
+        # テスト後は削除して元のロジックに戻す
+        TEST_MODE = false
+        TEST_RANGE = 5  # 0-4 の5通りのみ生成（衝突しやすくするため）
+
+        generate = (digits) =>
+            # テストモードの場合は範囲を制限
+            if TEST_MODE and digits is 1
+                max = TEST_RANGE
+            else
+                max = Math.pow(10, digits)
+
+            # 使用率を計算（digitsCountからO(1)で取得）
+            usedCount = @digitsCount[digits] ? 0
+
+            # 使用率が80%を超えていたら次の桁へ（性能最適化）
+            if usedCount / max > 0.8
+                @minDigits = digits + 1
+                return generate(digits + 1)
+
+            # 残り余地が十分なら20回試行
+            for attempt in [0...20]
+                id = Math.floor(Math.random() * max).toString()
+                return id unless @usedShortIds.has(id)
+
+            # 見つからなければ次の桁へ
+            return generate(digits + 1)
+
+        return generate(@minDigits)
     # 時刻イベントを処理
     # phase:
     #   "nextturn" if called on nextturn
@@ -16083,6 +16162,14 @@ module.exports.actions=(req,res,ss)->
 
 splashlog=(roomid,game,log)->
     log.time=Date.now() # 時間を付加
+
+    # 短IDを生成（ランダムな数字、衝突時は桁数を増やす）
+    log.shortId = game.generateShortId()
+    game.usedShortIds.add(log.shortId)
+    # 桁数カウンターを更新
+    digitLength = log.shortId.length
+    game.digitsCount[digitLength] = (game.digitsCount[digitLength] ? 0) + 1
+
     #DBに追加
     game.logsaver.saveLog log
     #みんなに送信

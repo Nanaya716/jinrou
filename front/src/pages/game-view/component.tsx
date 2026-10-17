@@ -239,6 +239,7 @@ export class Game extends React.Component<IPropGame, {}> {
                 <LogsPane
                   store={store}
                   onResetLogPickup={this.handleResetLogPickup}
+                  onShortIdClick={this.handleShortIdClick}
                 />
               </LogsWrapper>
             </MainWrapper>
@@ -301,6 +302,15 @@ export class Game extends React.Component<IPropGame, {}> {
   protected handleRefuseRevival(): void {
     const { onRefuseRevival } = this.props;
     onRefuseRevival();
+  }
+  /**
+   * Handle a click on shortId in log.
+   */
+  @bind
+  protected handleShortIdClick(shortId: string): void {
+    if (this.speakFormRef.current != null) {
+      this.speakFormRef.current.appendToComment(`>>${shortId} `);
+    }
   }
   /**
    * Handle a click on player name in log.
@@ -475,6 +485,7 @@ class RulePane extends React.PureComponent<IPropRulePane, {}> {
 interface IPropLogsPane {
   store: GameStore;
   onResetLogPickup(): void;
+  onShortIdClick?: (shortId: string) => void;
 }
 
 @observer
@@ -483,6 +494,7 @@ class LogsPane extends React.PureComponent<IPropLogsPane, {}> {
     const {
       store,
       onResetLogPickup,
+      onShortIdClick,
     } = this.props;
     return (
       <Logs
@@ -492,6 +504,7 @@ class LogsPane extends React.PureComponent<IPropLogsPane, {}> {
         rule={store.rule}
         logPickup={store.logPickup}
         onResetLogPickup={onResetLogPickup}
+        onShortIdClick={onShortIdClick}
       />
     );
   }

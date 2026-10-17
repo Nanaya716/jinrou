@@ -3,6 +3,10 @@
  */
 export interface LogBase {
   time: number;
+  /**
+   * Short ID for reply reference.
+   */
+  shortId?: string;
 }
 
 /**

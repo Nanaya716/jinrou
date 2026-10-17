@@ -70,6 +70,12 @@ export class LogStore {
    */
   private lastBlockId = 1;
 
+  /**
+   * Map of shortId to log for quick lookup.
+   * This avoids O(n) lookup performance issues.
+   */
+  private shortIdIndex = new Map<string, StoredLog>();
+
   constructor() {
     makeObservable(this);
   }
@@ -117,6 +123,12 @@ export class LogStore {
       day: this.currentDay,
     };
     chunk.logs.push(stored);
+    this.getActiveBlock(chunk).logs.push(stored);
+
+    // Add to shortId index for quick lookup
+    if (stored.shortId) {
+      this.shortIdIndex.set(stored.shortId, stored);
+    }
   }
   /**
    * Reset logs.
@@ -138,6 +150,7 @@ export class LogStore {
         ],
       },
     ];
+    this.shortIdIndex.clear();
   }
   /**
    * Reset logs with initial data.
@@ -175,5 +188,30 @@ export class LogStore {
     }
     // today
     yield* this.chunks[this.chunks.length - 1].logs;
+  }
+
+  /**
+   * Find a log by shortId.
+   * Returns null if not found.
+   */
+  public findByShortId(shortId: string): StoredLog | null {
+    const result = this.shortIdIndex.get(shortId);
+    return result !== undefined ? result : null;
+  }
+
+  /**
+   * Get the active block of the given chunk.
+   */
+  private getActiveBlock(chunk: LogChunk): StoredLogBlock {
+    const lastBlock = chunk.blocks[chunk.blocks.length - 1];
+    if (lastBlock != null && lastBlock.logs.length < logBlockSize) {
+      return lastBlock;
+    }
+    const newBlock: StoredLogBlock = {
+      blockId: ++this.lastBlockId,
+      logs: [],
+    };
+    chunk.blocks.push(newBlock);
+    return newBlock;
   }
 }

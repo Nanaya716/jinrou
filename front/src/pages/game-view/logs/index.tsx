@@ -39,6 +39,10 @@ export interface IPropLogs {
    * Callback for resetting log pickup filter.
    */
   onResetLogPickup(): void;
+  /**
+   * Callback for shortId click.
+   */
+  onShortIdClick?: (shortId: string) => void;
 }
 
 export interface IStateLogs {
@@ -76,6 +80,16 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
   public componentWillUnmount() {
     this.state.renderingState.dispose();
   }
+
+  /**
+   * Resolve log by shortId for reply reference.
+   * This is a performance-optimized lookup using the shortId index.
+   * Returns the StoredLog object directly to avoid JSON serialization overhead.
+   */
+  private resolveLogById = (shortId: string): StoredLog | null => {
+    return this.props.logs.findByShortId(shortId);
+  };
+
   public render() {
     const {
       logs,
@@ -84,6 +98,7 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
       visibility,
       logPickup,
       onResetLogPickup,
+      onShortIdClick,
     } = this.props;
     const { renderingState } = this.state;
 
@@ -130,6 +145,8 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
                 fixedSize={fixedSize}
                 icons={icons}
                 rule={rule}
+                resolveLogById={this.resolveLogById}
+                onShortIdClick={onShortIdClick}
               />
             );
           })}
@@ -175,6 +192,14 @@ class LogChunk extends React.PureComponent<
      * Current rule.
      */
     rule: Rule | undefined;
+    /**
+     * Function to resolve log by shortId for reply reference.
+     */
+    resolveLogById?: (shortId: string) => StoredLog | null;
+    /**
+     * Callback for shortId click.
+     */
+    onShortIdClick?: (shortId: string) => void;
   },
   {}
 > {
@@ -187,6 +212,8 @@ class LogChunk extends React.PureComponent<
       renderedNumber,
       rule,
       icons,
+      resolveLogById,
+      onShortIdClick,
     } = this.props;
     if (!visible && !fixedSize) {
       return null;
@@ -204,6 +231,8 @@ class LogChunk extends React.PureComponent<
               log={log}
               rule={rule}
               icons={icons}
+              resolveLogById={resolveLogById}
+              onShortIdClick={onShortIdClick}
             />
           ))
         }

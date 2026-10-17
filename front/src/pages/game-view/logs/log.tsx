@@ -8,6 +8,49 @@ import { Theme } from '../../../theme';
 import { FixedSizeLogRow } from './elements';
 import { CommentContent } from './comment';
 import { VillageRulesContent } from './village-rules';
+import { StoredLog } from './log-store';
+
+const SHORT_ID_DOUBLE_CLICK_DELAY = 300;
+let currentShortIdClick: ((shortId: string) => void) | undefined;
+let lastShortIdClickTime = 0;
+let lastShortIdClick = '';
+let shortIdClickResetTimer: number | null = null;
+
+function handleShortIdDoubleClick(e: React.MouseEvent<HTMLElement>): boolean {
+  const shortId = e.currentTarget.getAttribute('data-shortid');
+  if (!shortId || !currentShortIdClick) {
+    return false;
+  }
+
+  const now = Date.now();
+  const timeDiff = now - lastShortIdClickTime;
+  if (
+    lastShortIdClick === shortId &&
+    timeDiff < SHORT_ID_DOUBLE_CLICK_DELAY &&
+    timeDiff > 0
+  ) {
+    currentShortIdClick(shortId);
+    lastShortIdClickTime = 0;
+    lastShortIdClick = '';
+    if (shortIdClickResetTimer != null) {
+      window.clearTimeout(shortIdClickResetTimer);
+      shortIdClickResetTimer = null;
+    }
+    return true;
+  }
+
+  lastShortIdClickTime = now;
+  lastShortIdClick = shortId;
+  if (shortIdClickResetTimer != null) {
+    window.clearTimeout(shortIdClickResetTimer);
+  }
+  shortIdClickResetTimer = window.setTimeout(() => {
+    lastShortIdClickTime = 0;
+    lastShortIdClick = '';
+    shortIdClickResetTimer = null;
+  }, SHORT_ID_DOUBLE_CLICK_DELAY);
+  return false;
+}
 
 export interface IPropOneLog {
   /**
@@ -36,6 +79,14 @@ export interface IPropOneLog {
    * Current rule setting.
    */
   rule: Rule | undefined;
+  /**
+   * Function to resolve log by shortId for reply reference.
+   */
+  resolveLogById?: (shortId: string) => StoredLog | null;
+  /**
+   * Callback for shortId click.
+   */
+  onShortIdClick?: (shortId: string) => void;
 }
 
 /**
@@ -58,7 +109,10 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
       log,
       rule,
       icons,
+      resolveLogById,
+      onShortIdClick,
     } = this.props;
+    currentShortIdClick = onShortIdClick;
     const baseClassName = logClass;
     const logUserid = 'userid' in log ? log.userid : undefined;
     const logUserAttrs =
@@ -232,6 +286,7 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
             <CommentContent
               comment={log.comment || ''}
               supplement={log.mode === 'nextturn' ? undefined : log.supplement}
+              resolveLogById={resolveLogById}
             />
           </Comment>
         ) : (
@@ -246,6 +301,9 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
           </Icon>
           <Name
             noName={noName}
+            size={size}
+            shortId={log.shortId}
+            onShortIdClick={onShortIdClick}
             {...partAttrs(log.mode)}
           >
             {nameText ? sanitizeLog(nameText) : null}
@@ -254,6 +312,8 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
           <Time
             noName={noName}
             time={new Date(log.time)}
+            shortId={log.shortId}
+            onShortIdClick={onShortIdClick}
             {...partAttrs(log.mode)}
           />
         </>,
@@ -640,7 +700,56 @@ const IconImage = styled.span.attrs<{ $src: string }>(props => ({
 /**
  * Username box.
  */
-const Name = styled(LogPart)<IPropLogPart>`
+interface IPropName extends IPropLogPart {
+  size?:
+    | 'big'
+    | 'small'
+    | 'skyblue'
+    | 'darkblue'
+    | 'purple'
+    | 'green'
+    | 'brown';
+  shortId?: string;
+  onShortIdClick?: (shortId: string) => void;
+}
+
+const NameInner = ({
+  children,
+  shortId,
+  onShortIdClick,
+  className,
+  ...rest
+}: IPropName & {
+  className?: string;
+  children?: React.ReactNode;
+}) => {
+  const canUseShortId = shortId != null && onShortIdClick != null;
+
+  const handleNameClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    if (canUseShortId && handleShortIdDoubleClick(e)) {
+      return;
+    }
+  };
+
+  return (
+    <LogPart className={className} data-shortid={shortId} {...rest}>
+      {canUseShortId ? (
+        <NameText
+          data-shortid={shortId}
+          onClick={handleNameClick}
+          style={{ cursor: 'pointer' }}
+        >
+          {children}
+        </NameText>
+      ) : (
+        children
+      )}
+    </LogPart>
+  );
+};
+
+const Name = styled(NameInner)<IPropName>`
   grid-column: 2;
   max-width: 10em;
   overflow: hidden;
@@ -656,6 +765,17 @@ const Name = styled(LogPart)<IPropLogPart>`
     font-size: calc(0.75 * var(--base-font-size));
     border-bottom: none;
   `};
+`;
+
+/**
+ * Name text wrapper for double-click interaction.
+ * Only the text itself should be clickable, not the entire name area.
+ */
+const NameText = styled.span`
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  vertical-align: bottom;
 `;
 
 /**
@@ -709,11 +829,15 @@ const PoemWrapper = styled.div`
 interface IPropTime extends IPropLogPart {
   time: Date;
   className?: string;
+  shortId?: string;
+  onShortIdClick?: (shortId: string) => void;
 }
 const TimeInner = ({
   time,
   noName,
   className,
+  shortId,
+  onShortIdClick,
   ...rest
 }: IPropTime) => {
   const year = time.getFullYear();
@@ -725,7 +849,25 @@ const TimeInner = ({
   const str = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
   return (
     <LogPart className={className} {...rest}>
-      <time>{str}</time>
+      <time
+        data-shortid={shortId}
+        style={{
+          cursor: shortId && onShortIdClick ? 'pointer' : 'default',
+          display: 'block',
+          width: '100%',
+        }}
+        onClick={
+          shortId && onShortIdClick ? handleShortIdDoubleClick : undefined
+        }
+      >
+        {shortId && (
+          <span style={{ opacity: 0.6 }}>
+            {'>'}
+            {shortId}
+          </span>
+        )}{' '}
+        {str}
+      </time>
     </LogPart>
   );
 };
