@@ -1,10 +1,10 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 import { PrizeStore } from './store';
 import { PrizePage } from './component';
 import { i18n, addResource } from '../../i18n';
 import { Prize, PrizeUtil, NowPrize } from './defs';
+import { mountReact } from '../../util/react-root';
 
 /**
  * Options to place.
@@ -52,10 +52,10 @@ export async function place({
 
   const com = <PrizePage i18n={i18n} store={store} onUsePrize={onUsePrize} />;
 
-  ReactDOM.render(com, node);
+  const root = mountReact(node, com);
 
   const unmount = () => {
-    ReactDOM.unmountComponentAtNode(node);
+    root.unmount();
   };
 
   return { unmount, store };

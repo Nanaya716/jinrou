@@ -50,6 +50,5 @@ export function splitPrizesIntoGroups(prizes: Prize[]): Prize[][] {
   if (currentGroup.length > 0) {
     result.push(currentGroup);
   }
-  console.log(prizes, sorted, result);
   return result;
 }
