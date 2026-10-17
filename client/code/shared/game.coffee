@@ -2653,3 +2653,8 @@ isAllJobsMode=(rule)->
        # 役職が隠されている場合もtrue
        return true
    return false
+
+# Export normal1, normal2, normal3 for server-side use
+exports.normal1 = normal1
+exports.normal2 = normal2
+exports.normal3 = normal3
