@@ -86,6 +86,9 @@ module.exports =
     appSecret:""
     sandbox:false
     groupOpenIDs:[]
+    # 启用 QQ bot 后默认每天北京时间 10:00 向上述群推送高安全性火锅配置。
+    # 旧配置省略此项时也启用；设为 false 可单独关闭，不影响开局播报。
+    dailyCasting:true
   weibo:
     enable:false
     oauth:

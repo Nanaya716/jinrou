@@ -1,5 +1,8 @@
 https = require 'https'
 WebSocket = require 'ws'
+dailyCasting = require './libs/qqbot-daily-casting.coffee'
+randomCasting = require './libs/random-casting.coffee'
+
 OP_DISPATCH = 0
 OP_HEARTBEAT = 1
 OP_IDENTIFY = 2
@@ -17,6 +20,9 @@ ws = null
 heartbeatTimer = null
 lastSeq = null
 reconnectTimer = null
+# 只对新配役指令防重，避免重复事件再次生成不同名单。
+castingMessages = new Map
+
 exports.start = ->
     config = Config.qqbot
     unless config?.enable
@@ -24,6 +30,9 @@ exports.start = ->
     unless config.appID && config.appSecret
         console.error '[QQBot] appID and appSecret are required.'
         return
+    # 定时主动发送不依赖网关连接状态，沿用开局通知的目标群配置。
+    dailyCasting.start config, (-> getGroupOpenIDs config), (groupOpenID, content)->
+        sendTextGroupMessage groupOpenID, content, config
     connectGateway config
         .catch (err)->
             console.error '[QQBot] Failed to connect gateway.'
@@ -60,6 +69,21 @@ getGroupOpenIDs = (config)->
     groupOpenIDs = groupOpenIDs.map (groupOpenID)-> String(groupOpenID ? '').trim()
     groupOpenIDs = groupOpenIDs.filter (groupOpenID)-> groupOpenID.length > 0
     groupOpenIDs
+
+# 新功能使用纯文本，不改变既有开局播报的 Markdown 和按钮。
+sendTextGroupMessage = (groupOpenID, content, config, msgID)->
+    getAccessToken(config).then (token)->
+        body = {msg_type: 0, content}
+        if msgID?
+            body.msg_id = msgID
+            body.msg_seq = 1
+        requestJSON {
+            hostname: apiHost config
+            path: "/v2/groups/#{encodeURIComponent groupOpenID}/messages"
+            method: 'POST'
+            headers:
+                Authorization: "QQBot #{token}"
+        }, body
 
 connectGateway = (config)->
     getAccessToken(config)
@@ -141,6 +165,10 @@ replyToGroupAtMessage = (eventData, config)->
         console.error '[QQBot] GROUP_AT_MESSAGE_CREATE is missing group_openid or id.'
         return
     console.log '[QQBot] group_openid =', groupOpenID
+    text = String(eventData.content ? '').trim()
+    if /^[\/／]?使绊子(?:\s|$)/.test text
+        replyToRandomCasting groupOpenID, msgID, text, config
+        return
     buildWaitingRoomsMessage()
         .then (content)->
             replyGroupMessage groupOpenID, msgID, content, config
@@ -149,6 +177,33 @@ replyToGroupAtMessage = (eventData, config)->
         .catch (err)->
             console.error '[QQBot] Failed to reply group mention.'
             console.error err.stack || err
+
+replyToRandomCasting = (groupOpenID, msgID, text, config)->
+    now = Date.now()
+    castingMessages.forEach (receivedAt, key)->
+        castingMessages.delete key if now - receivedAt >= 5 * 60 * 1000
+    key = "#{groupOpenID}:#{msgID}"
+    return if castingMessages.has key
+    castingMessages.set key, now
+
+    # QQ 指令面板和手动 @ 都进入同一群消息事件；回复绑定原消息，
+    # 不广播到配置的其他群，也不需要主动消息额度。
+    Promise.resolve().then ->
+        match = text.match /^[\/／]?使绊子(?:\s+([0-9]+))?$/
+        number = if match?[1]? then Number match[1] else undefined
+        # 不带参数走推荐权重；带参数只校验游戏支持的范围，直接按该人数生成。
+        unless match? && (!number? || randomCasting.minPlayers <= number <= randomCasting.maxPlayers)
+            return "用法：/使绊子（按流程随机12–30人），或 /使绊子 9（指定#{randomCasting.minPlayers}–#{randomCasting.maxPlayers}人）。"
+        randomCasting.buildMessage number
+    .catch (err)->
+        console.error '[QQBot] Failed to generate random casting.'
+        console.error err.stack || err
+        '生成名单失败，请稍后再试。'
+    .then (content)->
+        sendTextGroupMessage groupOpenID, content, config, msgID
+    .catch (err)->
+        console.error '[QQBot] Failed to reply random casting.'
+        console.error err.stack || err
 
 replyGroupMessage = (groupOpenID, msgID, content, config)->
     getAccessToken(config).then (token)->
