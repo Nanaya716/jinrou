@@ -1,4 +1,5 @@
-import { observable, action } from 'mobx';
+import '../../util/mobx-config';
+import { observable, action, makeObservable } from 'mobx';
 import { i18n } from '../../i18n';
 import { deepClone } from '../../util/deep-clone';
 import {
@@ -34,6 +35,7 @@ export class UserSettingsStore {
       name: i18n.t('color.defaultProfile'),
     };
     this.currentProfile = deepClone(this.defaultProfile);
+    makeObservable(this);
   }
   /**
    * Saved color profiles.

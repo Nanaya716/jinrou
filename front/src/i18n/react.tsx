@@ -1,21 +1,21 @@
-import i18next from 'i18next';
 import * as React from 'react';
 
 import { bind } from '../util/bind';
-import { fromRenderProps } from 'recompose';
 import memoizeOne from 'memoize-one';
+import { i18n as I18nInstance, TranslationFunction } from './index';
 
 // React Context for holding i18n translation function.
-const I18nContext = React.createContext<{ i18n: i18next.i18n } | undefined>(
+const I18nContext = React.createContext<{ i18n: I18nInstance } | undefined>(
   undefined,
 );
 const { Provider, Consumer } = I18nContext;
 
 export interface IPropI18nProvider {
-  i18n: i18next.i18n;
+  i18n: I18nInstance;
+  children?: React.ReactNode;
 }
 export interface IStateI18nProvider {
-  i18n: i18next.i18n;
+  i18n: I18nInstance;
 }
 /**
  * Component which provides an i18n instance to contxet.
@@ -29,7 +29,7 @@ export class I18nProvider extends React.PureComponent<
   /**
    * Memoized function which converts i18n object to a context.
    */
-  private toContext = memoizeOne((i18n: i18next.i18n) => ({
+  private toContext = memoizeOne((i18n: I18nInstance) => ({
     i18n,
   }));
   static getDerivedStateFromProps(
@@ -69,24 +69,21 @@ export class I18nProvider extends React.PureComponent<
 /**
  * Retrieve i18n rendering function from context.
  */
-export function useI18n(namespace: string): i18next.TranslationFunction {
+export function useI18n(namespace?: string): TranslationFunction {
   const context = React.useContext(I18nContext);
   if (context == null) {
     throw new Error('useI18n is used without providing i18n instance');
   }
   const { i18n } = context;
-  const t = React.useMemo(
-    () =>
-      namespace != null
-        ? i18n.getFixedT(i18n.language, namespace)
-        : i18n.t.bind(i18n),
-    [i18n, namespace],
-  );
+  const t = React.useMemo(() => getTranslationFunction(i18n, namespace), [
+    i18n,
+    namespace,
+  ]);
   return t;
 }
 
 export interface IPropI18n {
-  children: (t: i18next.TranslationFunction) => React.ReactNode;
+  children: (t: TranslationFunction) => React.ReactNode;
   // Namespace selected for i18n instance.
   namespace?: string;
 }
@@ -99,10 +96,8 @@ export class I18n extends React.PureComponent<IPropI18n, {}> {
    * Memoized function to generate translation function from i18n and namespance.
    */
   private getT = memoizeOne(
-    (i18n: i18next.i18n, namespace: string | undefined) =>
-      namespace != null
-        ? i18n.getFixedT(i18n.language, namespace)
-        : i18n.t.bind(i18n),
+    (i18n: I18nInstance, namespace: string | undefined) =>
+      getTranslationFunction(i18n, namespace),
   );
   public render() {
     const { children, namespace } = this.props;
@@ -155,7 +150,7 @@ export interface IPropI18nInterpInner {
   /**
    * i18n instance.
    */
-  i18n: i18next.i18n;
+  i18n: I18nInstance;
   /**
    * namespace.
    */
@@ -250,7 +245,29 @@ function getResource(props: IPropI18nInterpInner): string[] {
   return result;
 }
 
-/**
- * Higher-Order Component which reads TranslationFunction from context.
- */
-export const withTranslationFunction = fromRenderProps(I18n, t => ({ t }));
+function getTranslationFunction(
+  i18n: I18nInstance,
+  namespace?: string,
+): TranslationFunction {
+  const source =
+    namespace != null
+      ? i18n.getFixedT(i18n.language, namespace)
+      : i18n.t.bind(i18n);
+  return ((key: string, options?: Record<string, unknown>) =>
+    source(key, options as any)) as TranslationFunction;
+}
+
+export function withTranslationFunction<
+  TProps extends { t: TranslationFunction }
+>(
+  WrappedComponent: React.ComponentType<TProps>,
+): React.ComponentType<Omit<TProps, 't'>> {
+  const WithTranslationFunction = (props: Omit<TProps, 't'>) => {
+    const t = useI18n();
+    return <WrappedComponent {...(props as TProps)} t={t} />;
+  };
+  WithTranslationFunction.displayName = `withTranslationFunction(${WrappedComponent.displayName ||
+    WrappedComponent.name ||
+    'Component'})`;
+  return WithTranslationFunction;
+}

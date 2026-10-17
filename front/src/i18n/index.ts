@@ -31,8 +31,18 @@ i18next.use(xhrBackend).init({
 /**
  * Reexport type of i18n.
  */
-export type i18n = i18next.i18n;
-export type TranslationFunction = i18next.TranslationFunction;
+export interface TranslationFunction {
+  (key: string): string;
+  (
+    key: string,
+    options: { returnObjects: true } & Record<string, unknown>,
+  ): unknown;
+  (key: string, options?: Record<string, unknown>): string;
+}
+export interface i18n extends Omit<i18next.i18n, 't' | 'getFixedT'> {
+  t: TranslationFunction;
+  getFixedT(lng: string | null, ns?: string | string[]): TranslationFunction;
+}
 
 /**
  * Preload language data.
@@ -44,8 +54,8 @@ export async function preload(lng: string): Promise<void> {
 /**
  * Get an instance of i18next for given language.
  */
-export function forLanguage(lng: string): i18next.i18n {
-  const res = i18next.cloneInstance();
+export function forLanguage(lng: string): i18n {
+  const res = (i18next.cloneInstance() as unknown) as i18n;
   res.changeLanguage(lng, err => {
     if (err != null) {
       console.error(err);
@@ -59,9 +69,9 @@ export function forLanguage(lng: string): i18next.i18n {
  */
 export function getI18nFor(
   lng: string = EXTERNAL_SYSTEM_LANGUAGE,
-): Promise<i18next.i18n> {
+): Promise<i18n> {
   return new Promise((resolve, reject) => {
-    const res = i18next.cloneInstance();
+    const res = (i18next.cloneInstance() as unknown) as i18n;
     if (lng != null) {
       res.changeLanguage(lng, err => {
         if (err != null) {
@@ -124,17 +134,21 @@ function loadLanguageBundle(
   lng: string,
   ns: string,
 ): Promise<{ default: unknown }> {
-  return import(/*
+  return import(
+    /*
     webpackChunkName: "language-data-[request]"
-  */ `../../../language/${lng}/${ns}.yaml`);
+  */ `../../../language/${lng}/${ns}.yaml`
+  );
 }
 
 /**
  * Dynamically load system language bundle.
  */
 function loadSystemLanguageBundle(ns: string): Promise<{ default: unknown }> {
-  return import(/*
+  return import(
+    /*
     webpackPrefetch: true,
     webpackChunkName: "language-data-[request]"
-  */ `../../../language/${EXTERNAL_SYSTEM_LANGUAGE}/${ns}.yaml`);
+  */ `../../../language/${EXTERNAL_SYSTEM_LANGUAGE}/${ns}.yaml`
+  );
 }

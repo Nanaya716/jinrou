@@ -1,8 +1,8 @@
 import { i18n } from '../../i18n';
 import { ServerConnectionStore } from './store';
 import { ServerConnection } from './component';
-import * as ReactDOM from 'react-dom';
 import * as React from 'react';
+import { mountReact } from '../../util/react-root';
 
 export interface IPlaceOptions {
   i18n: i18n;
@@ -22,10 +22,10 @@ export function place({ i18n, node, connected }: IPlaceOptions): IPlaceResult {
   }
 
   const com = <ServerConnection i18n={i18n} store={store} />;
-  ReactDOM.render(com, node);
+  const root = mountReact(node, com);
 
   const unmount = () => {
-    ReactDOM.unmountComponentAtNode(node);
+    root.unmount();
   };
   return { store, unmount };
 }

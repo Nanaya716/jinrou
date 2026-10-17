@@ -1,10 +1,10 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 import { UserSettingsStore } from './store';
 import { UserSettings } from './component';
 import { i18n, addResource } from '../../i18n';
 import { loadProfilesLogic } from './logic';
+import { mountReact } from '../../util/react-root';
 
 /**
  * Options to place.
@@ -40,10 +40,10 @@ export async function place({
 
   const com = <UserSettings i18n={i18n} store={store} />;
 
-  ReactDOM.render(com, node);
+  const root = mountReact(node, com);
 
   const unmount = () => {
-    ReactDOM.unmountComponentAtNode(node);
+    root.unmount();
   };
 
   return { unmount };

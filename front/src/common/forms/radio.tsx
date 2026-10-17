@@ -1,8 +1,6 @@
-import { ActiveButton, Button } from './button';
+import { ActiveButton } from './button';
 import { FontAwesomeIcon } from '../../util/icon';
 import * as React from 'react';
-import { withProps } from 'recompose';
-import { arrayMapToObject } from '../../util/array-map-to-object';
 import styled from '../../util/styled';
 import { contentMargin } from './style';
 
@@ -19,24 +17,14 @@ export interface IPropRadioButtons {
   onChange: (value: string) => void;
 }
 
-type IPropRadioButtonsInner = Pick<IPropRadioButtons, 'current' | 'options'> & {
-  onChange: Record<string, () => void>;
-};
-
-const addProps = withProps(({ options, onChange }: IPropRadioButtons) => ({
-  onChange: arrayMapToObject<string, Record<string, () => void>>(
-    options.map(obj => obj.value),
-    value => () => onChange(value),
-  ),
-}));
 /**
  * Radio button using buttons.
  */
-export const RadioButtonsInner = ({
+export const RadioButtons = ({
   current,
   options,
   onChange,
-}: IPropRadioButtonsInner) => {
+}: IPropRadioButtons) => {
   return (
     <RadioButtonWrapper role="radiogroup">
       {options.map(({ label, value, title }) => {
@@ -49,7 +37,7 @@ export const RadioButtonsInner = ({
             role="radio"
             aria-checked={checked}
             active={checked}
-            onClick={onChange[value]}
+            onClick={() => onChange(value)}
           >
             {checked ? <FontAwesomeIcon icon="check" /> : null}
             {label}
@@ -64,5 +52,3 @@ const RadioButtonWrapper = styled.span`
   display: inline-block;
   margin: ${-contentMargin}px 0;
 `;
-
-export const RadioButtons = addProps(RadioButtonsInner);

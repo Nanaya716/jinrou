@@ -5,7 +5,7 @@ import { PlayerInfo } from '../defs';
 /**
  * Speak kind select control.
  */
-export const SpeakKindSelect: React.StatelessComponent<{
+export const SpeakKindSelect: React.FC<{
   /**
    * List of available speak kind.
    */

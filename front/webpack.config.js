@@ -12,7 +12,7 @@ require('coffee-script/register');
 
 const path = require('path');
 const webpack = require('webpack');
-const ManifestPlugin = require('webpack-manifest-plugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
@@ -33,6 +33,10 @@ let systemLanguage;
 let publicPath;
 // whether to use legacy builds.
 let legacyBuilds;
+// optional output path override, useful for local verification.
+const outputPathOverride = process.env.OUTPUT_PATH
+  ? path.resolve(__dirname, process.env.OUTPUT_PATH)
+  : null;
 try {
   const config = require('../config/app.coffee');
 
@@ -53,14 +57,18 @@ const makeConfig = (isProduction, isLegacyBuild) => ({
   entry: './dist-esm/index.js',
   output: {
     library: 'JinrouFront',
-    path: !isLegacyBuild
+    path: outputPathOverride
+      ? !isLegacyBuild
+        ? outputPathOverride
+        : path.join(outputPathOverride, 'legacy')
+      : !isLegacyBuild
       ? path.join(__dirname, '..', 'client/static/front-assets/')
       : path.join(__dirname, '..', 'client/static/front-assets/legacy/'),
     publicPath: !isLegacyBuild ? publicPath : addPathSeg(publicPath, 'legacy'),
     crossOriginLoading: 'anonymous',
     // for production, include hash information.
-    filename: isProduction ? 'bundle.[chunkhash].js' : 'bundle.js',
-    chunkFilename: '[name].[chunkhash].bundle.js',
+    filename: isProduction ? 'bundle.[contenthash].js' : 'bundle.js',
+    chunkFilename: '[name].[contenthash].bundle.js',
   },
   module: {
     rules: [
@@ -101,7 +109,8 @@ const makeConfig = (isProduction, isLegacyBuild) => ({
       },
       {
         test: /\.yaml$/,
-        use: ['json-loader', 'yaml-loader'],
+        type: 'json',
+        use: ['yaml-loader'],
       },
       {
         test: /\.(?:pug|jade)$/,
@@ -114,16 +123,18 @@ const makeConfig = (isProduction, isLegacyBuild) => ({
       EXTERNAL_SYSTEM_LANGUAGE: JSON.stringify(systemLanguage),
     }),
     new BundleAnalyzerPlugin({
-      analyzerMode: isProduction ? 'static' : 'server',
-      openAnalyzer: !isProduction,
+      analyzerMode: isProduction ? 'static' : 'disabled',
+      openAnalyzer: !isProduction
     }),
-    new CopyWebpackPlugin([
-      {
-        from: 'build/feature-check.js',
-        to: 'feature-check.[hash].js',
-      },
-    ]),
-    new ManifestPlugin({
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'build/feature-check.js',
+          to: 'feature-check.[contenthash].js',
+        },
+      ],
+    }),
+    new WebpackManifestPlugin({
       // https://github.com/danethurber/webpack-manifest-plugin/issues/144
       seed: {},
       map: file => {
@@ -134,7 +145,6 @@ const makeConfig = (isProduction, isLegacyBuild) => ({
         return file;
       },
     }),
-    isProduction ? new webpack.HashedModuleIdsPlugin() : null,
   ].filter(plug => plug != null),
   resolve: {
     alias: {
@@ -154,25 +164,25 @@ const makeConfig = (isProduction, isLegacyBuild) => ({
       cacheGroups: {
         dialog: {
           test: /[\\\/]dist-esm[\\\/]dialog[\\\/]/,
-          name: 'dialog',
+          name: false,
           chunks: 'all',
           priority: Priority.lib,
         },
         page_game_view: {
           test: /[\\\/]dist-esm[\\\/]pages[\\\/]game-view[\\\/]/,
-          name: 'game-view',
+          name: false,
           chunks: 'all',
           priority: Priority.page,
         },
         page_game_start_control: {
           test: /[\\\/]dist-esm[\\\/]pages[\\\/]game-start-control[\\\/]/,
-          name: 'game-start-control',
+          name: false,
           chunks: 'all',
           priority: Priority.page,
         },
         page_user_settings: {
           test: /[\\\/]dist-esm[\\\/]pages[\\\/]user-settings[\\\/]/,
-          name: 'user-settings',
+          name: false,
           chunks: 'all',
           priority: Priority.page,
         },
@@ -198,37 +208,37 @@ const makeConfig = (isProduction, isLegacyBuild) => ({
             'color-name',
             'color-string',
           ),
-          name: 'vendor_react',
+          name: false,
           chunks: 'all',
           priority: Priority.vendor,
         },
         vendor_react_draggable: {
           test: /[\\\/]node_modules[\\\/]react-draggable[\\\/]/,
-          name: 'vendor_react_draggable',
+          name: false,
           chunks: 'all',
           priority: Priority.vendor,
         },
         vendor_mobx: {
           test: /[\\\/]node_modules[\\\/]mobx[\\\/]/,
-          name: 'vendor_mobx',
+          name: false,
           chunks: 'all',
           priority: Priority.vendor,
         },
         vendor_mobx_react: {
           test: /[\\\/]node_modules[\\\/]mobx-react[\\\/]/,
-          name: 'vendor_mobx_react',
+          name: false,
           chunks: 'all',
           priority: Priority.vendor,
         },
         vendor_i18next: {
           test: /[\\\/]node_modules[\\\/]i18next(?:-xhr-backend)?[\\\/]/,
-          name: 'vendor_i18next',
+          name: false,
           chunks: 'all',
           priority: Priority.vendor,
         },
         vendor_for_settings: {
           test: /[\\\/]node_modules[\\\/](?:react-color|dexie|lodash)[\\\/]/,
-          name: 'vendor_for_settings',
+          name: false,
           chunks: 'all',
           priority: Priority.vendor,
         },

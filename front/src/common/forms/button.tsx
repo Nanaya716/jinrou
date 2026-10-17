@@ -18,6 +18,7 @@ export const borderColor = lightBorderColor;
  * Props of button.
  */
 export interface IPropButton {
+  children?: React.ReactNode;
   /**
    * make it slim button.
    */

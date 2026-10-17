@@ -1,8 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
 import { i18n } from '../../i18n';
 import { ReportFormConfig, ReportFormQuery } from '../game-view/defs';
 import { Lobby } from './component';
+import { mountReact } from '../../util/react-root';
 
 interface IPlaceOptions {
   /**
@@ -45,11 +45,11 @@ export function place({
     />
   );
 
-  ReactDOM.render(com, node);
+  const root = mountReact(node, com);
 
   return {
     unmount: () => {
-      ReactDOM.unmountComponentAtNode(node);
+      root.unmount();
     },
   };
 }

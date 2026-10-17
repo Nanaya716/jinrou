@@ -1,4 +1,5 @@
-import { observable, action } from 'mobx';
+import '../../util/mobx-config';
+import { observable, action, makeObservable } from 'mobx';
 import { UserProfile, NewsEntry, BanInfo, PrizeInfo } from './defs';
 
 interface StoreInit {
@@ -28,6 +29,7 @@ export class Store {
   public prize: PrizeInfo;
 
   constructor(init: StoreInit) {
+    makeObservable(this);
     this.profile = init.profile;
     this.mailConfirmSecurity = init.mailConfirmSecurity;
     this.ban = init.ban;

@@ -1,6 +1,7 @@
+import '../../util/mobx-config';
 import { GameStore } from '../game-view';
 import { i18n, TranslationFunction } from '../../i18n';
-import { computed, observable, action } from 'mobx';
+import { computed, observable, action, makeObservable } from 'mobx';
 import {
   StoryInputInterface,
   StoryInputRoomHeaderInterface,
@@ -33,6 +34,7 @@ export class GameTutorialStore {
   private interactiveDriver: InteractiveDriver;
 
   constructor(public userInfo: UserInfo, private i18n: i18n) {
+    makeObservable(this);
     this.t = i18n.getFixedT(i18n.language, 'tutorial_game');
     this.interactiveDriver = new InteractiveDriver(this.t, this);
 

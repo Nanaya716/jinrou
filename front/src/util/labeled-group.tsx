@@ -42,6 +42,8 @@ export interface IPropSelectLabeledGroup<T, L> {
    * Current value of selection.
    */
   value: string;
+  id?: string;
+  name?: string;
   getGroupLabel: (
     label: L,
   ) => {
@@ -64,6 +66,8 @@ export class SelectLabeledGroup<T, L> extends React.PureComponent<
     const {
       items,
       value,
+      id,
+      name,
       getGroupLabel,
       getOptionKey,
       makeOption,
@@ -92,7 +96,7 @@ export class SelectLabeledGroup<T, L> extends React.PureComponent<
         : undefined;
 
     return (
-      <select value={value} onChange={changeHandler}>
+      <select id={id} name={name} value={value} onChange={changeHandler}>
         {tree.map(item => (
           <TOT key={item.key} item={item} makeOption={makeOption} />
         ))}

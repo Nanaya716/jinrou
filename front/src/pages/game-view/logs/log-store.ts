@@ -1,4 +1,5 @@
-import { observable, action, computed } from 'mobx';
+import '../../../util/mobx-config';
+import { observable, action, computed, makeObservable } from 'mobx';
 import { Log, LogVisibility } from '../defs';
 
 /**
@@ -47,6 +48,9 @@ export class LogStore {
    * Last id of log.
    */
   private lastLogId = 0;
+  constructor() {
+    makeObservable(this);
+  }
 
   /**
    * Number of all logs.

@@ -66,7 +66,7 @@ export class KickDialog extends React.PureComponent<IPropKickDialog, {}> {
               contents={() => (
                 <>
                   <FormControlWrapper>
-                    <FormSelect ref={this.selectRef}>
+                    <FormSelect ref={this.selectRef} name="kickTarget">
                       {players.map(({ id, name }) => (
                         <option key={id} value={id} label={name}>
                           {name}
@@ -78,7 +78,11 @@ export class KickDialog extends React.PureComponent<IPropKickDialog, {}> {
                     <label>
                       <FontAwesomeIcon icon="ban" />
                       {t('kick.noentry')}
-                      <input ref={this.noentryRef} type="checkbox" />
+                      <input
+                        ref={this.noentryRef}
+                        type="checkbox"
+                        name="kickNoentry"
+                      />
                     </label>
                   </FormControlWrapper>
                 </>

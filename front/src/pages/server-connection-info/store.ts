@@ -1,10 +1,15 @@
-import { observable, action, computed } from 'mobx';
+import '../../util/mobx-config';
+import { observable, action, computed, makeObservable } from 'mobx';
 import { reopenDuration, delay } from './def';
 
 /**
  * Store of current server connection.
  */
 export class ServerConnectionStore {
+  constructor() {
+    makeObservable(this);
+  }
+
   /**
    * Whether server connection is currently on.
    */

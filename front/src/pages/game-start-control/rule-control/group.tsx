@@ -9,6 +9,7 @@ export interface IPropRuleGroup {
    * class name passed by styled-components.
    */
   className?: string;
+  children?: React.ReactNode;
   /**
    * shown name of this group.
    */

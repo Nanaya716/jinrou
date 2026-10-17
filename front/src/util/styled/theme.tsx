@@ -16,6 +16,7 @@ export function makeThemeProvider(
 ): React.FunctionComponent<{
   theme: UserProvidedTheme;
   mode: GlobalStyleMode;
+  children?: React.ReactNode;
 }> {
   /**
    * memoized function to make theme object.

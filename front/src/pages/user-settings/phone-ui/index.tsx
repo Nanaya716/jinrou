@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { UserSettingsStore } from '../store';
-import { withPropsOnChange, withProps } from 'recompose';
+import { withProps } from 'recompose';
 import { TranslationFunction } from '../../../i18n';
 import { ThemeStore, themeStore } from '../../../theme';
 import { observer } from 'mobx-react';
@@ -58,9 +58,7 @@ const addProps = withProps(({ store }: IPropPhoneUIDisp) => ({
   },
 }));
 
-const addDefaultProerties = observer;
-
-const ColorProfileDispInner = addDefaultProerties(
+const PhoneUIDispInner = observer(
   ({
     t,
     onUIUseChange,
@@ -117,8 +115,6 @@ const ColorProfileDispInner = addDefaultProerties(
   },
 );
 /**
- * Component of color profile.
+ * Component of phone UI settings.
  */
-export const PhoneUIDisp = withTranslationFunction(
-  addProps(ColorProfileDispInner),
-);
+export const PhoneUIDisp = withTranslationFunction(addProps(PhoneUIDispInner));

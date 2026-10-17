@@ -3,6 +3,7 @@ const https = require('https');
 const path = require('path');
 
 const cpx = require('cpx');
+require('./server/node24-compat');
 const ss = require('socketstream');
 
 ss.client.define('main', {

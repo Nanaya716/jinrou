@@ -194,25 +194,19 @@ class LogChunk extends React.Component<
 
     const chunkContent = (
       <I18n namespace="game_client">
-        {t => (
-          <Observer>
-            {() =>
-              mapReverse(logsToRender, log => {
-                return (
-                  <OneLog
-                    key={`${log.time}-${(log as any).comment || ''}`}
-                    t={t}
-                    logClass={logClass}
-                    fixedSize={fixedSize}
-                    log={log}
-                    rule={rule}
-                    icons={icons}
-                  />
-                );
-              })
-            }
-          </Observer>
-        )}
+        {t =>
+          mapReverse(logsToRender, log => (
+            <OneLog
+              key={log.logid}
+              logClass={logClass}
+              t={t}
+              fixedSize={fixedSize}
+              log={log}
+              rule={rule}
+              icons={icons}
+            />
+          ))
+        }
       </I18n>
     );
     if (fixedSize) {

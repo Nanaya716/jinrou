@@ -174,6 +174,7 @@ export class SelectRoles extends React.Component<IPropSelectRoles, {}> {
 
 interface IPropRoleCategoryFolder {
   name: string;
+  children?: React.ReactNode;
 }
 interface IStateRoleCategoryFolder {
   open: boolean;

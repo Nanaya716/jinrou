@@ -51,6 +51,7 @@ export const EditableInputWrapper: React.FunctionComponent<{
   labelFor?: string;
   helpText?: string;
   label: string;
+  children?: React.ReactNode;
 }> = ({ labelFor, label, helpText, children }) => (
   <>
     <InputLabel htmlFor={labelFor}>{label}</InputLabel>

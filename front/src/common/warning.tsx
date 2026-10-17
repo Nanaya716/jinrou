@@ -3,11 +3,12 @@ import * as React from 'react';
 
 export interface IPropInlineWarning {
   className?: string;
+  children?: React.ReactNode;
 }
 /**
  * Inline warning component.
  */
-const InlineWarningInner: React.StatelessComponent<IPropInlineWarning> = ({
+const InlineWarningInner: React.FC<IPropInlineWarning> = ({
   className,
   children,
 }) => {

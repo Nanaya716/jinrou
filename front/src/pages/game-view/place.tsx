@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { runInAction } from 'mobx';
 
 import { GameStore } from './store';
@@ -17,6 +16,7 @@ import {
 } from './defs';
 import { makeRefuseRevivalLogic } from './logic/refuse-revival';
 import { i18n } from '../../i18n';
+import { mountReact } from '../../util/react-root';
 
 /**
  * Options to place.
@@ -142,13 +142,13 @@ export function place({
     />
   );
 
-  ReactDOM.render(com, node);
+  const root = mountReact(node, com);
 
   return {
     store,
     runInAction,
     unmount: () => {
-      ReactDOM.unmountComponentAtNode(node);
+      root.unmount();
     },
   };
 }

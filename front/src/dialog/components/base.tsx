@@ -13,6 +13,15 @@ interface IPropDialogWrapper {
   modal?: boolean;
 }
 
+const DraggableContainer = (Draggable as unknown) as React.ComponentType<
+  React.PropsWithChildren<{
+    bounds?: string;
+    handle?: string;
+    cancel?: string;
+    nodeRef?: React.RefObject<HTMLDivElement>;
+  }>
+>;
+
 /**
  * Keyframes for dialogs.
  */
@@ -50,6 +59,7 @@ const DialogWrapper = styled(AppStyling)<IPropDialogWrapper>`
 
 interface IPropDialogBase {
   className?: string;
+  children?: React.ReactNode;
   title?: string;
   icon?: IconProp;
   /**
@@ -227,6 +237,7 @@ export function Dialog({
   contents,
   afterButtons,
 }: IPropDialog) {
+  const draggableNodeRef = React.useRef<HTMLDivElement>(null);
   return (
     <WithRandomIds names={['titleClassName']}>
       {({ titleClassName }) => (

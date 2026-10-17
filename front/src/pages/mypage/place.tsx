@@ -1,10 +1,10 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 import { MyPage } from './component';
 import { i18n, I18nProvider } from '../../i18n';
 import { Store } from './store';
 import { UserProfile, BanInfo, PrizeInfo } from './defs';
+import { mountReact } from '../../util/react-root';
 
 /**
  * Options to place.
@@ -59,10 +59,10 @@ export function place({
     </I18nProvider>
   );
 
-  ReactDOM.render(com, node);
+  const root = mountReact(node, com);
 
   const unmount = () => {
-    ReactDOM.unmountComponentAtNode(node);
+    root.unmount();
   };
 
   return { unmount, store };

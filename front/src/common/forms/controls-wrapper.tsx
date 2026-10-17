@@ -14,6 +14,7 @@ export const Controls: React.FunctionComponent<{
    * Whether the compact style is used.
    */
   compact?: boolean;
+  children?: React.ReactNode;
 }> = ({ title, description, children, compact }) => (
   <ControlsWrapper compact={compact}>
     <ControlsHeader compact={compact}>

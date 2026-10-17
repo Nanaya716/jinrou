@@ -1,4 +1,5 @@
-import { observable, action, when } from 'mobx';
+import '../../../util/mobx-config';
+import { observable, action, when, makeObservable } from 'mobx';
 import { LogStore } from './log-store';
 
 /**
@@ -27,7 +28,11 @@ export class LogsRenderingState {
   private renderingHandle: number | null = null;
 
   constructor(private logState: LogStore) {
-    when(() => logState.loaded, () => this.startRendering());
+    makeObservable(this);
+    when(
+      () => logState.loaded,
+      () => this.startRendering(),
+    );
   }
   /**
    * Reset pending log number.

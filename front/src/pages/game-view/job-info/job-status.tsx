@@ -6,7 +6,7 @@ import { TranslationFunction, I18nInterp } from '../../../i18n';
  * Component to show job status.
  * @package
  */
-export const JobStatus: React.StatelessComponent<{
+export const JobStatus: React.FC<{
   jobname: string;
   desc: RoleDesc[];
   t: TranslationFunction;

@@ -1,4 +1,5 @@
-import { observable, action, computed } from 'mobx';
+import '../../util/mobx-config';
+import { observable, action, computed, makeObservable } from 'mobx';
 import { Room, RoomListMode, freshDuration } from './defs';
 
 export interface RoomInStore extends Room {
@@ -13,6 +14,7 @@ export interface RoomInStore extends Room {
  */
 export class RoomListStore {
   constructor(private pageNumber: number, mode: RoomListMode) {
+    makeObservable(this);
     this.mode = mode;
   }
   /**

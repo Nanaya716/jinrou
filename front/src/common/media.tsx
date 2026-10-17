@@ -37,13 +37,15 @@ type MediaFunction = <P extends object>(
   ...interpolations: Array<Interpolation<ThemedStyledProps<P, Theme>>>
 ) => FlattenInterpolation<ThemedStyledProps<P, Theme>>;
 
+const applyCss = css as (...args: any[]) => ReturnType<typeof css>;
+
 /**
  * Media query for smartphones.
  */
 export const phone: MediaFunction = (...args) =>
   css`
     @media (${phoneQuery}) {
-      ${css(...args)};
+      ${applyCss(...args)};
     }
   `;
 
@@ -52,7 +54,7 @@ export const phone: MediaFunction = (...args) =>
  */
 export const notPhone: MediaFunction = (...args) => css`
   @media (${notPhoneQuery}) {
-    ${css(...args)};
+    ${applyCss(...args)};
   }
 `;
 
@@ -88,12 +90,19 @@ export class IsPhone extends React.Component<
     // reflect current matching state of media query.
     this.eventHandler();
 
-    // mediaQueryList.addEventListener is not Typable yet! (TS 3.0.3)
-    mediaQueryList.addListener(this.eventHandler);
+    if ('addEventListener' in mediaQueryList) {
+      mediaQueryList.addEventListener('change', this.eventHandler);
+    } else {
+      mediaQueryList.addListener(this.eventHandler);
+    }
   }
   public componentWillUnmount() {
     if (this.eventHandler != null) {
-      this.mediaQueryList.removeListener(this.eventHandler);
+      if ('removeEventListener' in this.mediaQueryList) {
+        this.mediaQueryList.removeEventListener('change', this.eventHandler);
+      } else {
+        this.mediaQueryList.removeListener(this.eventHandler);
+      }
     }
   }
 }

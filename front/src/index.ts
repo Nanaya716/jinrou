@@ -1,26 +1,29 @@
 import '@babel/polyfill';
 import '_polyfills';
 import './init-icons';
-import { ThemeStore } from './theme';
 
 /**
  * Asynchronously load the theme store.
  */
-export async function loadThemeStore(): Promise<ThemeStore> {
-  const themeModule = await import(/*
+export async function loadThemeStore(): Promise<import('./theme').ThemeStore> {
+  const themeModule = await import(
+    /*
     webpackPreload: true,
     webpackChunkName: "theme"
-   */ './theme');
+   */ './theme'
+  );
   return themeModule.themeStore;
 }
 /**
  * Asynchronously load the i18n module.
  */
 export function loadI18n() {
-  return import(/*
+  return import(
+    /*
     webpackPrefetch: true,
     webpackChunkName: "i18n"
-   */ './i18n');
+   */ './i18n'
+  );
 }
 
 /**
@@ -34,19 +37,23 @@ export function loadDefaultI18n() {
  * Asynchronously load the dialog module.
  */
 export function loadDialog() {
-  return import(/*
+  return import(
+    /*
     webpackPrefetch: true,
     webpackChunkName: "dialog"
-   */ './dialog');
+   */ './dialog'
+  );
 }
 
 /**
  * Asynchronously load the game-start-control module.
  */
 export function loadGameStartControl() {
-  return import(/*
+  return import(
+    /*
     webpackChunkName: "game-start-control"
-  */ './pages/game-start-control');
+  */ './pages/game-start-control'
+  );
 }
 
 /**
@@ -62,9 +69,11 @@ export function loadGameView() {
  * Asynchronoulsly load the user settings module.
  */
 export function loadUserSettings() {
-  return import(/*
+  return import(
+    /*
     webpackChunkName: "user-settings"
-  */ './pages/user-settings');
+  */ './pages/user-settings'
+  );
 }
 
 /**
@@ -78,20 +87,24 @@ export function loadManual() {
  * Asynchronously load the sever-connection module.
  */
 export function loadServerConnection() {
-  return import(/*
+  return import(
+    /*
     webpackPrefetch: true,
     webpackChunkName: "server-connection-info"
-   */ './pages/server-connection-info');
+   */ './pages/server-connection-info'
+  );
 }
 
 /**
  * Asynchronously load the roomlist module.
  */
 export function loadRoomList() {
-  return import(/*
+  return import(
+    /*
     webpackPrefetch: true,
     webpackChunkName: "room-list"
-    */ './pages/room-list');
+    */ './pages/room-list'
+  );
 }
 
 /**
@@ -116,19 +129,23 @@ export function loadNewRoom() {
  * Asynchronously load the top-page module.
  */
 export function loadTopPage() {
-  return import(/*
+  return import(
+    /*
     webpackPrefetch: true,
     webpackChunkName: "top-page"
-  */ './pages/top-page');
+  */ './pages/top-page'
+  );
 }
 
 /**
  * Asynchronously load the game-tutorial module.
  */
 export function loadGameTutorial() {
-  return import(/*
+  return import(
+    /*
     webpackChunkName: "game-tutorial"
-  */ './pages/game-tutorial');
+  */ './pages/game-tutorial'
+  );
 }
 
 /**

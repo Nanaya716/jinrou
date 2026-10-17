@@ -15,6 +15,7 @@ export const Details: React.FunctionComponent<{
   summaryOpen: string;
   summaryClosed: string;
   defaultOpen?: boolean;
+  children?: React.ReactNode;
 }> = ({ summaryOpen, summaryClosed, children, defaultOpen = false }) => {
   const [open, setOpen] = useState(defaultOpen);
 

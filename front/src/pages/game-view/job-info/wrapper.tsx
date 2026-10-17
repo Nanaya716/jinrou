@@ -5,7 +5,7 @@ import { Theme } from '../../../theme';
 import { withTheme } from '../../../util/styled';
 import { TranslationFunction } from '../../../i18n';
 
-const WrapperInner: React.StatelessComponent<{
+const WrapperInner: React.FC<{
   t: TranslationFunction;
   /**
    * Current team.
@@ -17,6 +17,7 @@ const WrapperInner: React.StatelessComponent<{
    */
   slim?: boolean;
   speakFocus: boolean;
+  children?: React.ReactNode;
 }> = ({ children, t, team, slim = false, speakFocus, theme }) => {
   // get the color for this team.
   const teamColor = Color(!team ? '#cccccc' : theme.teamColors[team]);

@@ -81,6 +81,7 @@ export class ChecklistDialog extends React.PureComponent<
                               type="checkbox"
                               checked={check}
                               id={`${inputid}-${id}`}
+                              name={`checklist-${id}`}
                               onChange={this.makeHandleChange(i)}
                             />
                           </td>

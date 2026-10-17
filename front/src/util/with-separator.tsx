@@ -6,6 +6,7 @@ import * as React from 'react';
 export class WithSeparator extends React.PureComponent<
   {
     separator: React.ReactNode;
+    children?: React.ReactNode;
   },
   {}
 > {

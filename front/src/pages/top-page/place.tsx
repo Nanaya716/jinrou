@@ -1,9 +1,9 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 import { TopPage } from './component';
 import { i18n } from '../../i18n';
 import { LoginHandler, SignupHandler } from './def';
+import { mountReact } from '../../util/react-root';
 
 /**
  * Options to place.
@@ -35,10 +35,10 @@ export function place({
 }: IPlaceOptions): IPlaceResult {
   const com = <TopPage i18n={i18n} onLogin={onLogin} onSignup={onSignup} />;
 
-  ReactDOM.render(com, node);
+  const root = mountReact(node, com);
 
   const unmount = () => {
-    ReactDOM.unmountComponentAtNode(node);
+    root.unmount();
   };
 
   return { unmount };

@@ -102,10 +102,11 @@ export const OneColorDisp = observerify(handlersComposer)(
   },
 );
 
-const SampleText: React.StatelessComponent<{
+const SampleText: React.FC<{
   color: string;
   bg: string;
   bold: boolean;
+  children?: React.ReactNode;
 }> = ({ color, bg, bold, children }) => {
   const styleObject: React.CSSProperties = {
     color,
