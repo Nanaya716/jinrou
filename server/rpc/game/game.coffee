@@ -6097,6 +6097,7 @@ class Cupid extends Player
         # 2人とも更新する
         game.splashjobinfo [game.getPlayer(@flag), game.getPlayer(@target)]
 
+        null
 class FoxMatchmaker extends Fox
     type:"FoxMatchmaker"
     team:"Fox"
