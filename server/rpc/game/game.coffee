@@ -14167,6 +14167,20 @@ class MajoantiBond extends Complex
         }
 
 # 2. 幻视
+class MajoantiLieDetector extends Complex
+    cmplType:"MajoantiLieDetector"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiLieDetector.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiLieDetector.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiLieDetector.name"
+            type: "MajoantiLieDetector"
+        }
+
+# 4. 魔女杀手
 class MajoantiBodySwap extends Complex
     cmplType:"MajoantiBodySwap"
     formType: FormType.optional
@@ -16139,6 +16153,7 @@ complexes=
 
     # 魔女·反逆者モード用魔法クラス
     MajoantiBond: MajoantiBond
+    MajoantiLieDetector: MajoantiLieDetector
     MajoantiBodySwap: MajoantiBodySwap
     MajoantiFutureSight: MajoantiFutureSight
     MajoantiHeal: MajoantiHeal
@@ -18525,6 +18540,7 @@ tweet=(roomid,message)->
 # 魔女·反逆者模式的魔法列表
 MAJOANTI_MAGICS = [
     "MajoantiBond",           # 1. 缔结
+    "MajoantiLieDetector",    # 3. 谎言侦测
     "MajoantiBodySwap",       # 5. 身体交换
     "MajoantiFutureSight",    # 6. 未来视
     "MajoantiHeal",           # 7. 治愈
