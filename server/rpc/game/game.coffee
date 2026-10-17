@@ -14293,6 +14293,20 @@ class MajoantiDeathRecall extends Complex
         }
 
 # 20. 怨念反噬
+class MajoantiGrudgeBite extends Complex
+    cmplType:"MajoantiGrudgeBite"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiGrudgeBite.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiGrudgeBite.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiGrudgeBite.name"
+            type: "MajoantiGrudgeBite"
+        }
+
+# 21. 刹那回归
 class GuardedByPsychic extends Complex
     cmplType: "GuardedByPsychic"
     # cmplFlag: 灵能者ID
@@ -16120,6 +16134,7 @@ complexes=
     MajoantiFlame: MajoantiFlame
     MajoantiGreatWitch: MajoantiGreatWitch
     MajoantiDeathRecall: MajoantiDeathRecall
+    MajoantiGrudgeBite: MajoantiGrudgeBite
 
     # 役職ごとの強さ
 jobStrength=
@@ -18504,6 +18519,7 @@ MAJOANTI_MAGICS = [
     "MajoantiFlame",          # 14. 火焰操纵
     "MajoantiGreatWitch",     # 18. 大魔女
     "MajoantiDeathRecall",    # 19. 死亡回溯
+    "MajoantiGrudgeBite",     # 20. 怨念反噬
 ]
 
 # 魔女·反逆者模式：公开当前场上已分配的魔法种类

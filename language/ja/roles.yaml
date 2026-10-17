@@ -236,6 +236,7 @@ jobname:
   MajoantiFlame: '火焰操纵'
   MajoantiGreatWitch: '大魔女'
   MajoantiDeathRecall: '死亡回溯'
+  MajoantiGrudgeBite: '怨念反噬'
 # Name of categories.
 categoryName:
   Human: '村人系'
@@ -1397,5 +1398,8 @@ MajoantiGreatWitch:
 MajoantiDeathRecall:
   name: '死亡回溯'
   jobname: '{{jobname}}（死亡回溯）'
+MajoantiGrudgeBite:
+  name: '怨念反噬'
+  jobname: '{{jobname}}（怨念反噬）'
 Chemical:
   jobname: '{{left}}×{{right}}'
