@@ -78,6 +78,10 @@ export interface PlayerInfo {
    */
   realid: string | null;
   /**
+   * Account nickname, available only to a game master in anonymous rooms.
+   */
+  realname: string | null;
+  /**
    * Whether this player is anonymized.
    */
   anonymous: boolean;

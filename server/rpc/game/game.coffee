@@ -363,6 +363,7 @@ module.exports=
                 newpl.setProfile {
                     id:player.userid
                     realid:player.realid
+                    realname:player.realname
                     name:player.name
                 }
                 newpl.setTarget null
@@ -381,6 +382,7 @@ module.exports=
                 newpl.setProfile {
                     id:player.userid
                     realid:player.realid
+                    realname:player.realname
                     name:player.name
                 }
                 newpl.setTarget null
@@ -529,6 +531,7 @@ class Game
                     gmpl.setProfile {
                         id: gmpls[0].userid
                         realid: gmpls[0].realid
+                        realname: gmpls[0].realname
                         name: gmpls[0].name
                     }
                     @participants.push gmpl
@@ -720,6 +723,7 @@ class Game
                     newpl.setProfile {
                         id:plobj.userid
                         realid:plobj.realid
+                        realname:plobj.realname
                         name:plobj.name
                     }
                     newpl.setTarget null
@@ -763,6 +767,8 @@ class Game
                 if obj?.gm || not (@rule?.blind=="complete" || (@rule?.blind=="yes" && !@finished))
                     # 公開してもよい
                     r.realid=x.realid
+                if obj?.gm && @rule?.blind
+                    r.realname=x.realname
                 r
             day:@day
             # for backward compatibility
@@ -984,6 +990,7 @@ class Game
                     newpl.setProfile {
                         id:pl.userid
                         realid:pl.realid
+                        realname:pl.realname
                         name:pl.name
                     }
                     @players.push newpl
@@ -1133,6 +1140,7 @@ class Game
                 gm.setProfile {
                     id:pl.userid
                     realid:pl.realid
+                    realname:pl.realname
                     name:pl.name
                 }
                 @participants.push gm
@@ -1147,6 +1155,7 @@ class Game
                 helper.setProfile {
                     id:pl.realid
                     realid:pl.realid
+                    realname:pl.realname
                     name:pl.name
                 }
                 helper.setFlag ppl.id  # ヘルプ先
@@ -3300,6 +3309,7 @@ class Player
             type:@type
             id:@id
             realid:@realid
+            realname:@realname
             name:@name
             dead:@dead
             scapegoat:@scapegoat
@@ -3836,6 +3846,7 @@ class Player
     setProfile:(obj={})->
         @id=obj.id
         @realid=obj.realid
+        @realname=obj.realname
         @name=obj.name
     # 個人情報的なことを移動
     transProfile:(newpl)->
@@ -15664,6 +15675,44 @@ module.exports.actions=(req,res,ss)->
                 # 役職選択中
                 game.phase = Phase.rolerequesting
                 game.rolerequesttable={}
+
+                # サーバー再起動後は game.players が不完全な可能性があるため、
+                # room.players から完全な game.players を再構築する
+                newPlayers = []
+
+                # 既存のプレイヤーオブジェクトを再利用（objidを維持するため）
+                existingPlayersMap = new Map()
+                for pl in game.players
+                    existingPlayersMap.set(pl.realid, pl)
+                for pl in game.participants
+                    existingPlayersMap.set(pl.realid, pl) if pl.realid?
+
+                for plobj in room.players
+                    existingPl = existingPlayersMap.get(plobj.realid)
+                    if existingPl?
+                        # 既存のプレイヤーオブジェクトを再利用
+                        if existingPl.type == "Waiting" && !existingPl.jobname?
+                            existingPl.jobname = game.i18n.t "roles:jobname.Waiting"
+                        newPlayers.push existingPl
+                    else
+                        # 新規プレイヤー（サーバー再起動後など）
+                        if plobj.mode == "gm"
+                            newpl = Player.factory "GameMaster", game
+                        else
+                            newpl=Player.factory "Waiting", game
+                            newpl.jobname = game.i18n.t "roles:jobname.Waiting"
+                        newpl.setProfile {
+                            id:plobj.userid
+                            realid:plobj.realid
+                            realname:plobj.realname
+                            name:plobj.name
+                        }
+                        newpl.setTarget null
+                        newPlayers.push newpl
+
+                game.players = newPlayers
+                game.participants = newPlayers.concat []
+
                 res null
                 log=
                     mode:"system"

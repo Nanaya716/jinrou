@@ -673,13 +673,26 @@ exports.start=(roomid)->
             game_view.store.resetPlayers room.players.map convertRoomPlayerToPlayerInfo
 
         userid=Index.app.userid()
+        gm_realnames = {}
         #========================================
 
         # 誰かが参加した!!!!
         socket_ids.push Index.socket.on "join","room#{roomid}",(msg,channel)->
+            if gm_realnames[msg.userid]?
+                msg.realname = gm_realnames[msg.userid]
             room.players.push msg
             forminfo()
             game_view.store.addPlayer convertRoomPlayerToPlayerInfo msg
+        # Account nicknames for anonymous-room players are delivered only to
+        # the GM channel. Cache them in case this arrives before the join event.
+        socket_ids.push Index.socket.on "playerRealName","room#{roomid}_gamemaster",(msg,channel)->
+            gm_realnames[msg.userid] = msg.realname
+            for pl in room.players
+                if pl.userid == msg.userid
+                    pl.realname = msg.realname
+            game_view.store.updatePlayer msg.userid, {
+                realname: msg.realname
+            }
         # 誰かが出て行った!!!
         socket_ids.push Index.socket.on "unjoin","room#{roomid}",(msg,channel)->
             room.players=room.players.filter (x)->x.userid!=msg
@@ -986,6 +999,7 @@ convertGamePlayerToPlayerInfo = (pl) ->
     {
         id: pl.id
         realid: pl.realid || null
+        realname: pl.realname || null
         anonymous: !pl.realid
         name: pl.name
         dead: pl.dead
@@ -999,6 +1013,7 @@ convertRoomPlayerToPlayerInfo = (pl) ->
     {
         id: pl.userid
         realid: pl.realid || null
+        realname: pl.realname || null
         anonymous: !pl.realid
         name: pl.name
         dead: false
