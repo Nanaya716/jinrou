@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled from '../../util/styled';
-import { Transition } from 'react-transition-group';
 import Swipeable from 'react-swipeable';
 
 import { ThemeProvider } from '../../util/styled';
@@ -11,6 +10,7 @@ import { themeStore, UserTheme } from '../../theme';
 import { I18nProvider, I18n, i18n } from '../../i18n';
 
 import {
+  Rule,
   RuleGroup,
   RoomControlHandlers,
   RoleCategoryDefinition,
@@ -147,11 +147,9 @@ export class Game extends React.Component<IPropGame, {}> {
       speakState,
       logVisibility,
       rule,
-      ruleOpen,
       timer,
       players,
       roomControls,
-      logPickup,
       speakFocus,
       favoriteState,
     } = store;
@@ -221,53 +219,28 @@ export class Game extends React.Component<IPropGame, {}> {
                 favoriteState={favoriteState}
                 onFavoriteToggle={onFavoriteToggle}
                 onFocus={this.handleSpeakFocus}
+                timer={timer}
                 {...speakState}
               />
             </SpeakFormPart>
             {/* Main game screen. */}
             <MainWrapper>
-              {/* Rule panel if open. */}
-              <Transition in={rule != null && ruleOpen} timeout={250}>
-                {(state: string) => {
-                  const closed =
-                    state === 'exiting' ||
-                    state === 'exited' ||
-                    state === 'unmounted';
-                  return (
-                    <>
-                      <RuleWrapper closed={closed}>
-                        {rule != null ? (
-                          <RuleStickyWrapper closed={closed}>
-                            <RuleInnerWrapper ref={this.ruleElement}>
-                              <Swipeable
-                                onSwipingLeft={this.handleRuleSwipeToLeft}
-                                onSwipingRight={this.handleRuleSwipeToRight}
-                              >
-                                <ShowRule
-                                  rule={rule}
-                                  categories={categories}
-                                  ruleDefs={ruleDefs}
-                                />
-                              </Swipeable>
-                            </RuleInnerWrapper>
-                          </RuleStickyWrapper>
-                        ) : null}
-                      </RuleWrapper>
-                      {/* Logs. */}
-                      <LogsWrapper ruleOpen={!closed}>
-                        <Logs
-                          logs={store.logs}
-                          visibility={store.logVisibility}
-                          icons={store.icons}
-                          rule={store.rule}
-                          logPickup={logPickup}
-                          onResetLogPickup={this.handleResetLogPickup}
-                        />
-                      </LogsWrapper>
-                    </>
-                  );
-                }}
-              </Transition>
+              <RulePane
+                store={store}
+                rule={rule}
+                categories={categories}
+                ruleDefs={ruleDefs}
+                ruleElement={this.ruleElement}
+                onSwipingLeft={this.handleRuleSwipeToLeft}
+                onSwipingRight={this.handleRuleSwipeToRight}
+              />
+              {/* Logs. */}
+              <LogsWrapper>
+                <LogsPane
+                  store={store}
+                  onResetLogPickup={this.handleResetLogPickup}
+                />
+              </LogsWrapper>
             </MainWrapper>
             <RoomFooterPart>
               <GameFooter
@@ -450,6 +423,78 @@ export class Game extends React.Component<IPropGame, {}> {
       }
     }
   }
+
+}
+
+interface IPropRulePane {
+  store: GameStore;
+  rule: Rule | undefined;
+  categories: RoleCategoryDefinition[];
+  ruleDefs: RuleGroup;
+  ruleElement: React.RefObject<HTMLDivElement>;
+  onSwipingLeft(): void;
+  onSwipingRight(): void;
+}
+
+@observer
+class RulePane extends React.PureComponent<IPropRulePane, {}> {
+  public render() {
+    const {
+      store,
+      rule,
+      categories,
+      ruleDefs,
+      ruleElement,
+      onSwipingLeft,
+      onSwipingRight,
+    } = this.props;
+    const closed = rule == null || !store.ruleOpen;
+    return (
+      <RuleWrapper closed={closed}>
+        {rule != null ? (
+          <RuleStickyWrapper closed={closed}>
+            <RuleInnerWrapper ref={ruleElement}>
+              <Swipeable
+                onSwipingLeft={onSwipingLeft}
+                onSwipingRight={onSwipingRight}
+              >
+                <ShowRule
+                  rule={rule}
+                  categories={categories}
+                  ruleDefs={ruleDefs}
+                />
+              </Swipeable>
+            </RuleInnerWrapper>
+          </RuleStickyWrapper>
+        ) : null}
+      </RuleWrapper>
+    );
+  }
+}
+
+interface IPropLogsPane {
+  store: GameStore;
+  onResetLogPickup(): void;
+}
+
+@observer
+class LogsPane extends React.PureComponent<IPropLogsPane, {}> {
+  public render() {
+    const {
+      store,
+      onResetLogPickup,
+    } = this.props;
+    return (
+      <Logs
+        logs={store.logs}
+        visibility={store.logVisibility}
+        icons={store.icons}
+        rule={store.rule}
+        logPickup={store.logPickup}
+        onResetLogPickup={onResetLogPickup}
+      />
+    );
+  }
 }
 
 /**
@@ -458,7 +503,6 @@ export class Game extends React.Component<IPropGame, {}> {
 const AppWrapper = styled(AppStyling)`
   display: flex;
   flex-flow: column nowrap;
-
   --base-font-size: 1rem;
   ${phone`
     --base-font-size: ${({ theme }): string => {
@@ -473,7 +517,7 @@ const AppWrapper = styled(AppStyling)`
         case 'very-small':
           return '0.6em';
       }
-    }}
+    }};
     padding-bottom: 2em;
   `};
 `;
@@ -552,23 +596,15 @@ const JobInfoPart = styled(RoomHeaderPart)`
 const MainWrapper = styled.div`
   display: flex;
   flex-flow: row nowrap;
+  position: relative;
 `;
 
 /**
  * Wrapper of logs.
  */
-const LogsWrapper = styled.div<{
-  /**
-   * Whether the rule pane is open.
-   */
-  ruleOpen?: boolean;
-}>`
+const LogsWrapper = styled.div`
   flex: auto 1 1;
   order: 1;
-  ${phone`
-    transition: margin-left 250ms ease-out;
-    margin-left: ${({ ruleOpen }) => (ruleOpen ? '-20em' : '0)')};
-  `};
 `;
 
 /**
@@ -589,9 +625,14 @@ interface IPropsRuleWrapper {
  * Wrapper of rule.
  */
 const RuleWrapper = styled.div<IPropsRuleWrapper>`
-  transition: width 250ms ease-out;
-  flex: auto 0 0;
-  width: ${({ closed }) => (closed ? '0' : '20em')};
+  display: ${({ closed }) => (closed ? 'none' : 'block')};
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 20em;
+  max-width: 100%;
+  max-height: 100vh;
+  overflow: auto;
   order: 2;
 
   z-index: ${ruleZIndex};
@@ -604,8 +645,8 @@ const RuleWrapper = styled.div<IPropsRuleWrapper>`
 `;
 
 const RuleStickyWrapper = styled.div<IPropsRuleWrapper>`
-  transition: width 250ms ease-out;
-  width: ${({ closed }) => (closed ? '0' : '20em')};
+  width: 20em;
+  max-width: 100%;
   position: sticky;
   top: 0;
   overflow-x: hidden;

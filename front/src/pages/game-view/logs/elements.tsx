@@ -1,4 +1,4 @@
-import styled, { css } from '../../../util/styled';
+import styled from '../../../util/styled';
 import { phone } from '../../../common/media';
 
 /**
@@ -11,14 +11,6 @@ const fixedSizeGridColumnsPhone = '16px 1fr auto';
  */
 export const LogWrapper = styled.div<{
   /**
-   * The class attached to each log.
-   */
-  logClass: string;
-  /**
-   * ID of user currently picked up.
-   */
-  logPickup: string | null;
-  /**
    * Whether the UI is in "fixed-size mode".
    */
   fixedSize: boolean;
@@ -30,16 +22,7 @@ export const LogWrapper = styled.div<{
     fit-content(10em)
     1fr
     auto;
-  ${({ logClass, logPickup }) =>
-    // logPickup should not contain `"` because it is a user id.
-    // XXX safer solution?
-    logPickup != null
-      ? css`
-    .${logClass}:not([data-userid="${logPickup}"]) {
-      opacity: 0.3;
-    }
-  `
-      : ''} ${phone`
+  ${phone`
     grid-template-columns:
       minmax(8px, max-content)
       1fr
@@ -54,6 +37,7 @@ export const LogWrapper = styled.div<{
 export const FixedSizeChunkWrapper = styled.div<{
   visible: boolean;
 }>`
+  contain: layout paint style;
   display: ${({ visible }) => (visible ? 'block' : 'none')};
 `;
 
@@ -61,6 +45,7 @@ export const FixedSizeChunkWrapper = styled.div<{
  * Wrapper of one log line, used in fixed-size layout.
  */
 export const FixedSizeLogRow = styled.div`
+  contain: layout paint style;
   display: grid;
   grid-template-columns: ${fixedSizeGridColumnsPC};
   ${phone`

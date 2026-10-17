@@ -22,7 +22,18 @@ export type StoredLog = Log & {
 export interface LogChunk {
   day: number;
   logs: StoredLog[];
+  blocks: StoredLogBlock[];
 }
+
+/**
+ * Stable block of logs for rendering.
+ */
+export interface StoredLogBlock {
+  blockId: number;
+  logs: StoredLog[];
+}
+
+export const logBlockSize = 100;
 
 /**
  * Store of logs.
@@ -33,6 +44,12 @@ export class LogStore {
     {
       day: 1,
       logs: [],
+      blocks: [
+        {
+          blockId: 1,
+          logs: [],
+        },
+      ],
     },
   ];
   /**
@@ -48,6 +65,11 @@ export class LogStore {
    * Last id of log.
    */
   private lastLogId = 0;
+  /**
+   * Last id of log block.
+   */
+  private lastBlockId = 1;
+
   constructor() {
     makeObservable(this);
   }
@@ -68,10 +90,21 @@ export class LogStore {
     // If log is a nextturn log, update current day.
     if (log.mode === 'nextturn' && !log.finished && !log.night) {
       this.currentDay = log.day;
-      this.chunks.push({
-        day: this.currentDay,
-        logs: [],
-      });
+      const lastChunk = this.chunks[this.chunks.length - 1];
+      if (lastChunk == null || lastChunk.logs.length > 0) {
+        this.chunks.push({
+          day: this.currentDay,
+          logs: [],
+          blocks: [
+            {
+              blockId: ++this.lastBlockId,
+              logs: [],
+            },
+          ],
+        });
+      } else {
+        lastChunk.day = this.currentDay;
+      }
     }
     // current chunk of logs.
     const chunk: LogChunk = this.chunks[this.chunks.length - 1];
@@ -90,10 +123,19 @@ export class LogStore {
    */
   @action
   public reset(): void {
+    this.currentDay = 1;
+    this.lastLogId = 0;
+    this.lastBlockId = 0;
     this.chunks = [
       {
         day: 1,
         logs: [],
+        blocks: [
+          {
+            blockId: ++this.lastBlockId,
+            logs: [],
+          },
+        ],
       },
     ];
   }

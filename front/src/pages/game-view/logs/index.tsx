@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { observer, Observer } from 'mobx-react';
-import { Log, LogVisibility, maxLogsInGrid } from '../defs';
+import { observer } from 'mobx-react';
+import { LogVisibility } from '../defs';
 import { Rule } from '../../../defs';
 
-import { OneLog } from './log';
+import { LogModeStyle, OneLog } from './log';
 import { StoredLog, LogStore } from './log-store';
 import { mapReverse } from '../../../util/map-reverse';
 import { I18n } from '../../../i18n';
@@ -13,7 +13,6 @@ import {
   PendingLogMessage,
 } from './elements';
 import { LogsRenderingState } from './store';
-import { toJS } from 'mobx';
 
 export interface IPropLogs {
   /**
@@ -44,6 +43,12 @@ export interface IPropLogs {
 
 export interface IStateLogs {
   renderingState: LogsRenderingState;
+}
+
+class StaticLogStyleRules extends React.PureComponent {
+  public render() {
+    return <LogModeStyle />;
+  }
 }
 
 /**
@@ -86,7 +91,7 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
       return null;
     }
 
-    const fixedSize = logs.allLogNumber > maxLogsInGrid;
+    const fixedSize = true;
     /*
      * number of logs to render (not pending).
      */
@@ -94,44 +99,45 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
 
     let renderedLogCount = 0;
     return (
-      <LogWrapper
-        logPickup={logPickup}
-        logClass={this.logClass}
-        fixedSize={fixedSize}
-        onClick={onResetLogPickup}
-      >
-        {mapReverse(logs.chunks, (chunk, i) => {
-          // Decide whether this chunk should be shown.
-          const visible =
-            visibility.type === 'all' ||
-            (visibility.type === 'today'
-              ? i === logs.chunks.length - 1
-              : chunk.day === visibility.day);
+      <>
+        <StaticLogStyleRules />
+        <LogWrapper
+          className="jf-log-list"
+          fixedSize={fixedSize}
+        >
+          {mapReverse(logs.chunks, (chunk, i) => {
+            // Decide whether this chunk should be shown.
+            const visible =
+              visibility.type === 'all' ||
+              (visibility.type === 'today'
+                ? i === logs.chunks.length - 1
+                : chunk.day === visibility.day);
 
-          // number of logs in this chunk
-          // which should be rendered.
-          const chunkRenderedLogs = Math.max(
-            0,
-            Math.min(chunk.logs.length, renderedLogs - renderedLogCount),
-          );
-          renderedLogCount += chunk.logs.length;
-          return (
-            <LogChunk
-              key={chunk.day}
-              logClass={this.logClass}
-              logs={chunk.logs}
-              renderedNumber={chunkRenderedLogs}
-              visible={visible}
-              fixedSize={fixedSize}
-              icons={icons}
-              rule={rule}
-            />
-          );
-        })}
-        {renderingState.pendingLogNumber > 0 ? (
-          <PendingLogMessage>正在读取...</PendingLogMessage>
-        ) : null}
-      </LogWrapper>
+            // number of logs in this chunk
+            // which should be rendered.
+            const chunkRenderedLogs = Math.max(
+              0,
+              Math.min(chunk.logs.length, renderedLogs - renderedLogCount),
+            );
+            renderedLogCount += chunk.logs.length;
+            return (
+              <LogChunk
+                key={`${chunk.day}:${i}`}
+                logClass={this.logClass}
+                logs={chunk.logs}
+                renderedNumber={chunkRenderedLogs}
+                visible={visible}
+                fixedSize={fixedSize}
+                icons={icons}
+                rule={rule}
+              />
+            );
+          })}
+          {renderingState.pendingLogNumber > 0 ? (
+            <PendingLogMessage>正在读取...</PendingLogMessage>
+          ) : null}
+        </LogWrapper>
+      </>
     );
   }
 }
@@ -139,14 +145,14 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
 /**
  * Show chunk of logs.
  */
-class LogChunk extends React.Component<
+class LogChunk extends React.PureComponent<
   {
     /**
      * Class attached to each log.
      */
     logClass: string;
     /**
-     * Logs to render.
+     * Logs in this chunk.
      */
     logs: StoredLog[];
     /**
@@ -185,13 +191,7 @@ class LogChunk extends React.Component<
     if (!visible && !fixedSize) {
       return null;
     }
-    const logsToRender =
-      renderedNumber >= logs.length
-        ? logs
-        : renderedNumber > 0
-          ? logs.slice(-renderedNumber)
-          : [];
-
+    const logsToRender = selectRenderedLogs(logs, renderedNumber);
     const chunkContent = (
       <I18n namespace="game_client">
         {t =>
@@ -219,4 +219,15 @@ class LogChunk extends React.Component<
       return chunkContent;
     }
   }
+}
+
+function selectRenderedLogs(
+  logs: StoredLog[],
+  renderedNumber: number,
+): StoredLog[] {
+  return renderedNumber >= logs.length
+    ? logs
+    : renderedNumber > 0
+    ? logs.slice(-renderedNumber)
+    : [];
 }
