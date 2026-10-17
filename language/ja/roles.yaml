@@ -261,7 +261,9 @@ Diviner:
 Psychic:
   result:
     human: '村人'
-  # Psychi result.
+  # Psychic result.
+  resultlog: '根据 {{name}} 的灵能结论，被处刑的 {{target}} 是 {{result}}。'
+
   resultlog: '根据 {{name}} 的灵能结论，被处刑的 {{target}} 是 {{result}}。'
 
 # Werewolf
