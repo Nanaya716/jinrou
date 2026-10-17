@@ -233,6 +233,7 @@ jobname:
   MajoantiFutureSight: '未来视'
   MajoantiHeal: '治愈'
   MajoantiBrainwash: '洗脑'
+  MajoantiVoiceMimic: '声音模仿'
   MajoantiStrength: '怪力'
   MajoantiFloat: '漂浮'
   MajoantiClairvoyance: '千里眼'
@@ -1400,6 +1401,9 @@ MajoantiHeal:
 MajoantiBrainwash:
   name: '洗脑'
   jobname: '{{jobname}}（洗脑）'
+MajoantiVoiceMimic:
+  name: '声音模仿'
+  jobname: '{{jobname}}（声音模仿）'
 MajoantiStrength:
   name: '怪力'
   jobname: '{{jobname}}（怪力）'
