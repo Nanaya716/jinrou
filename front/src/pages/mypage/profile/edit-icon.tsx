@@ -27,7 +27,15 @@ export const IconEdit: React.FunctionComponent<Props> = ({
   };
   return (
     <EditableInputWrapper label={t('profile.icon')}>
-      {icon ? <img src={icon} width={48} height={48} /> : null}
+      {icon ? (
+        <img
+          src={icon}
+          width={48}
+          height={48}
+          referrerPolicy="no-referrer"
+          style={{ objectFit: 'cover' }}
+        />
+      ) : null}
       <EditButton onClick={clickHandler}>{t('profile.iconSelect')}</EditButton>
       {icon ? (
         <EditButton

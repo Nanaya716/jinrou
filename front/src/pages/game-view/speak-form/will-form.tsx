@@ -63,8 +63,17 @@ export class WillForm extends React.PureComponent<
             ) : null}
           </p>
           <p>
-            <textarea ref={this.textareaRef} onChange={this.handleChange} />
-            <input type="submit" value={t('game_client:speak.will.save')} />
+            <textarea
+              ref={this.textareaRef}
+              id="will-content"
+              name="willContent"
+              onChange={this.handleChange}
+            />
+            <input
+              type="submit"
+              name="saveWill"
+              value={t('game_client:speak.will.save')}
+            />
           </p>
         </Content>
       </Wrapper>

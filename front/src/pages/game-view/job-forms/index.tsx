@@ -184,7 +184,13 @@ function makeNormalContent({
   );
 }
 function makeNormalButtons({ t }: FormContentProps) {
-  return <input type="submit" value={t('game_client_form:normalButton')} />;
+  return (
+    <input
+      type="submit"
+      name="submitForm"
+      value={t('game_client_form:normalButton')}
+    />
+  );
 }
 
 /**
