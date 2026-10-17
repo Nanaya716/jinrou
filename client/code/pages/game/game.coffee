@@ -901,6 +901,8 @@ getLabeledGroupsOfJobrules = ()->
                     }
         return result
     res = f Shared.game.jobrules, []
+    fixedCastings = res.filter (group)-> group.label == '固定人数配置'
+    res = res.filter (group)-> group.label != '固定人数配置'
     # 特殊配役を追加
     res.push {
         type: 'group'
@@ -959,6 +961,7 @@ getLabeledGroupsOfJobrules = ()->
             }
         ]
     }
+    res.push fixedCastings...
     res
 # Convert suggestedOption to OptionSuggestion.
 convertSuggestedOption = (obj)->

@@ -187,67 +187,725 @@ normal1=(number)->
     ret.Werewolf=1
     if number>=8
         ret.Werewolf++
-        if number>=13
+        if number>=14
             ret.Werewolf++
-            if number>=20
+            if number>=17
                 ret.Werewolf++
-                if number>=25
+                if number>=20
                     ret.Werewolf++
-                    if number>=30
+                    if number>=23
                         ret.Werewolf++
+                        if number>=27
+                            ret.Werewolf++
+                            if number>=29
+                                ret.Werewolf++
     ret.Diviner=1 #占い
-    if number>=22
+    if number>=23
         ret.Diviner++
     if number>=8
         ret.Psychic=1 #灵能
+        if number>=23
+            ret.Psychic++
     if number>=6
         ret.Madman=1 #狂人
         ret.Guard=1 #猎人
-        if 18 <= number <= 19 || number >= 23
+        if number==13
+            ret.Madman--
+            ret.HearMadman=1  #13人是听狂配置
+            ret.Baker=1
+        if 15<=number<=16
+            ret.Madman--
+            ret.Fanatic=1 #狂信者
+            if number==16
+                ret.Immoral=1
+        if 19<=number<=22
+            ret.Immoral=1 
+            if number==19
+                ret.Madman--
+                ret.Fanatic=1 #狂信者
+            if number==22
+                ret.Madman--
+                ret.Fanatic=1 #狂信者
+        if number>=23
             ret.Madman++
-        if number>=20
-            ret.Guard++
-    if number>=13
+    if number>=14
         ret.Couple=2 #共有
-        if number>=18
+        if number>=25
             ret.Couple++
-    if number>=11
+    if number>=12
         ret.Fox=1 #狐
-        if number>=19
+        if number>=23
             ret.Fox++
+            if number>=24
+                ret.Fox++
+    if number>=17
+        ret.Poisoner=1 #猫
     ret
 normal2=(number)->
     ret={}
-    # 人狼
+    #狼
+    ret.Werewolf=1
+    if number>=8
+        ret.Werewolf++
+        if number>=13
+            ret.Werewolf++
+            if number>=16
+                ret.Werewolf++
+                if number>=20
+                    ret.Werewolf++
+                    if number>=23
+                        ret.Werewolf++
+                        if number>=27
+                            ret.Werewolf++
+                            if number>=29
+                                ret.Werewolf++
+    ret.Diviner=1 #占い
+    if number>=20
+        ret.Diviner++
+    if number>=8
+        ret.Psychic=1 #灵能
+        if number>=24
+            ret.Psychic++
+    if number>=6
+        ret.Madman=1 #狂人
+        ret.Guard=1 #猎人
+        if number==12
+            ret.Madman--
+            ret.WerewolfDescendant=1
+        if 14<=number<=15
+            ret.Madman--
+            ret.Fanatic=1 #狂信者
+            ret.Immoral=1
+            if number==15
+                ret.Fanatic--
+                ret.HearMadman=1
+        if number==16
+            ret.Immoral=1
+            ret.Madman--
+        if 18<=number<=19
+            ret.Immoral=1 
+            if number==19
+                ret.Madman--
+                ret.Fanatic=1 #狂信者
+        if number>=20
+            ret.Madman--
+            ret.HearMadman=1
+    if number>=14
+        ret.Poisoner=1 #猫
+    if number == 12 || number>=14
+        ret.Fox=1 #狐 
+        if number>=20
+            ret.Fox++
+            if number>=25
+                ret.Fox++
+    if number>=14
+        ret.Couple=2
+    if number==19 || number>=22
+        ret.Teruteru=1
+    ret
+
+fixed9=(number)->
+    {
+        Diviner:1
+        Werewolf:1
+        Fox:1
+        Immoral:2
+    }
+
+allsides12=(number)->
+    {
+        Diviner:2
+        Psychic:2
+        Guard:1
+        Werewolf:2
+        Madman:1
+        Fanatic:1
+        Fox:2
+        Immoral:1
+    }
+
+fixed11=(number)->
+    {
+        Diviner:1
+        Psychic:1
+        SuperGuard:1
+        Werewolf:1
+        Madman:1
+        ToughWolf:1
+        NineTailedFox:1
+    }
+
+butaotoko11=(number)->
+    {
+        Diviner:1
+        Psychic:1
+        Guard:1
+        Werewolf:2
+        Madman:1
+        ButaOtoko:1
+    }
+
+
+koi=(number)->
+    ret={}
+    #狼
+    ret.Werewolf=1
+    if number>=8
+        ret.Werewolf++
+        if number>=14
+            ret.Werewolf++
+            if number>=18
+                ret.Werewolf++
+                if number>=21
+                    ret.Werewolf++
+                    if number>=23
+                        ret.Werewolf++
+                        if number>=27
+                            ret.Werewolf++
+                            if number>=29
+                                ret.Werewolf++
+    ret.Diviner=1 #占い
+    if number>=23
+        ret.Diviner++
+    if number>=12
+        ret.Madman=1 #狂人
+        if number==13
+            ret.Madman--
+            ret.Fanatic=1 #狂信者
+        if number==14
+            ret.Madman--
+        if number>=15
+            ret.Madman--
+            ret.Fanatic=1 #狂信者
+    if number>=8
+        ret.Psychic=1 #灵能
+        if number>=23
+            ret.Psychic++
+    if number>=11
+        ret.Cupid=1 #丘比特
+        if 12<=number<=13
+            ret.Cupid--
+            ret.Lover=1 
+    if number>=6
+        ret.Guard=1 #猎人
+    if number>=14
+        ret.Couple=2 #共有
+        if number>=25
+            ret.Couple++
+    if number>=17
+        ret.Fox=1 #狐
+        if number>=23
+            ret.Fox++
+            if number>=24
+                ret.Fox++
+    if number>=18
+        ret.Poisoner=1 #猫
+    ret
+
+queen=(number)->
+    ret={}
+    #狼
+    ret.Werewolf=1
+    if number>=7
+        ret.Werewolf++
+        if number>=13
+            ret.Werewolf++
+            if number>=17
+                ret.Werewolf++
+                if number>=19
+                    ret.Werewolf++
+                    if number>=22
+                        ret.Werewolf++
+                        if number>=26
+                            ret.Werewolf++
+                            if number>=28
+                                ret.Werewolf++
+    ret.Diviner=1 #占い
+    if number>=22
+        ret.Diviner++
+    if number>=7
+        ret.Psychic=1 #灵能
+        if number>=22
+            ret.Psychic++
+    if number>=5
+        ret.Madman=1 #狂人
+        ret.Guard=1 #猎人
+        ret.QueenSpectator=1 #女王
+        if 13<=number<=14
+            ret.Madman--
+            ret.Fanatic=1 #狂信者
+            ret.Couple=2
+        if number==15 || number==16
+            ret.Madman--
+            ret.HearMadman=1
+            ret.Couple=2
+        if number>=17
+            ret.Poisoner=1
+            ret.Baker=1
+            if number>=18
+                ret.Madman--
+                ret.Fanatic=1 #狂信者
+            if number==19
+                ret.Fanatic--
+                ret.Madman=1
+            if number>=20
+                ret.Immoral=1
+        if number>=22
+            ret.Madman++
+    if number>=20
+        ret.Fox=1 #狐
+        if number>=22
+            ret.Fox++
+            if number>=23
+                ret.Fox++
+    ret
+
+queen2=(number)->
+    ret={}
+    #狼
+    ret.Werewolf=1
+    if number>=8
+        ret.Werewolf++
+        if number>=14
+            ret.Werewolf++
+            if number>=17
+                ret.Werewolf++
+                if number>=20
+                    ret.Werewolf++
+                    if number>=23
+                        ret.Werewolf++
+                        if number>=27
+                            ret.Werewolf++
+                            if number>=29
+                                ret.Werewolf++
+    ret.Diviner=1 #占い
+    if number>=23
+        ret.Diviner++
+    if number>=8
+        ret.Psychic=1 #灵能
+        if number>=23
+            ret.Psychic++
+    if number>=6
+        ret.Madman=1 #狂人
+        ret.Guard=1 #猎人
+        ret.QueenSpectator=1 #女王
+        if 14<=number<=15
+            ret.Madman--
+            ret.Fanatic=1 #狂信者
+            ret.Couple=2
+        if number==16
+            ret.Madman--
+            ret.HearMadman=1
+            ret.Couple=2
+        if number>=17
+            ret.Cosplayer=1
+            ret.Guard--
+            ret.WanderingGuard=1
+            ret.Baker=1
+            if number>=19
+                ret.Madman--
+                ret.Fanatic=1 #狂信者
+            if number==20
+                ret.Fanatic--
+                ret.Madman=1
+            if number>=20
+                ret.Immoral=1
+        if number>=23
+            ret.Madman++
+    if number>=20
+        ret.Fox=1 #狐
+        if number>=23
+            ret.Fox++
+            if number>=24
+                ret.Fox++
+    ret
+
+normal3=(number)->
+    ret={}
+    #狼
+    ret.Werewolf=1
+    if number>=8
+        ret.Werewolf++
+        if number>=14
+            ret.Werewolf++
+            if number>=18
+                ret.Werewolf++
+                if number>=20
+                    ret.Werewolf++
+                    if number>=23
+                        ret.Werewolf++
+                        if number>=27
+                            ret.Werewolf++
+                            if number>=29
+                                ret.Werewolf++
+    if number>=21
+        ret.Werewolf--
+        ret.NormalWolfDiviner=1
+    ret.Diviner=1 #占い
+    if number>=21
+        ret.Diviner++
+    if number>=8
+        ret.Psychic=1 #灵能
+        if number>=24
+            ret.Psychic++
+    if number>=6
+        ret.Madman=1 #狂人
+        ret.Guard=1 #猎人
+        if number==12
+            ret.Madman--
+            ret.HearMadman=1
+            ret.Baker=1
+        if number==13
+            ret.Madman--
+            ret.WhisperingMad=1
+            ret.Couple=2
+        if number==15
+            ret.Madman--
+            ret.Fanatic=1 #狂信者
+        if 16 <= number <= 20
+            if number==17
+                ret.Heretic=1
+            ret.Madman--
+            ret.HearMadman=1
+        if number==19 || number == 20
+            ret.Immoral=1
+
+    if number>=16
+        ret.Couple=2 #共有
+    if number>=12
+        ret.Fox=1 #狐
+        if number>=21
+            ret.Fox++
+    if (number >= 14 && number != 16 && number != 17)
+        ret.Poisoner=1 #猫
+    if number>=22 || number==19 || number==20
+        ret.HolyMarked=1
+    ret
+
+super1=(number)->
+    ret={}
+    #狼
+    ret.Werewolf=1
+    if number>=7
+        ret.Werewolf++
+        if number>=13
+            ret.Werewolf++
+            if number>=18
+                ret.Werewolf++
+                if number>=20
+                    ret.Werewolf++
+                    if number>=22
+                        ret.Werewolf++
+                        if number>=26
+                            ret.Werewolf++
+                            if number>=28
+                                ret.Werewolf++
+    ret.Werewolf--
+    ret.SuperWerewolf=1
+    ret.SuperDiviner=1 #超占い
+    if number>=23
+        ret.SuperDiviner++
+    if number>=8
+        ret.Psychic=1 #灵能
+        if number>=22
+            ret.Psychic++
+    if number>=6
+        ret.Madman=1 #狂人
+        ret.SuperGuard=1 #猎人
+        if number==13
+            ret.Madman--
+            ret.HearMadman=1  #13人是听狂配置
+            ret.Baker=1
+        if 15<=number<=16
+            ret.Madman--
+            ret.Fanatic=1 #狂信者
+        if number>=16
+            ret.Perfidious=1
+        if number==17
+            ret.HearMadman=1
+                
+        if 19<=number<=22
+            ret.Perfidious=1 
+            if number==19
+                ret.Madman--
+                ret.Fanatic=1 #狂信者
+            if number==22
+                ret.Madman--
+                ret.Fanatic=1 #狂信者
+        if number>=23
+            ret.Madman++
+    if number>=14
+        ret.Couple=2 #共有
+        if number>=25
+            ret.Couple++
+    if number>=12
+        ret.SuperFox=1 #狐
+        if number>=23
+            ret.SuperFox++
+            if number>=24
+                ret.SuperFox++
+    if number>=18
+        ret.Poisoner=1 #猫
+    ret
+
+mumou1=(number)->
+    ret={}
+    #狼
     ret.Werewolf=1
     if number>=8
         ret.Werewolf++
         if number>=16
             ret.Werewolf++
-            if number>=20
+            if number>=18
                 ret.Werewolf++
-                if number>=25
+                if number>=20
                     ret.Werewolf++
-                    if number>=29
+                    if number>=23
                         ret.Werewolf++
-    ret.Diviner=1 #占卜师
+                        if number>=27
+                            ret.Werewolf++
+                            if number>=29
+                                ret.Werewolf++
+    ret.Diviner=1 #占い
+    ret.MumouDiviner=1
+    if number>=23
+        ret.Diviner++
     if number>=8
-        ret.Psychic=1 #灵能者
-    if number>=10
-        ret.Madman=1 #狂人
-        if number>=28
-            ret.Madman++
-    if number>=11
+        ret.Psychic=1 #灵能
+        if number>=23
+            ret.Psychic++
+    if number>=6
+        ret.Fanatic=1 #狂信者
         ret.Guard=1 #猎人
-    if number>=13
-        ret.Couple=2 #共有者
-        if number>=28
+        if number>=14
+            if number%2!=0
+                ret.Fanatic--
+                ret.HearMadman=1
+    if number>=21
+        ret.Couple=2 #共有
+        if number>=25
+            ret.Couple++
+    if number>=12
+        ret.Fox=2 #狐
+    if number>=18
+        ret.Poisoner=1 #猫
+    ret
+
+fanni1=(number)->
+    ret={}
+    #狼
+    ret.CautiousWolf=1
+    if number>=8
+        ret.CautiousWolf++
+        if number>=14
+            ret.CautiousWolf++
+            if number>=17
+                ret.CautiousWolf++
+                if number>=20
+                    ret.CautiousWolf++
+                    if number>=23
+                        ret.CautiousWolf++
+                        if number>=27
+                            ret.CautiousWolf++
+                            if number>=29
+                                ret.CautiousWolf++
+    ret.Diviner=1 #占い
+    if number>=23
+        ret.Diviner++
+    if number>=8
+        ret.Psychic=1 #灵能
+        if number>=23
+            ret.Psychic++
+    if number>=6
+        ret.Madman=1 #狂人
+        ret.Guard=1 #猎人
+        if number==13
+            ret.Madman--
+            ret.HearMadman=1  #13人是听狂配置
+            ret.Baker=1
+        if 15<=number<=16
+            ret.Madman--
+            ret.Fanatic=1 #狂信者
+            if number==16
+                ret.Heretic=1
+        if 18<=number<=22
+            ret.Heretic=1 
+            if number==19
+                ret.Madman--
+                ret.Fanatic=1 #狂信者
+            if number==22
+                ret.Madman--
+                ret.Fanatic=1 #狂信者
+        if number>=23
+            ret.Madman++
+    if number>=14
+        ret.Couple=2 #共有
+        if number>=25
+            ret.Couple++
+    if number>=12
+        ret.Fox=1 #狐
+        if number>=23
+            ret.Fox++
+            if number>=24
+                ret.Fox++
+    if number>=17
+        ret.Poisoner=1 #猫
+    ret
+
+cosplayer=(number)->
+    ret={}
+    #狼
+    ret.Werewolf=1
+    if number>=8
+        ret.Werewolf++
+        if number>=15
+            ret.Werewolf++
+            if number>=17
+                ret.Werewolf++
+                if number>=20
+                    ret.Werewolf++
+                    if number>=21
+                        ret.Werewolf++
+                        if number>=26
+                            ret.Werewolf++
+                            if number>=28
+                                ret.Werewolf++
+    ret.Diviner=1 #占い
+    if number>=21
+        ret.Diviner++
+    if number>=8
+        ret.Psychic=1 #灵能
+        if number>=23
+            ret.Psychic++
+    if number>=6
+        ret.Madman=1 #狂人
+        ret.Cosplayer=1 #猎人
+        if number==12 || number==16 || number==13 || number==14
+            ret.Madman--
+            ret.Fanatic=1
+        if number>=23
+            ret.Fanatic=1
+    if number>=12
+        ret.Couple=2 #共有
+        if number>=27
             ret.Couple++
     if number>=15
         ret.Fox=1 #狐
+        if number>=18 && number<=20
+            ret.Immoral=1
+        if number>=21
+            ret.Fox++
+            if number>=24
+                ret.Fox++
+    if number>=17
+        ret.WanderingGuard=1 #猎人
+    if number>=21
+        ret.Poisoner=1
     ret
 
-exports.normal1 = normal1
+dictatorVillage=(number)->
+    ret={}
+    if number>=20
+        ret.Diviner=2
+        ret.Dictator=2
+        ret.Guard=1
+        ret.SeersMama=1
+        ret.QueenSpectator=1
+        ret.Witch=1
+        ret.Priest=1
+        ret.BloodWolf=1
+        ret.ToughWolf=1
+        ret.ThreateningWolf=1
+        ret.Sorcerer=1
+        ret.Fanatic=1
+        ret.LurkingMad=1
+        ret.MadHunter=1
+        ret.Madman=4
+    else if number==19
+        ret.Diviner=2
+        ret.Dictator=2
+        ret.Guard=1
+        ret.SeersMama=1
+        ret.QueenSpectator=1
+        ret.Witch=1
+        ret.Priest=1
+        ret.BloodWolf=1
+        ret.ToughWolf=1
+        ret.ThreateningWolf=1
+        ret.Sorcerer=1
+        ret.Fanatic=1
+        ret.LurkingMad=1
+        ret.MadHunter=1
+        ret.Madman=3
+    else if number>=17
+        ret.Diviner=2
+        ret.Dictator=2
+        ret.Guard=1
+        ret.SeersMama=1
+        ret.QueenSpectator=1
+        ret.Witch=1
+        ret.BloodWolf=1
+        ret.ToughWolf=1
+        ret.ThreateningWolf=1
+        ret.Sorcerer=1
+        ret.Fanatic=1
+        ret.LurkingMad=1
+        ret.Madman=if number==17 then 3 else 4
+    else if number>=15
+        ret.Diviner=2
+        ret.Dictator=2
+        ret.Guard=1
+        ret.SeersMama=1
+        ret.Witch=1
+        ret.Werewolf=3
+        ret.Sorcerer=1
+        ret.Fanatic=1
+        ret.Madman=if number==15 then 3 else 4
+    else if number>=13
+        ret.Diviner=2
+        ret.Dictator=1
+        ret.Guard=1
+        ret.SeersMama=1
+        ret.Witch=1
+        ret.Werewolf=2
+        ret.Sorcerer=1
+        ret.MadDictator=1
+        ret.Madman=3
+        if number==14
+            ret.DualPersonality=1 
+    else if number==12
+        ret.Diviner=2
+        ret.Dictator=2
+        ret.Guard=1
+        ret.Werewolf=2
+        ret.Sorcerer=1
+        ret.Madman=3
+        ret.DualPersonality=1
+    else if number==11
+        ret.Diviner=1
+        ret.Dictator=2
+        ret.Guard=1
+        ret.Werewolf=1
+        ret.Sorcerer=1
+        ret.WhisperingMad=1
+        ret.Madman=3
+        ret.DualPersonality=1
+    else if number>=9
+        ret.Diviner=1
+        ret.Dictator=2
+        ret.Guard=1
+        ret.Werewolf=1
+        ret.Sorcerer=1
+        ret.WhisperingMad=1
+        ret.Madman=if number==9 then 2 else 3
+    else
+        ret.Diviner=1
+        ret.Dictator=1
+        ret.Guard=1
+        ret.Werewolf=1
+        ret.Sorcerer=1
+        ret.Madman=number-5
+    ret
 
 exports.jobrules=[
   {
@@ -266,13 +924,7 @@ exports.jobrules=[
       {
         name:"普通3"
         minNumber:4
-        rule:(number)->
-          ret=normal1 number
-          ret.Fox ?= 0
-          ret.Fox++
-          if number<10 && ret.Werewolf>1
-            ret.Werewolf--
-          ret
+        rule:normal3
       }
     ]
   }
@@ -282,47 +934,50 @@ exports.jobrules=[
       {
         name:"恋人"
         rule:(number)->
-          ret=normal1 number
-          if ret.Fox>0  #NaNかも
-            ret.Fox--
-          ret.Cupid ?= 0
-          ret.Cupid++
+          ret=koi number
           ret
       }
       {
-        name:"背德者"
+        name:"超职业"
         rule:(number)->
-          ret=normal1 number
-          if ret.Fox>0
-            ret.Immoral?=0
-            ret.Immoral+=1
+          ret=super1 number
           ret
       }
       {
-        name:"埋毒者"
+        name:"女王村"
+        minNumber:10
+        suggestedOption:
+          scapegoat:"no"
         rule:(number)->
-          ret=normal1 number
-          ret.Poisoner=1
-          ret.Werewolf++
+          ret=queen number
           ret
-      }
+            
+      },
       {
-        name:"猫又"
+        name:"女王村（有欠）"
+        minNumber:10
         rule:(number)->
-          ret=normal1 number
-          ret.Cat=1
-          ret.Werewolf++
+          ret=queen2 number
           ret
-      }
+      },
       {
-        name:"低语狂人"
+        name:"黑骑士"
         rule:(number)->
-          ret=normal1 number
-          if ret.Madman>0
-            ret.WhisperingMad=1
-            ret.Madman--
+          ret=cosplayer number
           ret
-      }
+      },
+      {
+        name:"魔女反逆者"
+        rule:(number)->
+          ret=fanni1 number
+          ret
+      },
+      {
+        name:"无谋占卜师"
+        rule:(number)->
+          ret=mumou1 number
+          ret
+      },
     ]
   }
   {
@@ -373,11 +1028,11 @@ exports.jobrules=[
           ret
       }
       {
-        name:"人狼占卜师"
+        name:"人狼幻术师"
         rule:(number)->
           ret=normal1 number
           ret.Werewolf--
-          ret.WolfDiviner=1
+          ret.NormalWolfDiviner=1
           if number>=7
             ret.Fox++
           ret
@@ -392,8 +1047,42 @@ exports.jobrules=[
     ]
   }
   {
+    name:"固定人数配置"
+    rule:[
+      {
+        name:"9D"
+        fixedNumber:9
+        minNumber:9
+        rule:fixed9
+      }
+      {
+        name:"10人无欠九尾狐"
+        fixedNumber:10
+        minNumber:10
+        rule:fixed11
+      }
+      {
+        name:"11猪男"
+        fixedNumber:11
+        minNumber:11
+        rule:butaotoko11
+      }
+      {
+        name:"12全面战争"
+        fixedNumber:12
+        minNumber:12
+        rule:allsides12
+      }
+    ]
+  }
+  {
       name:"主题配置"
       rule:[
+        {
+          name:"独裁者村"
+          minNumber:7
+          rule:dictatorVillage
+        }
         {
           name:"变化村"
           minNumber:6
@@ -431,7 +1120,7 @@ exports.jobrules=[
               ret.Fanatic=1
             if number>=22
               ret.Werewolf--
-              ret.WolfDiviner=1
+              ret.NormalWolfDiviner=1
               ret.Copier++
             if number>=24
               ret.Diviner++
@@ -488,9 +1177,9 @@ exports.jobrules=[
             if number>=13
               ret.Werewolf++
             if number>=9
-              ret.WolfDiviner=1
+              ret.NormalWolfDiviner=1
               if number>=23
-                ret.WolfDiviner++
+                ret.NormalWolfDiviner++
             if number>=19
               ret.SolitudeWolf=1
             ret.Madman=1
@@ -507,54 +1196,6 @@ exports.jobrules=[
                 ret.Stalker++
             if number>=25
               ret.Copier=1
-            ret
-        }
-        {
-          name:"女王村"
-          minNumber:10
-          suggestedOption:
-            scapegoat:"no"
-          rule:(number)->
-            ret={}
-            ret.Diviner=1
-            if number>=25
-              ret.Diviner++
-            if number>=11
-              ret.ApprenticeSeer=1
-            ret.Psychic=1
-            ret.Guard=1
-            ret.Trapper=1
-            ret.Priest=1
-            if number>=12
-              ret.Merchant=1
-              if number>=18
-                ret.Merchant++
-            ret.QueenSpectator=1
-            if number>=14
-              ret.Prince=1
-              if number>=21
-                ret.Prince++
-            if number>=15
-              ret.Dictator=1
-              if number>=17
-                ret.Dictator++
-            if number>=26
-              ret.Couple=2
-              ret.Werewolf=1
-            ret.Werewolf?=0
-            ret.Werewolf++
-            ret.WolfDiviner=1
-            if number>=19
-              ret.WolfDiviner++
-            if number>=13
-              ret.WolfCub=1
-            if number>=16
-              ret.ToughWolf=1
-            ret.WhisperingMad=1
-            if number>=23
-              ret.Sorcerer=1
-            if number>=28
-              ret.Tanner=1
             ret
         }
       ]
@@ -616,7 +1257,7 @@ exports.jobrules=[
               if number>=14
                 ret.Dictator++
                 count++
-          # 埋毒者
+          # 猫又
           if number>=22
             ret.Poisoner=1
             count++
@@ -656,7 +1297,7 @@ exports.jobrules=[
           if number>=25
             ret.Werewolf++
           if number>=27
-            ret.WolfDiviner=1
+            ret.NormalWolfDiviner=1
             ret.Werewolf--
             ret.Immoral=1
           if number>=29
@@ -721,6 +1362,7 @@ getruleobj=(name)->
             return ruleobj
         obj=ruleobj.rule
     null
+exports.getruleobj=getruleobj
 # 规则関数を得る
 exports.getrulefunc=(name)->
     if name=="内部利用.量子人狼"
@@ -1323,7 +1965,7 @@ exports.new_rules=[
                 value:
                     type:"time"
                     id: 'night'
-                    defaultValue: 150
+                    defaultValue: 210
             }
             {
                 type: 'item'
@@ -1338,7 +1980,7 @@ exports.new_rules=[
                 value:
                     type:"time"
                     id: 'voting'
-                    defaultValue: 0
+                    defaultValue: 180
             }
             {
                 type: 'item'
@@ -1383,7 +2025,7 @@ exports.new_rules=[
                 value:
                     type:"checkbox"
                     id:"will"
-                    defaultChecked: true
+                    defaultChecked: false
                     value:"die"
             }
             {
@@ -1391,7 +2033,7 @@ exports.new_rules=[
                 value:
                     type:"select"
                     id:"heavenview"
-                    defaultValue: 'norevive'
+                    defaultValue: ''
                     values:[
                         "view"
                         "norevive"
@@ -1463,7 +2105,7 @@ exports.new_rules=[
                 value:
                     type:"integer"
                     id:"silentrule"
-                    defaultValue: 0
+                    defaultValue: 15
                     minValue: 0
                     getstr:(t, value)->
                         {
@@ -1520,20 +2162,20 @@ exports.new_rules=[
             }
             # Losemode is temporarily disabled because
             # it doesn't result in a fun game.
-            # {
-            #     type: 'item'
-            #     value:
-            #         type:"checkbox"
-            #         id:"losemode"
-            #         value:"on"
-            # }
             {
                 type: 'item'
                 value:
-                    type: "hidden"
-                    id: "losemode"
-                    value: ""
+                    type:"checkbox"
+                    id:"losemode"
+                    value:"on"
             }
+            # {
+            #     type: 'item'
+            #     value:
+            #         type: "hidden"
+            #         id: "losemode"
+            #         value: ""
+            # }
             {
                 type: 'item'
                 value:
@@ -1574,7 +2216,7 @@ exports.new_rules=[
                 value:
                     type:"checkbox"
                     id:"wolfsound"
-                    defaultChecked: true
+                    defaultChecked: false
                     value:"aloud"
             }
             {
@@ -1603,7 +2245,7 @@ exports.new_rules=[
                 value:
                     type:"select"
                     id:"divineresult"
-                    defaultValue: 'sunrise'
+                    defaultValue: 'immediate'
                     values:[
                         "immediate"
                         "sunrise"
@@ -1636,7 +2278,7 @@ exports.new_rules=[
                 value:
                     type:"select"
                     id:"psychicresult"
-                    defaultValue: 'sunrise'
+                    defaultValue: 'sunset'
                     values:[
                         "sunset"
                         "sunrise"
@@ -1658,6 +2300,7 @@ exports.new_rules=[
                 value:
                     type:"checkbox"
                     id:"couplesound"
+                    defaultChecked: false
                     value:"aloud"
             }
             {

@@ -225,8 +225,8 @@ rule:
       immediate: ""
       sunrise: ""
   firstnightdivine:
-    name: "占卜初日白通知"
-    label: "设为「有」的时候，占卜师首天晚上将自动从占卜结果为「村人」的人中随机选择一个人进行占卜。"
+    name: "初日随机狐以外占卜通知"
+    label: "设为「有」的时候，占卜师首天晚上将自动从占卜结果为「村人或人狼」的人中随机选择一个非妖狐进行占卜。"
     labels:
       auto: "有"
       manual: "无"
