@@ -229,6 +229,7 @@ jobname:
   MajoantiBond: '缔结'
   MajoantiBodySwap: '身体交换'
   MajoantiBrainwash: '洗脑'
+  MajoantiClairvoyance: '千里眼'
 # Name of categories.
 categoryName:
   Human: '村人系'
@@ -1369,5 +1370,8 @@ MajoantiBodySwap:
 MajoantiBrainwash:
   name: '洗脑'
   jobname: '{{jobname}}（洗脑）'
+MajoantiClairvoyance:
+  name: '千里眼'
+  jobname: '{{jobname}}（千里眼）'
 Chemical:
   jobname: '{{left}}×{{right}}'
