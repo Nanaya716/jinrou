@@ -13,6 +13,8 @@ import {
   ILoginDialog,
   IRoleDescDialog,
   ISuddenDeathPunishDialog,
+  IOpenAvatarDialog,
+  OpenAvatarResult,
 } from './defs';
 
 import { MessageDialog } from './components/message';
@@ -27,6 +29,7 @@ import { BoundFunc } from '../util/cached-binder';
 import { PromptDialog } from './components/prompt';
 import { LoginDialog } from './components/login';
 import { RoleDescDialog } from './components/role-desc';
+import { OpenAvatarDialog } from './components/openavatar';
 import { createMountedRoot } from '../util/react-root';
 
 /**
@@ -196,6 +199,19 @@ export async function showRoleDescDialog(d: IRoleDescDialog): Promise<void> {
   const i18n = await getI18nFor();
   return showDialog<void>(dialogArea, i18n, (open, close) => {
     const dialog = <RoleDescDialog {...d} onClose={close} />;
+    open(dialog);
+  });
+}
+
+/**
+ * Show an OpenAvatar role selection dialog.
+ * Returns null if cancelled, undefined if random selected, or { theme, skinKey } if role selected.
+ */
+export function showOpenAvatarDialog(
+  d: IOpenAvatarDialog,
+): Promise<OpenAvatarResult> {
+  return showDialog(dialogArea, null, (open, close) => {
+    const dialog = <OpenAvatarDialog {...d} onSelect={close} />;
     open(dialog);
   });
 }

@@ -23,6 +23,10 @@ export interface RoomPrelude {
    * Whether this room has a theme.
    */
   theme: boolean;
+  /**
+   * Theme name if exists (for detecting OpenAvatar mode).
+   */
+  themeName?: string;
 }
 /**
  * State of room during endless yaminabe.
@@ -37,6 +41,14 @@ export interface RoomDuringEndless {
    * Whether this room is blind mode.
    */
   blind: boolean;
+  /**
+   * Whether this room has a theme.
+   */
+  theme: boolean;
+  /**
+   * Theme name if exists.
+   */
+  themeName?: string;
 }
 /**
  * State of room after the end.

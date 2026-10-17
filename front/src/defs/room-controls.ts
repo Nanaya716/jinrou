@@ -5,8 +5,17 @@ export interface RoomControlHandlers {
   /**
    * Handler for room entry.
    * @param user Data of user when the room is blind.
+   * @param user.selectedSkin For OpenAvatar mode: { theme: string, skinKey: string }
+   * @param user.customName For OpenAvatar custom mode: custom name
+   * @param user.customIcon For OpenAvatar custom mode: custom avatar URL
    */
-  join(user: { name: string; icon: string | null }): void;
+  join(user: {
+    name: string;
+    icon: string | null;
+    selectedSkin?: { theme: string; skinKey: string };
+    customName?: string;
+    customIcon?: string;
+  }): void;
   /**
    * Handler for room leave.
    */
@@ -43,4 +52,16 @@ export interface RoomControlHandlers {
    * Make a new room with same settings button.
    */
   newRoom(): void;
+}
+
+/**
+ * Role data for OpenAvatar selection
+ */
+export interface OpenAvatarRole {
+  theme: string;
+  themeName: string;
+  skinKey: string;
+  name: string;
+  avatar: string | string[];
+  prize: string | string[];
 }

@@ -6,9 +6,11 @@ import {
   showSelectDialog,
   showKickDialog,
   showConfirmDialog,
+  showOpenAvatarDialog,
 } from '../../../dialog';
 import { TranslationFunction } from '../../../i18n';
 import { PlayerInfo, RoomControlInfo } from '../defs';
+import { getAllThemesSkins } from '../../../api/themes';
 
 export interface IPropRoomControls {
   /**
@@ -110,15 +112,23 @@ export class RoomControls extends React.Component<IPropRoomControls, {}> {
    * Handle a click of the join button.
    */
   @bind
-  private handleJoinClick(): void {
+  private async handleJoinClick(): Promise<void> {
     const { t, roomControls, handlers } = this.props;
     const blind =
       (roomControls.type === 'prelude' || roomControls.type === 'endless') &&
       roomControls.blind;
-    const theme = roomControls.type === 'prelude' && roomControls.theme;
+    const hasTheme =
+      (roomControls.type === 'prelude' || roomControls.type === 'endless') &&
+      roomControls.theme;
+
+    // Check if this is an OpenAvatar room
+    const isOpenAvatar =
+      (roomControls.type === 'prelude' || roomControls.type === 'endless') &&
+      roomControls.themeName === 'openavatar';
+
     // if the room is in blind mode,
     // show user info dialog.
-    if (blind && !theme) {
+    if (blind && !hasTheme) {
       showPlayerDialog({
         modal: true,
         title: t('game_client:room.playerDialog.title'),
@@ -132,6 +142,46 @@ export class RoomControls extends React.Component<IPropRoomControls, {}> {
           }
         })
         .catch(err => console.error(err));
+    } else if (isOpenAvatar) {
+      // OpenAvatar mode: show role selection dialog
+      try {
+        const result = await showOpenAvatarDialog({
+          modal: true,
+          title: '选择角色',
+          message: '请选择一个角色或随机分配',
+          randomAll: '全主题随机',
+          randomTheme: '本主题随机',
+          select: '选择',
+          cancel: '取消',
+          roles: getAllThemesSkins(),
+          selectedNames: this.props.players.map(p => p.name),
+        });
+
+        if (result === null) {
+          // Cancelled
+          return;
+        }
+
+        if (result.type === 'role') {
+          handlers.join({
+            name: '',
+            icon: null,
+            selectedSkin: {
+              theme: result.theme,
+              skinKey: result.skinKey,
+            },
+          });
+        } else if (result.type === 'custom') {
+          handlers.join({
+            name: '',
+            icon: null,
+            customName: result.customName,
+            customIcon: result.customIcon,
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
     } else {
       handlers.join({
         name: '',

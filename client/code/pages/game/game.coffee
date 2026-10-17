@@ -356,6 +356,7 @@ exports.start=(roomid)->
                             old: room.old
                             blind: !!room.blind
                             theme: room.theme? && !!room.theme
+                            themeName: room.theme
                         }
                     else if obj.game?.finished
                         {
@@ -367,6 +368,8 @@ exports.start=(roomid)->
                             type: 'endless'
                             joined: false
                             blind: !!room.blind
+                            theme: room.theme? && !!room.theme
+                            themeName: room.theme
                         }
                     else
                         null
@@ -427,6 +430,7 @@ exports.start=(roomid)->
                     castings = getLabeledGroupsOfJobrules()
                     game_start_control = gsc.place {
                         i18n: i18n
+                        roomid: roomid
                         node: target
                         castings: castings
                         roles: Shared.game.jobs
