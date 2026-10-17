@@ -20,6 +20,8 @@ specialName:
   CraftyWolf2: '狡猾的狼的能力'
   Poet1: '诗人的能力'
   Poet2: '诗人的能力'
+  SuperDiviner: 'SP占卜师的能力'
+  NormalDiviner: 'SP占卜师的能力'
   GachaAddicted_Normal: '课金者的能力'
   GachaAddicted_Premium: '课金者的能力'
   GachaAddicted_Commit: '课金者的能力'
@@ -37,6 +39,7 @@ messages:
   GreedyWolf: '在希望满足自身贪欲的场合下请选择'
   SuperWerewolf: '在想要发动SP能力，额外袭击1人的情况下请选择'
   Diviner: '请选择要占卜的对象'
+  SuperDiviner: '请选择要SP占卜的对象'
   TinyFox: '请选择要占卜的对象'
   Guard: '请选择要护卫的对象'
   MindPsychic: '请选择要施加念杀护卫的对象'
@@ -203,6 +206,15 @@ DragonKnight:
   # kill button (already used)
   killButtonUsed: '杀害（已经使用）'
 
+SuperDiviner:
+  description: '请选择占卜的使用对象'
+  Superdescription: '请选择SP占卜的使用对象'
+  # normal guard button.
+  DivinerButton: '占卜'
+  SuperDivinerUsedButton: 'SP占卜（只限一次）'
+  SuperDivinerUsedButtonUsed: 'SP占卜（已经使用）'
+
+# Texts for HimeFox form.
 HimeFox:
   sacrifice:
     description: '请选择准备献祭的背信者或异端者'

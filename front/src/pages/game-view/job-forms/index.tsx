@@ -21,6 +21,7 @@ import { makeWerewolfForm } from './werewolf';
 import { useI18n } from '../../../i18n/react';
 import { makeDragonKnightForm } from './dragonKnight';
 import { makePoet1Form, makePoet2Form } from './poet';
+import { makeNormalDivinerForm, makeSuperDivinerForm } from './superdiviner';
 import { makeHimeFoxSacrificeForm, makeNekikillTargetForm } from './himefox';
 import {
   makeGachaAddictedNormalForm,
@@ -222,6 +223,18 @@ function makeSpecialContent(props: FormContentProps): Partial<FormContent> {
     case 'DragonKnight': {
       ({ content: otherContents, buttons } = makeDragonKnightForm(
         props as FormContentProps<'DragonKnight'>,
+      ));
+      break;
+    }
+    case 'NormalDiviner': {
+      ({ content: otherContents, buttons } = makeNormalDivinerForm(
+        props as FormContentProps<'NormalDiviner'>,
+      ));
+      break;
+    }
+    case 'SuperDiviner': {
+      ({ content: otherContents, buttons } = makeSuperDivinerForm(
+        props as FormContentProps<'SuperDiviner'>,
       ));
       break;
     }

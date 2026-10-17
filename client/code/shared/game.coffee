@@ -11,7 +11,7 @@ exports.jobs=["Human","Werewolf","Diviner","Psychic","MindPsychic","Madman","Reb
 # 特殊役職?
 "Poisoner","BigWolf","DoubleHeadedWolf","TinyFox","Cat",
 # るる鯖で見つけた职业
-"Fanatic","HearMadman","Immoral",
+"Fanatic","HearMadman","Immoral","SuperDiviner",
 # 特殊役職2
 "Devil","Stalker","WhisperingMad","Dog","Perfidious",
 # 桃栗基本特殊役職
@@ -120,7 +120,7 @@ exports.blacks=["Werewolf","DoubleHeadedWolf","WolfDiviner","NormalWolfDiviner",
 
 # チームたち
 exports.teams=teams=
-    Human:["Human","Diviner","Psychic","MindPsychic","Guard","Couple","Poisoner","ToughGuy","Elder","Noble","Slave","Magician","Fugitive","Merchant","QueenSpectator","Princess","MadWolf","Liar","Light","Cursed","ApprenticeSeer","Diseased","Spellcaster","Lycan","Priest","Prince","PI","Cat","Witch","Oldman","OccultMania","Dog","Dictator","SeersMama","Trapper","RedHood","Counselor","Miko","HolyMarked","WanderingGuard","TroubleMaker","FrankensteinsMonster","BloodyMary","King","SantaClaus","Phantom","DrawGirl","Pyrotechnist","MagicalGirl","Baker","SpiritPossessed","GotChocolate","Forensic","Cosplayer","TinyGhost","Ninja","Twin","Hunter","Emma","Idol","HomeComer","Illusionist","DragonKnight","Samurai","Elementaler","Poet","Sacrifice","Oracle","GachaAddicted","Fate","Synesthete","Reindeer","Streamer","Tarzan","Hitokotonushinokami","RemoteWorker","Gambler","Sleepwalker","Disguised","Saint","SpaceWerewolfCrew","SpaceWerewolfObserver","SpaceWerewolfGuard","Hanami","Reincarnator","MementoDisposer","Interpreter","Dreamer","Assassin","StraySheep","Secretary","HouseKeeper","DarkPsychic","Itako","Hero"]
+    Human:["Human","Diviner","SuperDiviner","Psychic","MindPsychic","Guard","Couple","Poisoner","ToughGuy","Elder","Noble","Slave","Magician","Fugitive","Merchant","QueenSpectator","Princess","MadWolf","Liar","Light","Cursed","ApprenticeSeer","Diseased","Spellcaster","Lycan","Priest","Prince","PI","Cat","Witch","Oldman","OccultMania","Dog","Dictator","SeersMama","Trapper","RedHood","Counselor","Miko","HolyMarked","WanderingGuard","TroubleMaker","FrankensteinsMonster","BloodyMary","King","SantaClaus","Phantom","DrawGirl","Pyrotechnist","MagicalGirl","Baker","SpiritPossessed","GotChocolate","Forensic","Cosplayer","TinyGhost","Ninja","Twin","Hunter","Emma","Idol","HomeComer","Illusionist","DragonKnight","Samurai","Elementaler","Poet","Sacrifice","Oracle","GachaAddicted","Fate","Synesthete","Reindeer","Streamer","Tarzan","Hitokotonushinokami","RemoteWorker","Gambler","Sleepwalker","Disguised","Saint","SpaceWerewolfCrew","SpaceWerewolfObserver","SpaceWerewolfGuard","Hanami","Reincarnator","MementoDisposer","Interpreter","Dreamer","Assassin","StraySheep","Secretary","HouseKeeper","DarkPsychic","Itako","Hero"]
     Werewolf:["Werewolf","Madman","RebelliousMadman","MadDictator","BigWolf","DoubleHeadedWolf","Fanatic","HearMadman","Spy","WolfDiviner","NormalWolfDiviner","Spy2","Sorcerer","LoneWolf","MinionSelector","WolfCub","WhisperingMad","WolfBoy","GreedyWolf","SuperWerewolf","FascinatingWolf","SolitudeWolf","ToughWolf","LastStandWolf","ThreateningWolf","ObstructiveMad","PsychoKiller","CautiousWolf","Bomber","Ushinotokimairi","MadDog","Hypnotist","CraftyWolf","Pumpkin","MadScientist","MadHunter","MadCouple","EyesWolf","TongueWolf","BlackCat","LurkingMad","DecoyWolf","Satori","AbsoluteWolf","QueenOfNight","CurseWolf","IntuitionWolf","Faker","SealWolf","CynthiaWolf","NetherWolf","DarkWolf","SpaceWerewolfImposter","Acrobat","BloodWolf","Shadow","AttractiveWoman","DestroyCraziest","RainyBoy","WerewolfDescendant",]
     Fox:["Fox","NineTailedFox","TinyFox","Immoral","Perfidious","Blasphemy","XianFox","NightRabbit","Trickster","VariationFox","Actress","HimeFox","FoxMatchmaker"]
     Devil:["Devil"]
@@ -1412,6 +1412,8 @@ exports.jobinfo=
             color:"#00b3ff"
         Diviner:
             color:"#00b3fA"
+        SuperDiviner:
+            color:"#49AF58"
         Psychic:
             color:"#bb00ff"
         MindPsychic:
@@ -2290,7 +2292,7 @@ exports.new_rules=[
             id: 'diviner'
             visible:(rule)->
                 return true if isAllJobsMode rule
-                for job in ["Diviner","ApprenticeSeer","WolfDiviner","NormalWolfDiviner","TinyFox",]
+                for job in ["Diviner","ApprenticeSeer","WolfDiviner","NormalWolfDiviner","TinyFox","SuperDiviner",]
                     if rule.jobNumbers[job]>0
                         return true
                 return false
