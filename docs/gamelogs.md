@@ -55,13 +55,13 @@ GJした
 
 * target: 护卫先
 
-## 埋毒者
+## 猫又
 ### poisonkill
 毒で殺した
 
 * target: 殺した相手
 
-## 猫又
+## 九命妖猫
 ### catraise
 蘇生させた
 * target: もともとの蘇生相手

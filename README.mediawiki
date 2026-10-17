@@ -62,10 +62,10 @@ To run jinrou in an isolated environment using docker-compose, enther `docker` d
 * 狂人
 * 猎人
 * 共有者
-* 埋毒者
+* 猫又
 * 人狼
 * 妖狐
-* 埋毒者
+* 猫又
 * 大狼
 * 小狐
 === 桃栗特殊 ===
