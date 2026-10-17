@@ -64,6 +64,7 @@ jobname:
   Witch: '魔女'
   Oldman: '老人'
   Tanner: '皮革匠'
+  Teruteru: '晴天娃娃'
   Thief: '小偷'
   OccultMania: '怪诞狂热者'
   WolfCub: '狼之子'
@@ -356,6 +357,9 @@ TinyFox:
 # Magician
 Magician:
   select: '{{name}} 对 {{target}} 使用了死者复活术。'
+
+Teruteru:
+  announce: '晴天娃娃 {{name}} 的怨灵之力已经就绪。'
 
 # Spy
 Spy:
