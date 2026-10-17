@@ -227,6 +227,7 @@ jobname:
 
 # 魔女·反逆者モード用魔法（副職業）
   MajoantiBond: '缔结'
+  MajoantiVision: '幻视'
   MajoantiLieDetector: '谎言侦测'
   MajoantiBodySwap: '身体交换'
   MajoantiFutureSight: '未来视'
@@ -1381,6 +1382,9 @@ Authority:
 MajoantiBond:
   name: '缔结'
   jobname: '{{jobname}}（缔结）'
+MajoantiVision:
+  name: '幻视'
+  jobname: '{{jobname}}（幻视）'
 MajoantiLieDetector:
   name: '谎言侦测'
   jobname: '{{jobname}}（谎言侦测）'
