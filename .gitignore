@@ -1,9 +1,13 @@
 config/
 node_modules/
 /client/static/assets/main
-/server/themes/*
-!/server/themes/example.coffee
+# /server/themes/*
+# !/server/themes/example.coffee
+.claude/
 !/server/themes/readme.md
 /client/static/front-assets
 /language/*/*.missing.json
 /.vs
+CLAUDE.md
+tasks/lessons.md
+tasks/todo.md

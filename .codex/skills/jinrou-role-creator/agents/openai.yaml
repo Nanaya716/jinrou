@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jinrou Role Creator"
+  short_description: "Add new Jinrou game roles safely"
+  default_prompt: "Use $jinrou-role-creator to add a new role to this Jinrou project."

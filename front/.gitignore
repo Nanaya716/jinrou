@@ -1,2 +1,4 @@
 /dist
 /dist-esm
+/.tmp-webpack-check
+/.tmp-bundle
