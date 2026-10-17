@@ -1,9 +1,9 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { i18n, addResource } from '../../i18n';
 import { GameTutorial } from './component';
 import { GameTutorialStore } from './store';
 import { UserInfo } from './defs';
+import { mountReact } from '../../util/react-root';
 
 export interface IPlaceOptions {
   /**
@@ -47,14 +47,14 @@ export async function place({
     <GameTutorial i18n={i18n} store={store} teamColors={teamColors} />
   );
 
-  ReactDOM.render(com, node);
+  const root = mountReact(node, com);
 
   store.initialize();
 
   return {
     store,
     unmount: () => {
-      ReactDOM.unmountComponentAtNode(node);
+      root.unmount();
     },
   };
 }

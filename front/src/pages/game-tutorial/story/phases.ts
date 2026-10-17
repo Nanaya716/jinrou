@@ -256,7 +256,6 @@ export const phases: Partial<Record<number, Phase>> = {
         gameInput: {
           onSpeak: driver.getSpeakHandler(),
           onJobQuery: query => {
-            console.log(query);
             storage.day2DayTarget = query.target;
             driver.step();
           },
@@ -346,7 +345,6 @@ export const phases: Partial<Record<number, Phase>> = {
         gameInput: {
           onSpeak: driver.getSpeakHandler(),
           onJobQuery: query => {
-            console.log(query);
             storage.day2NightTarget = query.target;
             driver.step();
           },
