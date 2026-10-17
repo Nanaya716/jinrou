@@ -4208,7 +4208,7 @@ class Diviner extends Player
 
         if (@type == "Diviner" || @type == "Hitokotonushinokami") && game.day == 1 && game.rule.firstnightdivine == "auto"
             # 自動白通知
-            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("NineTailedFox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("FoxMatchmaker")
+            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("NineTailedFox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("SuperFox") && !x.isJobType("FoxMatchmaker")
             if targets2.length > 0
                 # ランダムに決定
                 log=
@@ -5017,6 +5017,78 @@ class TinyFox extends Diviner
             @addGamelog game,"foxdivine",success,p.id
     divineeffect:(game)->
 
+class SuperFox extends Fox
+    type:"SuperFox"
+    team:"Fox"
+    midnightSort:100
+    formType: FormType.optionalOnce
+    isFox:->true
+    sleeping:(game)->true 
+    chooseJobDay:(game)->true
+    jobdone:(game)->
+        if Phase.isDay(game.phase)
+            @flag?
+        else
+            super
+    sunrise:(game)->
+        super
+        # 一次性目标，防止每晚重复施加威吓
+        @setTarget null
+    job:(game,playerid,query)->
+        if @flag
+            return game.i18n.t "error.common.alreadyUsed"
+        unless Phase.isDay(game.phase)
+            return game.i18n.t "error.common.cannotUseSkillNow"
+        if playerid==@id
+            return game.i18n.t "error.common.noSelectSelf"
+        pl=game.getPlayer playerid
+        # pl.touched game,@id
+        unless pl?
+            return game.i18n.t "error.common.nonexistentPlayer"
+        @setTarget playerid
+        @setFlag {
+            target: playerid
+        }
+        log=
+            mode:"skill"
+            to:@id
+            comment: game.i18n.t "roles:SuperFox.select", {name: @name, target: pl.name}
+        splashlog game.id,game,log
+        null
+    sunset:(game)->
+        target = @flag?.target ? @target
+        t=game.getPlayer target
+        unless t?
+            return super
+        if t.dead
+            return super
+
+        # 威嚇して能力無しにする
+        @addGamelog game,"threaten",t.type,target
+        # 複合させる
+
+        log=
+            mode:"skill"
+            to:t.id
+            comment: game.i18n.t "roles:SuperFox.affected", {name: t.name}
+        splashlog game.id,game,log
+
+        newpl=Player.factory null, game, t,null,Threatened  # カウンセリングされた
+        t.transProfile newpl
+        t.transform game,newpl,true
+
+        super
+    getOpenForms:(game)->
+        res = []
+        if Phase.isDay(game.phase) && !@dead && !@flag?
+            #昼の能力選択可能
+            res.push {
+                type: "SuperFox"
+                options: @makeJobSelection game, false
+                formType: FormType.optionalOnce
+                objid: @objid
+            }
+        return res
 
 class Bat extends Player
     type:"Bat"
@@ -10598,7 +10670,7 @@ class Satori extends Diviner
 
         if @type == "Satori" && game.day == 1 && game.rule.firstnightdivine == "auto"
             # 自動白通知
-            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("BigWolf") && !x.isJobType("Diviner") && !x.isJobType("FoxMatchmaker")
+            targets2 = targets.filter (x)=> x.id != @id && [FortuneResult.human, FortuneResult.werewolf].includes(x.getFortuneResult(game)) && x.id != "替身君" && !x.isJobType("Fox") && !x.isJobType("XianFox") && !x.isJobType("NightRabbit") && !x.isJobType("Trickster") && !x.isJobType("VariationFox") && !x.isJobType("Actress") && !x.isJobType("BigWolf") && !x.isJobType("Diviner") && !x.isJobType("SuperFox") && !x.isJobType("FoxMatchmaker")
             if targets2.length > 0
                 # ランダムに決定
                 log=
@@ -15509,6 +15581,7 @@ jobs=
     BigWolf:BigWolf
     DoubleHeadedWolf:DoubleHeadedWolf
     TinyFox:TinyFox
+    SuperFox:SuperFox
     HimeFox:HimeFox
     FoxMatchmaker:FoxMatchmaker
     Bat:Bat
@@ -15791,6 +15864,7 @@ jobStrength=
     BigWolf:80
     DoubleHeadedWolf:40
     TinyFox:10
+    SuperFox:10
     HimeFox:20
     FoxMatchmaker:20
     Bat:10

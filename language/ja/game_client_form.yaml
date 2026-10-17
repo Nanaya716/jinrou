@@ -44,6 +44,7 @@ messages:
   MumouDiviner: '请选择要占卜的对象'
   SuperDiviner: '请选择要SP占卜的对象'
   TinyFox: '请选择要占卜的对象'
+  SuperFox: '请选择要诅咒的对象'
   Guard: '请选择要护卫的对象'
   SuperGuard: '请选择要SP护卫的对象'
   MindPsychic: '请选择要施加念杀护卫的对象'

@@ -20,6 +20,7 @@ jobname:
   BigWolf: '大狼'
   DoubleHeadedWolf: '双头狼'
   TinyFox: '小狐'
+  SuperFox: 'SP妖狐'
   Bat: '蝙蝠'
   Noble: '贵族'
   Slave: '奴隶'
@@ -279,6 +280,13 @@ Diviner:
   select: '{{name}} 占卜了 {{target}} 的身份。'
   # Divining result.
   resultlog: '{{name}} 占卜了 {{target}} 的身份，他是 {{result}}。'
+
+# SuperFox
+SuperFox:
+    # Select a threatening.
+  select: '{{name}} 诅咒了 {{target}}。'
+  # Affected by threatening.
+  affected: '{{name}} 被诅咒影响，今夜无法发动能力。'
 
 SuperDiviner:
   # Divine result
