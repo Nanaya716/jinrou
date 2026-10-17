@@ -282,6 +282,7 @@ Guard:
   # Log of GJ
   gj: '{{guard}} 成功守护了 {{name}}。'
 
+# Guard
 # Poisoner
 Poisoner:
   select: '{{name}} 的毒药泼了 {{target}} 一脸。'

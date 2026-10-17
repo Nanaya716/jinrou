@@ -4136,6 +4136,56 @@ class Diviner extends Player
             to:@id
             comment:r.result
         splashlog game.id,game,log
+
+class Psychic extends Player
+    type:"Psychic"
+    constructor:->
+        super
+        @setFlag ""    # ここにメッセージを入れよう
+    sunset:(game)->
+        super
+        if game.rule.psychicresult=="sunset"
+            @showpsychicresult game
+    sunrise:(game)->
+        super
+        unless game.rule.psychicresult=="sunset"
+            @showpsychicresult game
+    deadsunset:(game)->
+        if game.rule.psychicresult=="sunset"
+            # Delete logs which could not be shown
+            @setFlag ""
+    deadsunrise:(game)->
+        unless game.rule.psychicresult=="sunset"
+            @setFlag ""
+
+
+    showpsychicresult:(game)->
+        return unless @flag?
+        @flag.split("\n").forEach (x)=>
+            return unless x
+            log=
+                mode:"skill"
+                to:@id
+                comment:x
+            splashlog game.id,game,log
+        @setFlag ""
+
+    # 処刑で死んだ人を調べる
+    beforebury:(game,type,deads)->
+        return false if @dead
+        @setFlag if @flag? then @flag else ""
+        deads.filter((x)-> x.found=="punish").forEach (x)=>
+            @setFlag @flag + game.i18n.t("roles:Psychic.resultlog", {
+                name: @name
+                target: x.name
+                result: PsychicResult.renderToString x.getPsychicResult(), game.i18n
+            }) + "\n"
+        return false
+
+# 真·灵能者 - 拥有念杀护卫能力的灵能者
+class Madman extends Player
+    type:"Madman"
+    team:"Werewolf"
 class Guard extends Player
     type:"Guard"
     midnightSort: 80
@@ -4189,55 +4239,6 @@ class Guard extends Player
         newpl.touched game,@id
         null
 
-class Psychic extends Player
-    type:"Psychic"
-    constructor:->
-        super
-        @setFlag ""    # ここにメッセージを入れよう
-    sunset:(game)->
-        super
-        if game.rule.psychicresult=="sunset"
-            @showpsychicresult game
-    sunrise:(game)->
-        super
-        unless game.rule.psychicresult=="sunset"
-            @showpsychicresult game
-    deadsunset:(game)->
-        if game.rule.psychicresult=="sunset"
-            # Delete logs which could not be shown
-            @setFlag ""
-    deadsunrise:(game)->
-        unless game.rule.psychicresult=="sunset"
-            @setFlag ""
-
-
-    showpsychicresult:(game)->
-        return unless @flag?
-        @flag.split("\n").forEach (x)=>
-            return unless x
-            log=
-                mode:"skill"
-                to:@id
-                comment:x
-            splashlog game.id,game,log
-        @setFlag ""
-
-    # 処刑で死んだ人を調べる
-    beforebury:(game,type,deads)->
-        return false if @dead
-        @setFlag if @flag? then @flag else ""
-        deads.filter((x)-> x.found=="punish").forEach (x)=>
-            @setFlag @flag + game.i18n.t("roles:Psychic.resultlog", {
-                name: @name
-                target: x.name
-                result: PsychicResult.renderToString x.getPsychicResult(), game.i18n
-            }) + "\n"
-        return false
-
-# 真·灵能者 - 拥有念杀护卫能力的灵能者
-class Madman extends Player
-    type:"Madman"
-    team:"Werewolf"
 class Couple extends Player
     type:"Couple"
     makejobinfo:(game,result)->
