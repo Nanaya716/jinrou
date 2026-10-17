@@ -236,6 +236,7 @@ jobname:
   MajoantiClairvoyance: '千里眼'
   MajoantiGazeGuide: '视线引导'
   MajoantiFlame: '火焰操纵'
+  MajoantiLiquid: '液体操纵'
   MajoantiGreatWitch: '大魔女'
   MajoantiDeathRecall: '死亡回溯'
   MajoantiGrudgeBite: '怨念反噬'
@@ -1400,6 +1401,9 @@ MajoantiGazeGuide:
 MajoantiFlame:
   name: '火焰操纵'
   jobname: '{{jobname}}（火焰操纵）'
+MajoantiLiquid:
+  name: '液体操纵'
+  jobname: '{{jobname}}（液体操纵）'
 MajoantiGreatWitch:
   name: '大魔女'
   jobname: '{{jobname}}（大魔女）'
