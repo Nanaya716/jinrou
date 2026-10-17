@@ -14,7 +14,6 @@ export const BanAlert: React.FunctionComponent<Props> = ({ store }) => {
   if (ban == null) {
     return null;
   }
-  console.log(ban);
   return (
     <BanSectionWrapper>
       <div>
