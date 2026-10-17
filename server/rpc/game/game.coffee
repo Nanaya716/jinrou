@@ -408,6 +408,8 @@ module.exports=
                     realname:player.realname
                     name:player.name
                 }
+                # Waiting 不在 jobs 列表中，需要手动设置 jobname
+                newpl.jobname = game.i18n.t "roles:jobname.Waiting"
                 newpl.setTarget null
                 game.players.push newpl
                 game.participants.push newpl
@@ -15798,6 +15800,8 @@ module.exports.actions=(req,res,ss)->
                     mode:"system"
                     comment: game.i18n.t "system.gamestart.roleRequesting"
                 splashlog game.id,game,log
+                # 保存游戏状态到数据库（サーバー再起動後は全プレイヤーが含まれる）
+                game.save()
                 game.timer()
                 notifyQQGameStarted room, game, publicRuleInfo
                 ss.publish.channel "room#{roomid}","refresh",{id:roomid}
