@@ -16,12 +16,12 @@ exports.authenticate = (params,cb) ->
             # パスワードが古いので新しいハッシュで保存
             salt = gensalt()
             ha = crpassword params.password, salt
-            M.users.update {userid:params.userid}, {
+            M.users.updateOne {userid:params.userid}, {
                 $set: {
                     password: ha,
                     salt: salt,
                 },
-            }, {safe:true}, (err, count)->
+            }, {w: 1}, (err, count)->
                 if err?
                     cb {success:false}
                     return

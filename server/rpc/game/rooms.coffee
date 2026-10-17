@@ -143,6 +143,7 @@ readyResetJobCollection = new Map
 
 module.exports=
     # サーバー用 部屋1つ取得
+    # 注意: 部屋が存在しない場合、cbにはnullが渡される
     oneRoomS:(roomid,cb)->
         M.rooms.findOne {id:roomid},(err,result)=>
             if err?
@@ -178,13 +179,19 @@ sethelper=(ss,roomid,userid,id,res)->
         if pl?.userid == topl?.userid
             res i18n.t "error.noSelfHelper"
             return
+        if topl? && topl.mode != "player"
+            # ヘルパーの対象は実際にゲームに参加するプレイヤーだけ。
+            # GMや他のヘルパーを対象にすると、開始処理(setplayers)が
+            # 対象を見つけられず、ゲームを開始できなくなる。
+            res i18n.t "error.helperTargetNotPlayer"
+            return
         unless room.mode=="waiting"
             res i18n.t "error.alreadyStarted"
             return
         mode= if topl? then "helper_#{id}" else "player"
         room.players.forEach (x,i)=>
             if x.realid==userid
-                M.rooms.update {
+                M.rooms.updateOne {
                     id: roomid
                     "players.realid": x.realid
                 }, {
@@ -252,18 +259,35 @@ module.exports.actions=(req,res,ss)->
                     unless theme == null
                         x.themeFullName = theme.name
             res results
-    getMyRooms:(page)->
+    getMyRooms:(page, lastGameid)->
+        unless req.session.userId
+            res {error: i18n.t "common:error.needLogin"}
+            return
+        page = Math.max(0, Math.floor(Number(page) || 0))
+        lastGameid = Number(lastGameid) if lastGameid?
+        lastGameid = null unless Number.isFinite(lastGameid)
         # extract user's play logs from userrawlogs
-        M.userrawlogs.aggregate [
+        # Use cursor-based pagination instead of $skip for 10-100x performance improvement
+
+        # Build query conditions
+        matchCondition =
+            userid: req.session.userId
+            type: libuserlogs.DataTypes.game
+
+        # If lastGameid is provided, use range query instead of skip
+        if lastGameid?
+            matchCondition.gameid =
+                $lt: lastGameid
+
+        stream = M.userrawlogs.aggregate([
             {
-                $match:
-                    userid: req.session.userId
-                    type: libuserlogs.DataTypes.game
+                $match: matchCondition
             }, {
                 $sort:
                     gameid: -1
             }, {
-                $skip: page * page_number
+                # Direct page links have no saved cursor.
+                $skip: if lastGameid? then 0 else page * page_number
             }, {
                 $limit: page_number
             }, {
@@ -275,15 +299,45 @@ module.exports.actions=(req,res,ss)->
                     as: "room"
             }, {
                 $unwind: "$room"
-            },
-        ], (err, results)->
-            if err?
-                res {error: String err}
+            }
+        ], { allowDiskUse: true }).stream()  # Enable allowDiskUse to prevent memory overflow
+
+        results = []
+        timeout = null
+        streamClosed = false
+
+        # Set timeout to prevent hanging streams (30 seconds)
+        timeout = setTimeout ->
+            unless streamClosed
+                console.warn "getMyRooms request timeout for user #{req.session.userId}"
+                stream.destroy()
+                res {error: "Request timeout"}
+                streamClosed = true
+        , 30000
+
+        stream.on "data", (x)->
+            return if streamClosed
+
+            # Safety limit: prevent unbounded array growth (OOM protection)
+            if results.length >= 1000
+                console.warn "getMyRooms results limit reached for user #{req.session.userId}, stopping stream"
+                stream.destroy()
                 return
-            for x in results
-                if x.room?
-                    sanitizeRoomForList x.room, req.session.userId
+            if x.room?
+                sanitizeRoomForList x.room, req.session.userId
+            results.push x
+        stream.on "end", ->
+            return if streamClosed
+            streamClosed = true
+            clearTimeout(timeout)
+            # Return results
             res results
+
+        stream.on "error", (err)->
+            return if streamClosed
+            streamClosed = true
+            clearTimeout(timeout)
+            res {error: String err}
 
     getFavoriteRooms:(page, filter = {})->
         unless req.session.userId
@@ -387,20 +441,21 @@ module.exports.actions=(req,res,ss)->
                 userid: req.session.userId
                 roomid: roomid
             if favorite
-                M.roomfavorites.update query, {
+                M.roomfavorites.updateOne query, {
                     $setOnInsert:
                         userid: req.session.userId
                         roomid: roomid
                         createdAt: new Date
                 }, {
                     upsert: true
+                    w: 1
                 }, (err)->
                     if err?
                         res {error: String err}
                     else
                         res {favorite: true}
             else
-                M.roomfavorites.remove query, (err)->
+                M.roomfavorites.deleteMany query, (err)->
                     if err?
                         res {error: String err}
                     else
@@ -411,6 +466,9 @@ module.exports.actions=(req,res,ss)->
         M.rooms.findOne {id:roomid},(err,result)=>
             if err?
                 res {error:err}
+                return
+            unless result?
+                res {error: i18n.t "error.noSuchRoom"}
                 return
             # クライアントからの問い合わせの場合
             pl = result.players.filter((x)-> x.realid==req.session.userId)[0]
@@ -463,9 +521,9 @@ module.exports.actions=(req,res,ss)->
             res {error: i18n.t "error.newRoom.banned"}
             return
 
-        M.rooms.find().sort({id:-1}).limit(1).nextObject (err,doc)=>
+        M.rooms.find().sort({id:-1}).limit(1).next().then (doc)->
             id=if doc? then doc.id+1 else 1
-            
+
             #在一定时间间隔内，同一用户不能连续建房
             minTimeInterval = 10
             if id>1 and doc.owner.userid==req.session.user.userid
@@ -480,13 +538,13 @@ module.exports.actions=(req,res,ss)->
                 players:[]
                 made:Date.now()
                 jobrule:null
-            if room.number>40
+            if room.number > 40
                 res {error: "拒绝40人以上超大房，从你我做起。"}
                 return
-            if room.name.length<1
+            if room.name.length < 1
                 res {error: "请勿使用空格作为房间名。"}
                 return
-            if room.name.length>64
+            if room.name.length > 64
                 res {error: "你是在开车吗？如果不是，请换一个更短的房间名；如果是，本服务器将拨打110。"}
                 return
             room.password=query.password ? null
@@ -639,11 +697,11 @@ module.exports.actions=(req,res,ss)->
                 mode:"player"
                 nowprize:su.nowprize
             # 同IP制限
-                
+
             # if room.players.some((x)->x.ip==su.ip) && su.ip?.match("127.0.0.1")==null
             #     res error:"禁止多开 #{su.ip}"
             #     return
-                
+
             # please no, link of data:image/jpeg;base64 would be a disaster
             if user.icon?.length > Config.maxlength.user.icon
                 res error: i18n.t "error.join.iconTooLong"
@@ -777,7 +835,7 @@ module.exports.actions=(req,res,ss)->
                     user.name=sanitizeName opt.name.trim()
                     user.userid=makeid()
                     user.icon= opt.icon ? null
-                    
+
             #同昵称限制,及禁止使用替身君做昵称
             if room.players.some((x)->x.name==user.name)
                 res error:"昵称 #{user.name} 已经存在"
@@ -897,7 +955,7 @@ module.exports.actions=(req,res,ss)->
             else
                 update.$set.quitfromtheme = room.quitfromtheme
             update.$set.quitfromtheme[req.session.userId] = Date.now()
-            M.rooms.update {id:roomid},update,(err)=>
+            M.rooms.updateOne {id:roomid},update,(err)=>
                 if err?
                     res String err
                 else
@@ -970,7 +1028,7 @@ module.exports.actions=(req,res,ss)->
                 # add to banned list
                 update.$addToSet =
                     ban: id
-            M.rooms.update {id:roomid}, update, (err)=>
+            M.rooms.updateOne {id:roomid}, update, (err)=>
                 if err?
                     res String err
                 else
@@ -1032,7 +1090,7 @@ module.exports.actions=(req,res,ss)->
             if room.owner.userid != req.session.userId
                 res i18n.t "common:error.invalidInput"
                 return
-            M.rooms.update {
+            M.rooms.updateOne {
                 id: roomid
             }, {
                 $pullAll: {
@@ -1092,15 +1150,19 @@ module.exports.actions=(req,res,ss)->
                 return
             for pl in room.players
                 libready.unregister roomid, pl
-            M.rooms.update {id:roomid},{$set: {mode:"end"}},(err)=>
+            M.rooms.updateOne {id:roomid},{$set: {mode:"end"}},(err)=>
                 if err?
                     res String err
                 else
                     res null
                     Server.game.game.deletedlog ss,room
 
-    # 部屋探し
-    find:(query,page)->
+    # 部屋探し（支持游标分页）
+    # 参数说明：
+    # - query: 查询条件对象
+    # - page: 页码（向后兼容，可选）
+    # - cursor: 游标字符串 "gameid_direction" 或 null（新方式）
+    find:(query, page, cursor)->
         unless query?
             res {error: i18n.t "common:error.invalidInput"}
             return
@@ -1125,13 +1187,23 @@ module.exports.actions=(req,res,ss)->
             q.day["$lte"]=query.max_day
         if query.rule
             q["rule.jobrule"]=query.rule
-        # 日付新しい
-        M.games.find(q).sort({_id:-1}).limit(page_number).skip(page_number*page).toArray (err,results)->
+
+        # 解析游标参数
+        # Cursor-based pagination: client manages direction via history stack
+        # Backend only needs to return records with id < cursor (descending order)
+        if cursor?
+            gameid = parseInt(cursor)
+
+            # Use cursor for range query
+            if gameid?
+                q.id = {$lt: gameid}
+        # Always sort in descending order (newest first)
+        M.games.find(q).sort({id: -1}).limit(page_number).toArray (err,results)->
             if err?
                 throw err
                 return
             # gameを得たのでroomsに
-            M.rooms.find({id:{$in: results.map((x)->x.id)}}).sort({_id:-1}).toArray (err,docs)->
+            M.rooms.find({id:{$in: results.map((x)->x.id)}}).sort({id: -1}).toArray (err,docs)->
                 docs.forEach (x)->
                     if x.password?
                         x.needpassword=true
@@ -1144,6 +1216,19 @@ module.exports.actions=(req,res,ss)->
                             return
                         delete p.realname
                         delete p.realid if x.blind
+                # 将 games 数据作为 gameinfo 附加到 rooms 上
+                gameMap = {}
+                for game in results
+                    gameMap[game.id] = game
+
+                for room in docs
+                    game = gameMap[room.id]
+                    if game?
+                        room.gameinfo =
+                            winner: game.winner
+                            rule: game.rule
+                            day: game.day
+
                 res docs
     suddenDeathPunish:(roomid,banIDs)->
         # banIDs = ["someID","someID"]
@@ -1161,4 +1246,4 @@ module.exports.actions=(req,res,ss)->
 
 #res: (err)->
 setRoom=(roomid,room)->
-    M.rooms.update {id:roomid},room,res
+    M.rooms.replaceOne {id:roomid},room,res

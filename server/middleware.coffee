@@ -96,7 +96,7 @@ exports.twitterbot=(request, response, next)->
         M.rooms.findOne({
             id: Number(r[1])
         }, {
-            fields:
+            projection:
                 name: 1
                 comment: 1
         }).then((doc)->

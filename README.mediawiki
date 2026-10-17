@@ -3,11 +3,12 @@ Are you a werewolf?
 
 [https://www.werewolf.com.cn/ 月下人狼服务器]运行中!
 == version ==
-1.15.1
+1.15.4
 
 == requirements ==
 * Redis
-* MongoDB >= 3.2
+* MongoDB >= 6.0
+* Node.js 24 (legacy SocketStream compatibility patches included)
 
 == usage ==
 # Copy the source code
@@ -107,3 +108,6 @@ To run jinrou in an isolated environment using docker-compose, enther `docker` d
 
 
 
+
+== translate upgrade ==
+MongoDB driver 4.17 is used. Before starting against an existing database, set JINRO_MONGO_URI to its URI and run `node tool/migrate-blacklist-userid-index.js` to inspect, then `node tool/migrate-blacklist-userid-index.js --apply`. This required, idempotent migration replaces only the old unique blacklist.userid_1 index with a non-unique index; documents and the unique id index are preserved. Stop the app during this migration. Fresh databases already use the new index.

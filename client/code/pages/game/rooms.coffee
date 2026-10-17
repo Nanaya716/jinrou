@@ -1,5 +1,7 @@
 rooms_view = null
+roomCursors = [null]
 exports.start=(query={})->
+    roomCursors = [null]
     mode = query.mode
     page = query.page || 0
     noLinks = !!query.noLinks
@@ -82,10 +84,11 @@ requestRooms = (mode, page, keyword = '')->
                         userlog: userlog
                     }
         else if mode == "my"
-            ss.rpc "game.rooms.getMyRooms", page, (results)->
+            ss.rpc "game.rooms.getMyRooms", page, roomCursors[page], (results)->
                 if results.error?
                     reject results.error
                 else
+                    roomCursors[page + 1] = results[results.length - 1]?.room?.id
                     resolve {
                         rooms: results.map (obj)->
                             # align with other query's object structure

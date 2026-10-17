@@ -35,7 +35,7 @@ export class IconSelectDialog extends React.PureComponent<
   private twitterRef = React.createRef<HTMLInputElement>();
   state = {
     urlDisabled: false,
-    twitterDisabled: false,
+    twitterDisabled: true,
     requesting: false,
   };
   public render() {
@@ -76,7 +76,7 @@ export class IconSelectDialog extends React.PureComponent<
                         />
                       </td>
                     </tr>
-                    <tr>
+                    <tr style={twitterDisabled ? { display: 'none' } : {}}>
                       <th>{t('iconSelect.twitter')}</th>
                       <td>
                         <FormInput
@@ -109,7 +109,7 @@ export class IconSelectDialog extends React.PureComponent<
    */
   private makeHandleYesClick(
     t: TranslationFunction,
-  ): ((e: React.SyntheticEvent<any>) => void) {
+  ): (e: React.SyntheticEvent<any>) => void {
     return async (e: React.SyntheticEvent<any>) => {
       e.preventDefault();
       const url = this.urlRef.current;
@@ -148,7 +148,7 @@ export class IconSelectDialog extends React.PureComponent<
 
     this.setState({
       urlDisabled: hasTwitter && !hasUrl,
-      twitterDisabled: hasUrl,
+      twitterDisabled: true,
     });
   }
 }

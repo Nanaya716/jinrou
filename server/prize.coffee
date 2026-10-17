@@ -105,7 +105,8 @@ module.exports=exports=
 
             M.userlogs.findOneAndUpdate {userid: pl.realid}, query, {
                 upsert: true
-                returnOriginal: false
+                returnDocument: "after"
+                w: 1
             }, (err, res)->
                 if err?
                     throw err

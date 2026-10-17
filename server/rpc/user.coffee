@@ -45,7 +45,7 @@ login= (query,req,cb,ss)->
                     req.session.ban = ban
                 req.session.save (err)->
                     # お知らせ情報をとってきてあげる
-                    M.news.find().sort({time:-1}).nextObject (err,doc)->
+                    M.news.find().sort({time:-1}).next().then (doc)->
                         cb {
                             login:true
                             lastNews:doc?.time
@@ -53,7 +53,7 @@ login= (query,req,cb,ss)->
                             forgive: forgive
                         }
                     # IPアドレスを記録してあげる
-                    M.users.update {"userid":response.userid},{$set:{ip:response.ip}}
+                    M.users.updateOne {"userid":response.userid},{$set:{ip:response.ip}}
 
                 # log
                 Server.log.login req.session.user
@@ -235,9 +235,10 @@ exports.actions =(req,res,ss)->
             return
         # 計算に必要なカウンタだけ取得する(projection)
         M.userlogs.findOne {userid:req.session.userId}, {
-            fields: {
+            projection: {
                 wincount: true
                 losecount: true
+                drawcount: true
                 winteamcount: true
                 counter: true
             }
@@ -304,7 +305,7 @@ exports.actions =(req,res,ss)->
                     return
 
                 record.icon=query.icon
-            M.users.update {"userid":req.session.userId}, record, {safe:true},(err,count)=>
+            M.users.updateOne {"userid":req.session.userId}, {$set: record}, {w: 1},(err,count)=>
                 if err?
                     res {error: String errr}
                     return
@@ -364,7 +365,7 @@ exports.actions =(req,res,ss)->
                         address:doc.mail.address
                         verified:doc.mail.verified
                     doc.mailconfirmsecurity = false
-            M.users.update {"userid":doc.userid}, doc, {safe:true},(err,count)=>
+            M.users.updateOne {"userid":doc.userid}, {$set: doc}, {w: 1},(err,count)=>
                 if err?
                     res {error: String err}
                     return
@@ -422,12 +423,12 @@ exports.actions =(req,res,ss)->
                 return
             # saltを新しく生成
             newsalt = Server.auth.gensalt()
-            M.users.update {"userid":req.session.userId}, {
+            M.users.updateOne {"userid":req.session.userId}, {
                 $set:{
                     password: Server.auth.crpassword query.newpass, newsalt
                     salt: newsalt
                 }
-            }, {safe:true}, (err,count)=>
+            }, {w: 1}, (err,count)=>
                 if err?
                     res {error: String err}
                     return
@@ -447,9 +448,9 @@ exports.actions =(req,res,ss)->
             if query.mailconfirmsecurity == true
                 # 厳しい
                 if record.mail?.verified == true
-                    M.users.update {"userid":req.session.userId}, {
+                    M.users.updateOne {"userid":req.session.userId}, {
                         $set: {mailconfirmsecurity: true}
-                    }, {safe: true}, (err,count)->
+                    }, {w: 1}, (err,count)->
                         if err?
                             res {error: String err}
                             return
@@ -492,7 +493,7 @@ exports.actions =(req,res,ss)->
                             !x.value || x.value in Shared.prize.conjunctions
                     )
                         # 所持もOK
-                        M.users.update {"userid":req.session.userId}, {$set:{nowprize:query.prize}},{safe:true},(err)=>
+                        M.users.updateOne {"userid":req.session.userId}, {$set:{nowprize:query.prize}},{w: 1},(err)=>
                             req.session.user.nowprize=query.prize
                             req.session.save ->
                                 res null
@@ -572,7 +573,7 @@ exports.actions =(req,res,ss)->
             if isNaN(doc.counter?.allgamecount) || doc.counter?.allgamecount < Config.user.dataOpenBarrier
                 res {error: i18n.t "error.dataOpenSetting.history"}
                 return
-            M.users.update {
+            M.users.updateOne {
                 userid: req.session.userId
             }, updatequery, (err, num)->
                 if err?
@@ -680,7 +681,7 @@ getUserOpenData = (userid, cb)->
         }
     else
         M.users.findOne {"userid": userid}, {
-            fields: {
+            projection: {
                 userid: true
                 name: true
                 icon: true

@@ -36,7 +36,7 @@ exports.unreadyAll = (ss, roomid, players)->
             p.start = false
             untrack roomid, p.realid
         # update whole players array at once.
-        M.rooms.update {
+        M.rooms.updateOne {
             id: roomid
             mode: "waiting"
         }, {
@@ -68,7 +68,7 @@ untrack = (roomid, realid)->
 updateReady = (ss, roomid, userobj, ready)->
     new Promise (resolve, reject)->
         # save new readiness to DB.
-        M.rooms.update {
+        M.rooms.updateOne {
             id: roomid
             mode: "waiting"
             "players.realid": userobj.realid

@@ -53,7 +53,7 @@ exports.addBlacklist = (query, cb)->
             updateQuery.$unset = {
                 expires: ""
             }
-        M.blacklist.update {
+        M.blacklist.updateOne {
             id: id
         }, updateQuery, {w: 1, upsert: true}, (err)->
             if err?
@@ -66,7 +66,7 @@ makeBanId = ()-> Math.random().toString(36).slice(2) + "_" + Date.now().toString
 
 # このBANを解除
 exports.forgive = (id, cb)->
-    M.blacklist.update {
+    M.blacklist.updateOne {
         id: id
     }, {
         $set: {
@@ -79,7 +79,7 @@ exports.forgive = (id, cb)->
             cb null
 # BANを再設定
 exports.restore = (id, cb)->
-    M.blacklist.update {
+    M.blacklist.updateOne {
         id: id
     }, {
         $unset: {
@@ -126,7 +126,7 @@ exports.handleLogin = (userid, ip, cb)->
             # IPアドレスで判定
             updateq = updateBanQuery userid, ip, doc
             if updateq?
-                M.blacklist.update {
+                M.blacklist.updateOne {
                     _id: doc._id
                 }, updateq
 
@@ -212,7 +212,7 @@ exports.handleHello = (ip, cb)->
             cb doc
             updateq = updateBanQuery null, ip, doc
             if updateq?
-                M.blacklist.update {
+                M.blacklist.updateOne {
                     _id: doc._id
                 }, updateq
 # 自分をBANしてほしいひとがきた
@@ -233,7 +233,7 @@ exports.handleBanRequest = (banid, userid, ip, cb)->
             else
                 updateq = updateBanQuery userid, ip, doc
                 if updateq?
-                    M.blacklist.update {
+                    M.blacklist.updateOne {
                         _id: doc._id
                     }, updateq, {w: 1}, (err)->
                         if err?
@@ -314,7 +314,7 @@ exports.extendBlacklist = (query, cb)->
                 updateQuery.$set.id = id
                 updateQuery.$set.expires=d
 
-            M.blacklist.update {
+            M.blacklist.updateOne {
                 id: id
             }, updateQuery, {w: 1, upsert: true}, (err)->
                 if err?

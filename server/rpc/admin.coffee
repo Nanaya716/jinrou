@@ -160,7 +160,7 @@ exports.actions =(req,res,ss)->
             unless room?
                 res {error: "房间不存在。"}
                 return
-            M.rooms.update {id:roomid}, {$set:{made:made}}, {safe:true}, (err)->
+            M.rooms.updateOne {id:roomid}, {$set:{made:made}}, {w: 1}, (err)->
                 if err?
                     res {error: err.message ? err}
                     return
@@ -234,13 +234,13 @@ exports.actions =(req,res,ss)->
             # 遍历过期房间并更新状态
             ids = docs.map (item)-> return item.id
             # 关闭房间
-            M.rooms.update({id: {$in: ids}}, {$set: {"mode": "end"}}, {multi: true}, (err) ->
+            M.rooms.updateMany({id: {$in: ids}}, {$set: {"mode": "end"}}, (err, result) ->
                 if err?
                     res {error: err}
                     return
             )
             # 更新游戏状态为已结束
-            M.games.update({id: {$in: ids}}, {$set: {"finished": true}}, {multi: true}, (err) ->
+            M.games.updateMany({id: {$in: ids}}, {$set: {"finished": true}}, (err, result) ->
                 if err?
                     res {error: err}
                     return
@@ -297,7 +297,7 @@ exports.actions =(req,res,ss)->
             message:query.message
         M.news.findOne {message:addquery.message},(err,doc)->
             unless doc?
-                M.news.insert addquery,{safe:true},(err,doc)->
+                M.news.insertOne addquery,{w: 1},(err,doc)->
                     res null
             else
                 res null
@@ -320,7 +320,7 @@ exports.actions =(req,res,ss)->
             unless doc?
                 res {error: "通知不存在。"}
                 return
-            M.news.update {_id:id}, {$set:{message:query.message}}, {safe:true}, (err)->
+            M.news.updateOne {_id:id}, {$set:{message:query.message}}, {w: 1}, (err)->
                 if err?
                     res {error: err.message ? err}
                     return
@@ -344,10 +344,10 @@ exports.actions =(req,res,ss)->
             unless doc?
                 res {error: "通知不存在。"}
                 return
-            M.news.remove {_id:id}, {safe:true}, (err)->
+            M.news.deleteOne {_id:id}, {w: 1}, (err)->
                 if err?
                     res {error: err.message ? err}
                     return
                 res null
 
-pro=null    # 现在のプロセス
+pro=null    # 現在のプロセス

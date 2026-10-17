@@ -11,6 +11,7 @@ formType:
 
 # Name forms which is a little special.
 specialName:
+  SuperFox: 'SP妖狐的能力'
   _day: '处刑投票'
   _Werewolf: '人狼的袭击'
   Dog1: '犬的能力'

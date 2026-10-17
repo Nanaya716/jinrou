@@ -88,11 +88,11 @@ sendMail=(userquery, makemailobj, callback)->
                     return
                 console.log "Message sent: " + info.response
             # save to database
-            M.users.update userquery, {
+            M.users.updateOne userquery, {
                 $set: {
                     mail: mail
                 }
-            }, {safe: true}, (err, count)->
+            }, {w: 1}, (err, count)->
                 if err?
                     callback "请求处理失败。", null
                     return
