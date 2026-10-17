@@ -62,7 +62,7 @@ loadTable=(arr)->
     nums.shift()
     normals=[]  #通常职业
     specials=[] #特殊职业
-    normaljobs=["all","Human","Werewolf","Diviner","Psychic","Madman","Guard","Couple","Fox"]
+    normaljobs=["all","Human","Werewolf","Diviner","Psychic","MindPsychic","Madman","Guard","Couple","Fox"]
     # 数をパースする
     for num in nums
         res=num.match /^(\d+)(?:\(\d+\))?$/
