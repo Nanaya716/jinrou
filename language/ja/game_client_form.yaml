@@ -79,6 +79,7 @@ messages:
   BadLady1: '首先请选择你的本命对象'
   BadLady2: '请选择要玩弄的对象'
   Pyrotechnist: '准备放烟火的时候请点'
+  MagicalGirl: '请选择今晚要获得的套装能力'
   Helper: '请选择要帮助的对象'
   Bomber: '请选择要送炸弹的对象'
   Blasphemy: '请选择要亵渎的对象'
@@ -166,6 +167,13 @@ Merchant:
     Guard: '守护套装'
   # description.
   description: '请选择商品及其收件人'
+
+MagicalGirl:
+  kit:
+    Diviner: '占卜套装'
+    Psychic: '灵能套装'
+    Guard: '猎人套装'
+  description: '请选择你要在今晚获得的套装能力'
 # Texts for HomeComer form (extends Merchant).
 HomeComer:
   description: '请选择伴手礼及其赠送的对象'
