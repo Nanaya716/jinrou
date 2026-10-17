@@ -244,6 +244,8 @@ jobname:
   MajoantiDeathRecall: '死亡回溯'
   MajoantiGrudgeBite: '怨念反噬'
   MajoantiMomentaryReturn: '刹那回归'
+  MajoantiTime: '时间操纵'
+
 # Name of categories.
 categoryName:
   Human: '村人系'
@@ -1429,5 +1431,9 @@ MajoantiGrudgeBite:
 MajoantiMomentaryReturn:
   name: '刹那回归'
   jobname: '{{jobname}}（刹那回归）'
+MajoantiTime:
+  name: '时间操纵'
+  jobname: '{{jobname}}（时间操纵）'
+
 Chemical:
   jobname: '{{left}}×{{right}}'
