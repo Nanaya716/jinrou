@@ -47,6 +47,70 @@ import { GameFooter } from './footer';
 
 type TeamColors = Record<string, string | undefined>;
 
+const SPEAK_KIND_STORAGE_PREFIX = 'jinrou-speak-kind:';
+const SPEAK_KIND_STORAGE_INDEX = 'jinrou-speak-kind-index';
+const MAX_SAVED_SPEAK_KIND_ROOMS = 5;
+
+type SavedSpeakKindRoom = {
+  roomid: number;
+  updatedAt: number;
+};
+
+function speakKindStorageKey(roomid: number): string {
+  return `${SPEAK_KIND_STORAGE_PREFIX}${roomid}`;
+}
+
+function getSpeakKindStorageIndex(): SavedSpeakKindRoom[] {
+  try {
+    const index = JSON.parse(
+      localStorage.getItem(SPEAK_KIND_STORAGE_INDEX) || '[]',
+    );
+    if (!Array.isArray(index)) {
+      return [];
+    }
+    return index.filter(
+      item =>
+        typeof item.roomid === 'number' && typeof item.updatedAt === 'number',
+    );
+  } catch {
+    return [];
+  }
+}
+
+function touchSpeakKindStorageRoom(roomid: number): void {
+  try {
+    const next = [
+      { roomid, updatedAt: Date.now() },
+      ...getSpeakKindStorageIndex().filter(item => item.roomid !== roomid),
+    ];
+    const keep = next.slice(0, MAX_SAVED_SPEAK_KIND_ROOMS);
+    const removed = next.slice(MAX_SAVED_SPEAK_KIND_ROOMS);
+    localStorage.setItem(SPEAK_KIND_STORAGE_INDEX, JSON.stringify(keep));
+    for (const item of removed) {
+      localStorage.removeItem(speakKindStorageKey(item.roomid));
+    }
+  } catch {
+    // 忽略存储异常。
+  }
+}
+
+function loadSpeakKind(roomid: number): string | null {
+  try {
+    return localStorage.getItem(speakKindStorageKey(roomid));
+  } catch {
+    return null;
+  }
+}
+
+function saveSpeakKind(roomid: number, kind: string): void {
+  try {
+    localStorage.setItem(speakKindStorageKey(roomid), kind);
+    touchSpeakKindStorageRoom(roomid);
+  } catch {
+    // 忽略存储异常。
+  }
+}
+
 interface IPropGame {
   /**
    * i18n instance.
@@ -84,6 +148,10 @@ interface IPropGame {
    * Handle a speak event.
    */
   onSpeak: (query: SpeakQuery) => void;
+  /**
+   * 处理非法发言频道提交。
+   */
+  onInvalidSpeakKind: () => void;
   /**
    * Handle a refuse revival event.
    */
@@ -125,6 +193,15 @@ export class Game extends React.Component<IPropGame, {}> {
     user,
     teamColors,
   }));
+
+  public componentDidMount(): void {
+    this.restoreSavedSpeakKind();
+  }
+
+  public componentDidUpdate(): void {
+    this.restoreSavedSpeakKind();
+  }
+
   public render() {
     const {
       i18n,
@@ -136,6 +213,7 @@ export class Game extends React.Component<IPropGame, {}> {
       reportForm,
       shareButton,
       onJobQuery,
+      onInvalidSpeakKind,
       onWillChange,
       onReportFormSubmit,
       onFavoriteToggle,
@@ -213,6 +291,7 @@ export class Game extends React.Component<IPropGame, {}> {
                 onUpdate={this.handleSpeakUpdate}
                 onUpdateLogVisibility={this.handleLogVisibilityUpdate}
                 onSpeak={this.handleSpeak}
+                onInvalidSpeakKind={onInvalidSpeakKind}
                 onRefuseRevival={this.handleRefuseRevival}
                 onRuleOpen={this.handleRuleOpen}
                 onWillChange={onWillChange}
@@ -274,9 +353,13 @@ export class Game extends React.Component<IPropGame, {}> {
    */
   @bind
   protected handleSpeakUpdate(obj: Partial<SpeakState>): void {
-    this.props.store.update({
+    const { roomid, store } = this.props;
+    store.update({
       speakState: obj,
     });
+    if (obj.kind != null && this.isSpeakKindAllowed(store.speakState.kind)) {
+      saveSpeakKind(roomid, store.speakState.kind);
+    }
   }
   /**
    * Handle an update to log visibility.
@@ -435,6 +518,27 @@ export class Game extends React.Component<IPropGame, {}> {
     }
   }
 
+  private restoreSavedSpeakKind(): void {
+    const { roomid, store } = this.props;
+    const savedKind = loadSpeakKind(roomid);
+    if (
+      savedKind != null &&
+      savedKind !== store.speakState.kind &&
+      this.isSpeakKindAllowed(savedKind)
+    ) {
+      store.update({
+        speakState: {
+          kind: savedKind,
+        },
+      });
+    }
+  }
+
+  private isSpeakKindAllowed(kind: string): boolean {
+    const { roleInfo } = this.props.store;
+    const speaks = roleInfo != null ? roleInfo.speak : ['day'];
+    return speaks.includes(kind);
+  }
 }
 
 interface IPropRulePane {

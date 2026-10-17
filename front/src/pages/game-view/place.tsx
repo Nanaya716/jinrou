@@ -63,6 +63,10 @@ export interface IPlaceOptions {
    */
   onSpeak: (query: SpeakQuery) => void;
   /**
+   * 处理非法发言频道提交。
+   */
+  onInvalidSpeakKind: () => void;
+  /**
    * Handle a refuse revival event.
    */
   onRefuseRevival: () => Promise<void>;
@@ -117,6 +121,7 @@ export function place({
   shareButton,
   teamColors,
   onSpeak,
+  onInvalidSpeakKind,
   onRefuseRevival,
   onJobQuery,
   onWillChange,
@@ -139,6 +144,7 @@ export function place({
       reportForm={reportForm}
       shareButton={shareButton}
       onSpeak={onSpeak}
+      onInvalidSpeakKind={onInvalidSpeakKind}
       onRefuseRevival={refuseRevivalLogic}
       onJobQuery={onJobQuery}
       onWillChange={onWillChange}

@@ -107,6 +107,10 @@ export interface IPropSpeakForm extends SpeakState {
    */
   onSpeak: (query: SpeakQuery) => void;
   /**
+   * 通知当前发言频道非法。
+   */
+  onInvalidSpeakKind: () => void;
+  /**
    * Push a refuse revival button.
    */
   onRefuseRevival: () => void;
@@ -500,8 +504,16 @@ export class SpeakForm extends React.PureComponent<
    */
   @bind
   protected handleSubmit(e: React.SyntheticEvent<HTMLFormElement>): void {
-    const { kind, size, onSpeak } = this.props;
+    const { kind, size, roleInfo, onInvalidSpeakKind } = this.props;
     e.preventDefault();
+
+    if (roleInfo != null && !roleInfo.speak.includes(kind)) {
+      this.props.onUpdate({
+        kind: roleInfo.speak[0] || '',
+      });
+      onInvalidSpeakKind();
+      return;
+    }
 
     const query: SpeakQuery = {
       comment: this.commentString,

@@ -61,6 +61,7 @@ export const GameTutorial: React.FunctionComponent<IPropGameTutorial> = observer
           teamColors={teamColors}
           roomControlHandlers={roomControlHandlers}
           {...gameInput}
+          onInvalidSpeakKind={noop}
           onReportFormSubmit={noop}
           onFavoriteToggle={noop}
         />
