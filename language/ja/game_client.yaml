@@ -112,6 +112,9 @@ jobinfo:
     enemies: '你的宿敌是 {{names}}'
     spaceWerewolfImposters: '同伴的诈欺师是 {{names}}'
 
+rule:
+  majoantiMagics: '场上已分配的魔法效果'
+
 # game-view: speak form.
 speak:
   say: '发言'

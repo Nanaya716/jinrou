@@ -1278,6 +1278,18 @@ exports.new_rules=[
             {
                 type: 'item'
                 value:
+                    type:"select"
+                    id:"antimode"
+                    defaultValue: 'no'
+                    values: [
+                        "no"
+                        # "anti"
+                        "majoanti"
+                    ]
+            }
+            {
+                type: 'item'
+                value:
                     type:"separator"
             }
             {

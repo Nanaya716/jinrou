@@ -199,6 +199,7 @@ jobname:
   Waiting: '尚未分配'
   Watching: '观战者'
 
+# 魔女·反逆者モード用魔法（副職業）
 # Name of categories.
 categoryName:
   Human: '村人系'
@@ -1215,5 +1216,6 @@ Decider:
 Authority:
   jobname: '{{jobname}}（权力者）'
 
+# 魔女·反逆者モード用魔法
 Chemical:
   jobname: '{{left}}×{{right}}'

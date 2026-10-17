@@ -665,7 +665,7 @@ class Game
         game
     # 公開情報
     publicinfo:(obj)->  #obj:オプション
-        {
+        info =
             rule:@rule
             finished:@finished
             players:@players.map (x)=>
@@ -689,7 +689,9 @@ class Game
             jobscount:@jobscount
             # whether watch speak is allowed.
             watchspeak: @watchspeak != false
-        }
+        if @rule?.antimode == "majoanti"
+            info.majoantiMagics = @rule._majoantiMagics ? getAssignedMajoantiMagics this
+        info
     # IDからプレイヤー
     getPlayer:(id)->
         @players.filter((x)->x.id==id)[0]
@@ -1033,6 +1035,10 @@ class Game
                 nonvillagers.splice r, 1
                 drunkCount--
 
+
+        # 魔女·反逆者模式：为每个玩家随机分配一个魔法（antimode为majoanti时触发）
+        if @rule.antimode == "majoanti"
+            assignMajoantiMagics @
 
         # プレイヤーシャッフル
         @players=shuffle @players
@@ -12362,6 +12368,19 @@ class Complex
                 res[key] ||= value
         res
 
+
+# ============================================================
+# 魔女·反逆者模式支持
+# ============================================================
+
+# 魔女·反逆者模式检测函数（通过antimode配置判断）
+isMajoantiMode = (antimode)->
+    return antimode == "majoanti"
+
+# 魔女·反逆者模式 - 23种魔法副职业类（白板职业，只有名称不同）
+# ============================================================
+
+# 1. 缔结
 #superがつかえないので注意
 class Friend extends Complex    # 恋人
     # cmplFlag: 相方のid
@@ -14089,6 +14108,8 @@ complexes=
     OnedayAuthority:OnedayAuthority
     HouseKeeped: HouseKeeped
 
+    # 魔女·反逆者モード用魔法クラス
+
     # 役職ごとの強さ
 jobStrength=
     Human:5
@@ -15425,6 +15446,13 @@ module.exports.actions=(req,res,ss)->
                     comment: game.i18n.t "system.gamestart.divinerModeChanged"
                 splashlog game.id,game,log
 
+            # 魔女·反逆者模式：公布大日志
+            if query.antimode == "majoanti"
+                log=
+                    mode:"system"
+                    comment: game.i18n.t "system.gamestart.majoantiMode"
+                splashlog game.id,game,log
+
             if query.shoji=="on" && LOG_PEEKING_JOBS.some((job)-> joblist[job] > 0)
                 log=
                     mode:"system"
@@ -15506,7 +15534,8 @@ module.exports.actions=(req,res,ss)->
             "poisonwolf",
             "friendssplit",
             "quantumwerewolf_table","quantumwerewolf_dead","quantumwerewolf_diviner","quantumwerewolf_firstattack","yaminabe_hidejobs","yaminabe_safety",
-            "hide_singleton_teams"
+            "hide_singleton_teams",
+            "antimode"  # 魔女·反逆者模式配置（anti/majoanti）
             ]
 
                 ruleobj[x]=query[x] ? null
@@ -16370,3 +16399,56 @@ shuffle= (arr)->
 # ゲーム情報ツイート
 tweet=(roomid,message)->
     Server.oauth.template roomid,message,Config.admin.password
+
+
+# 魔女·反逆者模式的魔法列表
+MAJOANTI_MAGICS = [
+]
+
+# 魔女·反逆者模式：公开当前场上已分配的魔法种类
+getAssignedMajoantiMagics = (game)->
+    makeMajoantiMagicDetails game, MAJOANTI_MAGICS.filter((magicType)->
+        game.players.some (pl)-> pl.isCmplType magicType
+    )
+
+makeMajoantiMagicDetails = (game, magicTypes)->
+    magicTypes.map (magicType)->
+        {
+            name: game.i18n.t "roles:#{magicType}.name"
+            type: magicType
+        }
+
+# 魔女·反逆者模式：为每个玩家随机分配一个魔法
+assignMajoantiMagics = (game)->
+    playerCount = game.players.length
+    magicCount = MAJOANTI_MAGICS.length  # 23
+
+    # 如果玩家人数超过魔法数（23人），不进行分配
+    if playerCount > magicCount
+        return
+
+    # 根据玩家人数确定可用的魔法列表（使用前N种）
+    # 例如：5人游戏使用前5种魔法，15人游戏使用前15种魔法
+    availableMagics = MAJOANTI_MAGICS.slice(0, playerCount)
+
+    # 创建可用的魔法副本用于随机分配（不放回抽样）
+    shuffledMagics = availableMagics.slice()
+    assignedMagics = []
+
+    # 遍历所有玩家，为每人分配一个唯一的魔法
+    for pl in game.players
+        # 随机选择一个魔法索引
+        magicIndex = Math.floor(Math.random() * shuffledMagics.length)
+        # 从数组中取出并移除该魔法（不放回）
+        magicType = shuffledMagics.splice(magicIndex, 1)[0]
+        assignedMagics.push magicType
+
+        # 创建魔法Complex并附加到玩家身上
+        magicClass = complexes[magicType]
+        unless magicClass?
+            continue
+        newpl = Player.factory null, game, pl, null, magicClass
+        pl.transProfile newpl
+        pl.transform game, newpl, true, true
+
+    game.rule._majoantiMagics = makeMajoantiMagicDetails game, assignedMagics

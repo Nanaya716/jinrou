@@ -131,4 +131,19 @@ export interface Rule {
    * Job numbers.
    */
   jobNumbers: Record<string, number>;
+  /**
+   * Majoanti magics assigned in this game.
+   */
+  majoantiMagics?: Array<RuleRoleDetail | string>;
+}
+
+export interface RuleRoleDetail {
+  /**
+   * Display name of role.
+   */
+  name: string;
+  /**
+   * Id of role.
+   */
+  type: string;
 }

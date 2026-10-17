@@ -56,6 +56,13 @@ rule:
     label: "会有随机一人变成醉鬼。醉鬼在第三天夜里之前会把自己当做村人。"
     yes: "有"
     no: ""
+  antimode:
+    name: "反逆者模式"
+    label: "所有人获得一个反逆者风格的副职业。"
+    labels:
+      no: "不启用"
+      anti: "原版反逆者模式"
+      majoanti: "魔女·反逆者模式"
   scapegoat:
     name: "替身君"
     label: "替身君是在第一天夜里被杀的NPC。"
