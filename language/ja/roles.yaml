@@ -229,6 +229,7 @@ jobname:
   MajoantiBond: '缔结'
   MajoantiBodySwap: '身体交换'
   MajoantiBrainwash: '洗脑'
+  MajoantiFloat: '漂浮'
   MajoantiClairvoyance: '千里眼'
   MajoantiFlame: '火焰操纵'
   MajoantiDeathRecall: '死亡回溯'
@@ -1372,6 +1373,9 @@ MajoantiBodySwap:
 MajoantiBrainwash:
   name: '洗脑'
   jobname: '{{jobname}}（洗脑）'
+MajoantiFloat:
+  name: '漂浮'
+  jobname: '{{jobname}}（漂浮）'
 MajoantiClairvoyance:
   name: '千里眼'
   jobname: '{{jobname}}（千里眼）'

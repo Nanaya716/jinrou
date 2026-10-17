@@ -14195,6 +14195,20 @@ class MajoantiBrainwash extends Complex
         }
 
 # 9. 声音模仿
+class MajoantiFloat extends Complex
+    cmplType:"MajoantiFloat"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiFloat.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiFloat.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiFloat.name"
+            type: "MajoantiFloat"
+        }
+
+# 12. 千里眼
 class MajoantiClairvoyance extends Complex
     cmplType:"MajoantiClairvoyance"
     formType: FormType.optional
@@ -16057,6 +16071,7 @@ complexes=
     MajoantiBond: MajoantiBond
     MajoantiBodySwap: MajoantiBodySwap
     MajoantiBrainwash: MajoantiBrainwash
+    MajoantiFloat: MajoantiFloat
     MajoantiClairvoyance: MajoantiClairvoyance
     MajoantiFlame: MajoantiFlame
     MajoantiDeathRecall: MajoantiDeathRecall
@@ -18437,6 +18452,7 @@ MAJOANTI_MAGICS = [
     "MajoantiBond",           # 1. 缔结
     "MajoantiBodySwap",       # 5. 身体交换
     "MajoantiBrainwash",      # 8. 洗脑
+    "MajoantiFloat",          # 11. 漂浮
     "MajoantiClairvoyance",   # 12. 千里眼
     "MajoantiFlame",          # 14. 火焰操纵
     "MajoantiDeathRecall",    # 19. 死亡回溯
