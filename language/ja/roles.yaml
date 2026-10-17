@@ -240,6 +240,7 @@ jobname:
   MajoantiGreatWitch: '大魔女'
   MajoantiDeathRecall: '死亡回溯'
   MajoantiGrudgeBite: '怨念反噬'
+  MajoantiMomentaryReturn: '刹那回归'
 # Name of categories.
 categoryName:
   Human: '村人系'
@@ -1413,5 +1414,8 @@ MajoantiDeathRecall:
 MajoantiGrudgeBite:
   name: '怨念反噬'
   jobname: '{{jobname}}（怨念反噬）'
+MajoantiMomentaryReturn:
+  name: '刹那回归'
+  jobname: '{{jobname}}（刹那回归）'
 Chemical:
   jobname: '{{left}}×{{right}}'
