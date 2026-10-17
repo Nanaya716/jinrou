@@ -6,6 +6,7 @@ jobname:
   Werewolf: '人狼'
   Diviner: '占卜师'
   Psychic: '灵能者'
+  MindPsychic: '念缚灵能者'
   Madman: '狂人'
   RebelliousMadman: '反逆的狂人'
   Guard: '猎人'
@@ -268,7 +269,14 @@ Psychic:
   # Psychic result.
   resultlog: '根据 {{name}} 的灵能结论，被处刑的 {{target}} 是 {{result}}。'
 
+# MindPsychic - 念缚灵能者，拥有念杀护卫能力
+MindPsychic:
+  # 继承 Psychic 的所有能力
+  result:
+    human: '村人'
   resultlog: '根据 {{name}} 的灵能结论，被处刑的 {{target}} 是 {{result}}。'
+  # 念杀护卫选择
+  curseGuardSelect: '{{name}} 决定对 {{target}} 施加念杀护卫。'
 
 # Werewolf
 Werewolf:

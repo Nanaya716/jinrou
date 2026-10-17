@@ -4189,6 +4189,68 @@ class Psychic extends Player
         return false
 
 # 真·灵能者 - 拥有念杀护卫能力的灵能者
+class MindPsychic extends Psychic
+    type:"MindPsychic"
+    formType: FormType.optional
+    constructor:->
+        super
+    # 真·灵能者抵抗念杀
+    hasDeadResistance:->true
+    checkDeathResistance:(game, found, from)->
+        # 只有念杀会被抵抗
+        return super unless found == "nekikill"
+        # 念杀被抵抗
+        true
+    sleeping:-> true
+    # 使用@target来检查是否已选择护卫目标
+    jobdone:(game)-> @target?
+    sunset:(game)->
+        super
+        @setTarget null
+
+    job:(game,playerid)->
+        guardpl = game.getPlayer playerid
+        unless guardpl?
+            return game.i18n.t "error.common.nonexistentPlayer"
+
+        @setTarget playerid
+
+        log=
+            mode:"skill"
+            to:@id
+            comment: game.i18n.t "roles:MindPsychic.curseGuardSelect", {name: @name, target: guardpl.name}
+        splashlog game.id,game,log
+        null
+
+    midnight:(game,midnightSort)->
+        super
+
+        # 对自己施加念杀护卫
+        newpl = Player.factory null, game, @, null, GuardedByPsychic
+        @transProfile newpl
+        newpl.cmplFlag = @id
+        @transform game, newpl, true
+
+        # 对护卫目标施加念杀护卫
+        guardTarget = game.getPlayer game.skillTargetHook.get @target
+        unless guardTarget?
+            return
+
+        currentGuardTarget = game.getPlayer @target
+        unless currentGuardTarget? && !currentGuardTarget.dead
+            return
+
+        newpl2 = Player.factory null, game, guardTarget, null, GuardedByPsychic
+        guardTarget.transProfile newpl2
+        newpl2.cmplFlag = @id
+        guardTarget.transform game, newpl2, true
+        newpl2.touched game, @id
+        null
+
+    sunrise:(game)->
+        super
+        @setTarget null
+
 class Madman extends Player
     type:"Madman"
     team:"Werewolf"
@@ -12647,6 +12709,27 @@ isMajoantiMode = (antimode)->
 # ============================================================
 
 # 1. 缔结
+class GuardedByPsychic extends Complex
+    cmplType: "GuardedByPsychic"
+    # cmplFlag: 灵能者ID
+    checkDeathResistance:(game, found, from)->
+        guard = game.getPlayer @cmplFlag
+
+        # 只能护卫念杀攻击（nekikill）
+        unless found == "nekikill"
+            return super
+        # 念杀护卫成功
+        # 灵能者需要等待姬狐进行献祭
+        # 这里只是标记护卫成功，献祭由姬狐的midnight处理
+        guard.addGamelog game, "curseGuard", null, @id
+
+        return true  # 被护卫者暂时不死（等待姬狐献祭）
+    sunrise:(game)->
+        # 一日只能护卫一次
+        @mcall game, @main.sunrise, game
+        @sub?.sunrise? game
+        @uncomplex game
+
 #superがつかえないので注意
 class Friend extends Complex    # 恋人
     # cmplFlag: 相方のid
@@ -14124,6 +14207,7 @@ jobs=
     Werewolf:Werewolf
     Diviner:Diviner
     Psychic:Psychic
+    MindPsychic:MindPsychic
     Madman:Madman
     RebelliousMadman:RebelliousMadman
     Guard:Guard
@@ -14307,6 +14391,7 @@ jobs=
     ResidualHaunting:ResidualHaunting
     HouseKeeper: HouseKeeper
     RainyBoy:RainyBoy
+    MindPsychic:MindPsychic
     DarkPsychic:DarkPsychic
     Itako:Itako
     SpaceWerewolfCrew:SpaceWerewolfCrew
@@ -14378,6 +14463,7 @@ complexes=
     RaidProtected:RaidProtected
     OnedayAuthority:OnedayAuthority
     HouseKeeped: HouseKeeped
+    GuardedByPsychic:GuardedByPsychic
 
     # 魔女·反逆者モード用魔法クラス
 
@@ -14387,6 +14473,7 @@ jobStrength=
     Werewolf:40
     Diviner:25
     Psychic:15
+    MindPsychic:15
     Madman:10
     RebelliousMadman:12
     Guard:23
