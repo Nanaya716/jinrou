@@ -3210,7 +3210,8 @@ class VotingBox
         gots={}
         #for obj in @votes
         alives = @game.players.filter (x)->!x.dead
-        for pl in alives
+        voters = @game.players.filter (x)=> !x.dead || @getHisVote(x)?
+        for pl in voters
             obj=@getHisVote pl
             o=pl.publicinfo()
             if obj?
