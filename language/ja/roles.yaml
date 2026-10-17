@@ -229,6 +229,7 @@ jobname:
   MajoantiBond: '缔结'
   MajoantiBodySwap: '身体交换'
   MajoantiFutureSight: '未来视'
+  MajoantiHeal: '治愈'
   MajoantiBrainwash: '洗脑'
   MajoantiFloat: '漂浮'
   MajoantiClairvoyance: '千里眼'
@@ -1377,6 +1378,9 @@ MajoantiBodySwap:
 MajoantiFutureSight:
   name: '未来视'
   jobname: '{{jobname}}（未来视）'
+MajoantiHeal:
+  name: '治愈'
+  jobname: '{{jobname}}（治愈）'
 MajoantiBrainwash:
   name: '洗脑'
   jobname: '{{jobname}}（洗脑）'

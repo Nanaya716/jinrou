@@ -14195,6 +14195,20 @@ class MajoantiFutureSight extends Complex
         }
 
 # 7. 治愈
+class MajoantiHeal extends Complex
+    cmplType:"MajoantiHeal"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiHeal.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiHeal.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiHeal.name"
+            type: "MajoantiHeal"
+        }
+
+# 8. 洗脑
 class MajoantiBrainwash extends Complex
     cmplType:"MajoantiBrainwash"
     formType: FormType.optional
@@ -16127,6 +16141,7 @@ complexes=
     MajoantiBond: MajoantiBond
     MajoantiBodySwap: MajoantiBodySwap
     MajoantiFutureSight: MajoantiFutureSight
+    MajoantiHeal: MajoantiHeal
     MajoantiBrainwash: MajoantiBrainwash
     MajoantiFloat: MajoantiFloat
     MajoantiClairvoyance: MajoantiClairvoyance
@@ -18512,6 +18527,7 @@ MAJOANTI_MAGICS = [
     "MajoantiBond",           # 1. 缔结
     "MajoantiBodySwap",       # 5. 身体交换
     "MajoantiFutureSight",    # 6. 未来视
+    "MajoantiHeal",           # 7. 治愈
     "MajoantiBrainwash",      # 8. 洗脑
     "MajoantiFloat",          # 11. 漂浮
     "MajoantiClairvoyance",   # 12. 千里眼
