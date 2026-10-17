@@ -3504,6 +3504,8 @@ class Player
     isWerewolfVisible:->@isWerewolf()
     # 妖狐の仲間としてみえるか
     isFoxVisible:->false
+    # 背德以外背德系仲間としてみえるか
+    isPerfidiousVisible:->false
     # 恋人かどうか
     isFriend:->false
     # Complexかどうか
@@ -3532,6 +3534,8 @@ class Player
         draculaBitten: false
         # サンタクロース
         santaclauses: false
+        # 背信者
+        perfidious: false
         # 詐欺師（宇宙人狼）
         spaceWerewolfImposters: false
     }
@@ -4270,6 +4274,7 @@ class Fox extends Player
         res = super
         # 妖狐は仲間が分かる
         res.foxes = true
+        res.perfidious = true
         res
     divined:(game,player)->
         super
@@ -4941,11 +4946,34 @@ class Immoral extends Player
         unless game.players.some((x)->!x.dead && x.isFox())
             @die game, "foxsuicide"
         return false
+class Perfidious extends Player
+    type:"Perfidious"
+    team:"Fox"
+    beforebury:(game)->
+        return false if @dead
+        # 狐が全員死んでいたら自殺
+        unless game.players.some((x)->!x.dead && x.isFox())
+            @die game, "foxsuicide"
+        return false
+    isPerfidiousVisible:->true
     # 背徳者は妖狐が分かる
     getVisibilityQuery:->
         res = super
         res.foxes = true
         res
+    # 背徳者は妖狐が分かる
+    getVisibilityQuery:->
+        res = super
+        res.foxes = true
+        res.perfidious = true
+        res
+    isListener:(game,log)->
+        if log.mode=="fox"
+            true
+        else super
+    getSpeakChoice:(game)->
+        ["fox"].concat super
+
 class Devil extends Player
     type:"Devil"
     team:"Devil"
@@ -13889,6 +13917,7 @@ class Chemical extends Complex
     isFox:-> @main.isFox() || @sub?.isFox()
     isWerewolfVisible:-> @main.isWerewolfVisible() || @sub?.isWerewolfVisible()
     isFoxVisible:-> @main.isFoxVisible() || @sub?.isFoxVisible()
+    isPerfidiousVisible:-> @main.isPerfidiousVisible() || @sub?.isPerfidiousVisible()
     isVampire:-> @main.isVampire() || @sub?.isVampire()
     isAttacker:-> @main.isAttacker?() || @sub?.isAttacker?()
     humanCount:->
@@ -14070,6 +14099,7 @@ jobs=
     Light:Light
     Fanatic:Fanatic
     Immoral:Immoral
+    Perfidious:Perfidious
     Devil:Devil
     ToughGuy:ToughGuy
     Cupid:Cupid
@@ -14329,6 +14359,7 @@ jobStrength=
     Light:30
     Fanatic:20
     Immoral:5
+    Perfidious:5
     Devil:20
     ToughGuy:11
     Cupid:37
@@ -16334,6 +16365,10 @@ writeGlobalJobInfo = (game, player, result={})->
         # 詐欺師（宇宙人狼）
         if vq.spaceWerewolfImposters
             result.spaceWerewolfImposters = game.players.filter((x)->x.isJobType "SpaceWerewolfImposter").map (x)->
+                x.publicinfo()
+        # 背德者
+        if vq.perfidious
+            result.perfidious = game.players.filter((x)->x.isPerfidiousVisible()).map (x)->
                 x.publicinfo()
 
 #job情報を
