@@ -1,7 +1,8 @@
 dbinit= (loaded)->
     c=Config.mongo
-    mongodb=require 'mongodb'
-    client = new mongodb.MongoClient("mongodb://#{c.user}:#{c.pass}@#{c.host}:#{c.port}/#{c.database}?w=0")
+    mongodb=require 'mongodb-legacy'
+    auth = if c.user then "#{encodeURIComponent(c.user)}:#{encodeURIComponent(c.pass ? '')}@" else ""
+    client = new mongodb.MongoClient("mongodb://#{auth}#{c.host}:#{c.port}/#{c.database}?w=1")
     client.connect (err)->
         if err?
             console.error err

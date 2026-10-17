@@ -10,9 +10,7 @@
  */
 
 // MongoDB connection configuration
-const user = "test";        // TODO: Change to your username
-const password = "test";    // TODO: Change to your password
-const db = "werewolf";      // Database name
+const uri = process.env.JINRO_MONGO_URI;
 
 const mongo = require('mongodb');
 
@@ -41,21 +39,10 @@ connect()
 /**
  * Connect to MongoDB database
  */
-function connect() {
-  return new Promise((resolve, reject) => {
-    const url = `mongodb://${user}:${password}@localhost:27017/${db}?w=1`;
-    console.log('Connecting to MongoDB...');
-
-    mongo.MongoClient.connect(url, function(err, client) {
-      if (err) {
-        reject(err);
-      } else {
-        console.log('Connected successfully\n');
-        const database = client.db(db);
-        resolve({ client, database });
-      }
-    });
-  });
+async function connect() {
+  if (!uri) throw new Error("Set JINRO_MONGO_URI to the target database URI.");
+  const client = await mongo.MongoClient.connect(uri);
+  return { client, database: client.db() };
 }
 
 /**

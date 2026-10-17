@@ -2,7 +2,7 @@
 crypto=require('crypto')
 child_process=require('child_process')
 settings=Config.mongo
-ObjectID=require('mongodb').ObjectID
+ObjectId=require('mongodb').ObjectId
 
 libblacklist = require '../libs/blacklist.coffee'
 libi18n      = require '../libs/i18n.coffee'
@@ -309,7 +309,7 @@ exports.actions =(req,res,ss)->
             res {error: i18n.t "common:error.invalidInput"}
             return
         try
-            id=new ObjectID query.id
+            id=new ObjectId query.id
         catch err
             res {error: i18n.t "common:error.invalidInput"}
             return
@@ -333,7 +333,7 @@ exports.actions =(req,res,ss)->
             res {error: i18n.t "common:error.invalidInput"}
             return
         try
-            id=new ObjectID query.id
+            id=new ObjectId query.id
         catch err
             res {error: i18n.t "common:error.invalidInput"}
             return

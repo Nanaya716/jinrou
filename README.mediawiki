@@ -7,8 +7,8 @@ Are you a werewolf?
 
 == requirements ==
 * Redis
-* MongoDB >= 6.0
-* Node.js 24 (legacy SocketStream compatibility patches included)
+* MongoDB 8.0 (test instance: 8.0.16)
+* Node.js 22 (test runtime: 22.20.0; legacy SocketStream compatibility patches retained)
 
 == usage ==
 # Copy the source code
@@ -110,4 +110,7 @@ To run jinrou in an isolated environment using docker-compose, enther `docker` d
 
 
 == translate upgrade ==
-MongoDB driver 4.17 is used. Before starting against an existing database, set JINRO_MONGO_URI to its URI and run `node tool/migrate-blacklist-userid-index.js` to inspect, then `node tool/migrate-blacklist-userid-index.js --apply`. This required, idempotent migration replaces only the old unique blacklist.userid_1 index with a non-unique index; documents and the unique id index are preserved. Stop the app during this migration. Fresh databases already use the new index.
+MongoDB driver 6.21.0 and mongodb-legacy 6.1.3 are pinned. The deprecated legacy adapter bridges existing callbacks as a transition; future driver 7 migration requires converting these calls to Promises. Before starting against an existing database, set JINRO_MONGO_URI to its URI and run `node tool/migrate-blacklist-userid-index.js` to inspect, then `node tool/migrate-blacklist-userid-index.js --apply`. This required, idempotent migration replaces only the old unique blacklist.userid_1 index with a non-unique index; documents and the unique id index are preserved. Stop the app during this migration. Fresh databases already use the new index.
+
+For a reproducible local database smoke test, start a dedicated MongoDB 8 instance bound only to 127.0.0.1 on an unused port, set JINRO_SMOKE_PORT to that port, then run `node tests/mongodb8-smoke.js`. The script uses a random guarded test database and removes only its own fixtures. It never reads config/app.coffee. Node 22 and MongoDB 8 were tested locally on Windows; the Linux Docker image and complete app/Redis/browser flow still require staging verification.
+Historical tool/repair.js through tool/repair9.js target older driver APIs and are not deployment steps for this stack. tool/repair10-rebuild-userrawlogs-index.js uses the modern Promise API and an explicit JINRO_MONGO_URI; run database-changing tools only against the intended upgraded database during maintenance.

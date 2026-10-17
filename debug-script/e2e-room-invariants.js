@@ -364,12 +364,7 @@ function mongoUrl(opts) {
 }
 
 function connect(url) {
-  return new Promise((resolve, reject) => {
-    mongo.MongoClient.connect(
-      url,
-      (err, client) => (err ? reject(err) : resolve(client)),
-    );
-  });
+  return mongo.MongoClient.connect(url);
 }
 
 async function withDb(url, fn) {

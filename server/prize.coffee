@@ -106,6 +106,7 @@ module.exports=exports=
             M.userlogs.findOneAndUpdate {userid: pl.realid}, query, {
                 upsert: true
                 returnDocument: "after"
+                includeResultMetadata: true
                 w: 1
             }, (err, res)->
                 if err?

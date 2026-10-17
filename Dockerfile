@@ -1,5 +1,5 @@
 # Dockerfile to run jinrou in a docker container.
-FROM node:8
+FROM node:22
 MAINTAINER uhyo
 # define work directory
 WORKDIR /jinrou
@@ -11,8 +11,7 @@ ARG APP_CONFIG=config/app-image.coffee
 # COPY ./node_modules ./node_modules/
 COPY ./package.json ./package-lock.json ./
 RUN npm config set registry https://registry.npmmirror.com/ \
- && npm config set strict-ssl false \
- && npm install --production --no-audit --no-fund
+ && npm ci --omit=dev --no-audit --no-fund
 # copy source files.
 COPY ./prizedata ./prizedata/
 COPY ./public ./public/
