@@ -46,6 +46,7 @@ messages:
   TinyFox: '请选择要占卜的对象'
   SuperFox: '请选择要诅咒的对象'
   Guard: '请选择要护卫的对象'
+  OldGuard: '请选择要护卫的对象'
   SuperGuard: '请选择要SP护卫的对象'
   MindPsychic: '请选择要施加念杀护卫的对象'
   Magician: '请选择要复活的对象'

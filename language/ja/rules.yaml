@@ -259,7 +259,7 @@ rule:
     no: "无"
   guardmyself:
     name: "是否允许猎人系保护自身"
-    label: "对猎人・游荡猎人・Cosplayer・陷阱师・武士・精灵术士生效。"
+    label: "对猎人・老骑士・游荡猎人・Cosplayer・陷阱师・武士・精灵术士生效。"
     yes: "允许"
     no: ""
   gjmessage:
@@ -269,7 +269,7 @@ rule:
     no: ""
   consecutiveguard:
     name: "连续护卫"
-    label: "是否允许猎人・游荡猎人・Cosplayer・武士・精灵术士连续守护同一个人。"
+    label: "是否允许猎人・老骑士・游荡猎人・Cosplayer・武士・精灵术士连续守护同一个人。"
     labels:
       yes: "允许"
       no: "禁止"
