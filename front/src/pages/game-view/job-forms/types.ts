@@ -17,6 +17,8 @@ export const specialNamedTypes = [
   'GachaAddicted_Normal',
   'SuperDiviner',
   'NormalDiviner',
+  'SuperGuard',
+  'NormalGuard',
   'GachaAddicted_Premium',
   'GachaAddicted_Commit',
   // HimeFox forms
@@ -39,6 +41,8 @@ export const specialContentTypes = [
   'DragonKnight',
   'SuperDiviner',
   'NormalDiviner',
+  'SuperGuard',
+  'NormalGuard',
   'Poet1',
   'Poet2',
   'GachaAddicted_Normal',

@@ -11,6 +11,7 @@ jobname:
   Madman: '狂人'
   RebelliousMadman: '反逆的狂人'
   Guard: '猎人'
+  SuperGuard: 'SP猎人'
   Couple: '共有者'
   Fox: '妖狐'
   NineTailedFox: '九尾狐'
@@ -322,6 +323,15 @@ Guard:
   gj: '{{guard}} 成功守护了 {{name}}。'
 
 # Guard
+SuperGuard:
+  # Error: a Guard cannot guard a same player twice in a row
+  noGuardSame: '不能连续守护同一个人。'
+  # Selected a target.
+  select: '{{name}} 守护了 {{target}}。'
+  SuperSelect: '{{name}} 额外守护了 {{target}}。'
+  # Log of GJ
+  gj: '{{guard}} 成功守护了 {{name}}。'
+
 # Poisoner
 Poisoner:
   select: '{{name}} 的毒药泼了 {{target}} 一脸。'

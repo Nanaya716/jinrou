@@ -22,6 +22,8 @@ specialName:
   Poet2: '诗人的能力'
   SuperDiviner: 'SP占卜师的能力'
   NormalDiviner: 'SP占卜师的能力'
+  NormalGuard: 'SP猎人的能力'
+  SuperGuard: 'SP猎人的能力'
   GachaAddicted_Normal: '课金者的能力'
   GachaAddicted_Premium: '课金者的能力'
   GachaAddicted_Commit: '课金者的能力'
@@ -42,6 +44,7 @@ messages:
   SuperDiviner: '请选择要SP占卜的对象'
   TinyFox: '请选择要占卜的对象'
   Guard: '请选择要护卫的对象'
+  SuperGuard: '请选择要SP护卫的对象'
   MindPsychic: '请选择要施加念杀护卫的对象'
   Magician: '请选择要复活的对象'
   Spy: '准备今晚离开村子的时候请选择'
@@ -206,6 +209,14 @@ DragonKnight:
   # kill button (already used)
   killButtonUsed: '杀害（已经使用）'
 
+SuperGuard:
+  description: '请选择SP护卫的使用对象'
+  Superdescription: '请选择SP护卫的使用对象'
+  # normal guard button.
+  GuardButton: '护卫'
+  SuperGuardUsedButton: 'SP护卫（只限一次）'
+  SuperGuardUsedButtonUsed: 'SP护卫（已经使用）'
+  
 SuperDiviner:
   description: '请选择占卜的使用对象'
   Superdescription: '请选择SP占卜的使用对象'
