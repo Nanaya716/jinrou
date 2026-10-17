@@ -232,6 +232,7 @@ jobname:
   MajoantiFutureSight: '未来视'
   MajoantiHeal: '治愈'
   MajoantiBrainwash: '洗脑'
+  MajoantiStrength: '怪力'
   MajoantiFloat: '漂浮'
   MajoantiClairvoyance: '千里眼'
   MajoantiGazeGuide: '视线引导'
@@ -1392,6 +1393,9 @@ MajoantiHeal:
 MajoantiBrainwash:
   name: '洗脑'
   jobname: '{{jobname}}（洗脑）'
+MajoantiStrength:
+  name: '怪力'
+  jobname: '{{jobname}}（怪力）'
 MajoantiFloat:
   name: '漂浮'
   jobname: '{{jobname}}（漂浮）'

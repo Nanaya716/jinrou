@@ -14237,6 +14237,20 @@ class MajoantiBrainwash extends Complex
         }
 
 # 9. 声音模仿
+class MajoantiStrength extends Complex
+    cmplType:"MajoantiStrength"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiStrength.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiStrength.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiStrength.name"
+            type: "MajoantiStrength"
+        }
+
+# 11. 漂浮
 class MajoantiFloat extends Complex
     cmplType:"MajoantiFloat"
     formType: FormType.optional
@@ -16214,6 +16228,7 @@ complexes=
     MajoantiFutureSight: MajoantiFutureSight
     MajoantiHeal: MajoantiHeal
     MajoantiBrainwash: MajoantiBrainwash
+    MajoantiStrength: MajoantiStrength
     MajoantiFloat: MajoantiFloat
     MajoantiClairvoyance: MajoantiClairvoyance
     MajoantiGazeGuide: MajoantiGazeGuide
@@ -18605,6 +18620,7 @@ MAJOANTI_MAGICS = [
     "MajoantiFutureSight",    # 6. 未来视
     "MajoantiHeal",           # 7. 治愈
     "MajoantiBrainwash",      # 8. 洗脑
+    "MajoantiStrength",       # 10. 怪力
     "MajoantiFloat",          # 11. 漂浮
     "MajoantiClairvoyance",   # 12. 千里眼
     "MajoantiGazeGuide",      # 13. 视线引导
