@@ -101,6 +101,7 @@ const CloseButton = styled.span`
     color: black;
   }
 `;
+const closeButtonClassName = 'dialog-close-button';
 const DialogMain = styled.div`
   margin: 0.8em;
 `;
@@ -144,7 +145,10 @@ class DialogBaseInner extends React.PureComponent<IPropDialogBase, {}> {
               <Title id={titleid} className={titleClassName}>
                 {icon ? <FontAwesomeIcon icon={icon} /> : null}
                 {title}
-                <CloseButton onClick={onCancel}>
+                <CloseButton
+                  className={closeButtonClassName}
+                  onClick={onCancel}
+                >
                   <FontAwesomeIcon icon="times" />
                 </CloseButton>
               </Title>
@@ -242,24 +246,31 @@ export function Dialog({
     <WithRandomIds names={['titleClassName']}>
       {({ titleClassName }) => (
         <DialogWrapper modal={modal}>
-          <Draggable bounds="body" handle={`.${titleClassName}`}>
-            <DialogBase
-              title={title}
-              titleClassName={titleClassName}
-              icon={icon}
-              onCancel={onCancel}
-              form={form}
-              formRef={formRef}
-              onSubmit={onSubmit}
-            >
-              {message != null ? <p>{message}</p> : null}
-              {contents ? (
-                <DialogMainContents>{contents()}</DialogMainContents>
-              ) : null}
-              <Buttons>{buttons()}</Buttons>
-              {afterButtons ? afterButtons() : null}
-            </DialogBase>
-          </Draggable>
+          <DraggableContainer
+            bounds="body"
+            handle={`.${titleClassName}`}
+            cancel={`.${closeButtonClassName}`}
+            nodeRef={draggableNodeRef}
+          >
+            <div ref={draggableNodeRef}>
+              <DialogBase
+                title={title}
+                titleClassName={titleClassName}
+                icon={icon}
+                onCancel={onCancel}
+                form={form}
+                formRef={formRef}
+                onSubmit={onSubmit}
+              >
+                {message != null ? <p>{message}</p> : null}
+                {contents ? (
+                  <DialogMainContents>{contents()}</DialogMainContents>
+                ) : null}
+                <Buttons>{buttons()}</Buttons>
+                {afterButtons ? afterButtons() : null}
+              </DialogBase>
+            </div>
+          </DraggableContainer>
         </DialogWrapper>
       )}
     </WithRandomIds>
