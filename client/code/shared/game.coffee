@@ -13,7 +13,7 @@ exports.jobs=["Human","Werewolf","Diviner","Psychic","MindPsychic","Madman","Reb
 # るる鯖で見つけた职业
 "Fanatic","HearMadman","Immoral","SuperDiviner","SuperGuard","SuperFox"
 # 特殊役職2
-"Devil","Stalker","WhisperingMad","Dog","Perfidious","Heretic",
+"Devil","Stalker","WhisperingMad","Dog","Perfidious","Heretic","HolyMarked",
 # 桃栗基本特殊役職
 "Bat","Noble","Slave","Magician","Spy","WolfDiviner","NormalWolfDiviner"
 # 桃栗期間限定役職
@@ -107,7 +107,7 @@ exports.jobs=["Human","Werewolf","Diviner","Psychic","MindPsychic","Madman","Reb
 ]
 # 隠されていて自分で入れることができない役職
 exports.hiddenJobs = [
-    "Light", "Neet", "MinionSelector", "QuantumPlayer","HolyMarked",
+    "Light", "Neet", "MinionSelector", "QuantumPlayer",
     # 宇宙人狼
     "SpaceWerewolfCrew", "SpaceWerewolfImposter", "SpaceWerewolfObserver","SpaceWerewolfGuard","SpaceWerewolfSabotage"
 ]
