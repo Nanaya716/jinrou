@@ -13,6 +13,7 @@ export interface IPropPlayerBox {
   t: TranslationFunction;
   player: PlayerInfo;
   onEnableFilter(): void;
+  onInsertName?(name: string): void;
 }
 /**
  * A box which shows one player.
@@ -33,6 +34,7 @@ export class PlayerBox extends React.Component<IPropPlayerBox, {}> {
         winner,
         flags,
       },
+      onInsertName,
     } = this.props;
     return (
       <Wrapper dead={dead} hasIcon={icon != null}>
@@ -45,6 +47,12 @@ export class PlayerBox extends React.Component<IPropPlayerBox, {}> {
           )}
         </Name>
         <ToolIcons>
+          {/* Plus icon for name insertion - hidden but functional */}
+          {/* {onInsertName && (
+            <span onClick={this.handleInsertNameClick}>
+              <FontAwesomeIcon icon="plus" />
+            </span>
+          )} */}
           <span onClick={this.handleFilterClick}>
             <FontAwesomeIcon icon="search" />
           </span>
@@ -73,6 +81,13 @@ export class PlayerBox extends React.Component<IPropPlayerBox, {}> {
   private handleFilterClick() {
     // Handle a click of filter icon.
     this.props.onEnableFilter();
+  }
+  @bind
+  private handleInsertNameClick() {
+    const { player, onInsertName } = this.props;
+    if (onInsertName) {
+      onInsertName(player.name);
+    }
   }
 }
 

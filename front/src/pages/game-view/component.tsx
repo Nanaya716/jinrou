@@ -158,7 +158,11 @@ export class Game extends React.Component<IPropGame, {}> {
           <AppWrapper>
             {/* List of players. */}
             <RoomHeaderPart ref={this.playersElement}>
-              <Players players={players} onFilter={this.handleLogFilter} />
+              <Players
+                players={players}
+                onFilter={this.handleLogFilter}
+                onInsertName={this.handlePlayerNameClick}
+              />
             </RoomHeaderPart>
             {/* Room control buttons. */}
             {roomControls != null ? (
@@ -306,12 +310,7 @@ export class Game extends React.Component<IPropGame, {}> {
   @bind
   protected handleSpeak(query: SpeakQuery): void {
     const { store, onSpeak } = this.props;
-    // Back to the single line mode.
-    store.update({
-      speakState: {
-        multiline: false,
-      },
-    });
+    // Don't reset multiline state, keep current state
     onSpeak(query);
   }
   /**
@@ -321,6 +320,15 @@ export class Game extends React.Component<IPropGame, {}> {
   protected handleRefuseRevival(): void {
     const { onRefuseRevival } = this.props;
     onRefuseRevival();
+  }
+  /**
+   * Handle a click on player name in log.
+   */
+  @bind
+  protected handlePlayerNameClick(playerName: string): void {
+    if (this.speakFormRef.current != null) {
+      this.speakFormRef.current.appendToComment(playerName);
+    }
   }
   /**
    * handle the rule open button event.

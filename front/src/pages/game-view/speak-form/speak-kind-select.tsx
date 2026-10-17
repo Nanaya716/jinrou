@@ -14,6 +14,8 @@ export const SpeakKindSelect: React.FC<{
    * Currently selected speak kind.
    */
   current: string;
+  id?: string;
+  name?: string;
   /**
    * i18n function.
    */
@@ -26,9 +28,14 @@ export const SpeakKindSelect: React.FC<{
    * Callback for change.
    */
   onChange: (kind: string) => void;
-}> = ({ kinds, current, playersMap, t, onChange }) => {
+}> = ({ kinds, current, id, name, playersMap, t, onChange }) => {
   return (
-    <select value={current} onChange={e => onChange(e.currentTarget.value)}>
+    <select
+      id={id}
+      name={name}
+      value={current}
+      onChange={e => onChange(e.currentTarget.value)}
+    >
       {kinds.map(value => (
         <option key={value} value={value}>
           {speakKindLabel(t, playersMap, value)}

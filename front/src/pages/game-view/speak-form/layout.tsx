@@ -93,6 +93,7 @@ export const ButtonArea = styled.span`
 export const SpeakInput = styled.input`
   box-sizing: border-box;
   max-width: 100%;
+  padding-right: 20px;
   ${phone`
     width: 100%;
   `};
@@ -108,6 +109,7 @@ export const SpeakInput = styled.input`
 export const SpeakTextArea = styled.textarea`
   box-sizing: border-box;
   max-width: 100%;
+  padding-right: 20px;
   ${phone`
     width: 100%;
   `};
@@ -149,4 +151,34 @@ export const LabeledControl = styled(({ children, className, label }) => {
 export const SpeakControlsSlim = styled.span`
   font-size: xx-small;
   opacity: 0.75;
+`;
+
+/**
+ * Wrapper for input with character count.
+ * @package
+ */
+export const InputWithCountWrapper = styled.span`
+  position: relative;
+  display: inline-block;
+  width: 100%;
+`;
+
+/**
+ * Character count display inside input.
+ * @package
+ */
+export const CharCount = styled.span<{ hasContent: boolean }>`
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: ${props => (props.hasContent ? '#666' : '#999')};
+  pointer-events: none;
+  user-select: none;
+
+  ${phone`
+    font-size: 10px;
+    right: 6px;
+  `};
 `;

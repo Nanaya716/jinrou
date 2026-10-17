@@ -15,6 +15,8 @@ export interface IPropLogVisibility {
    * current day of game.
    */
   day: number;
+  id?: string;
+  name?: string;
   /**
    * Update handler of visibility.
    */
@@ -29,7 +31,7 @@ export class LogVisibilityControl extends React.PureComponent<
   {}
 > {
   public render() {
-    const { visibility, day } = this.props;
+    const { visibility, day, id, name } = this.props;
 
     // current select value.
     let value: string;
@@ -56,7 +58,12 @@ export class LogVisibilityControl extends React.PureComponent<
     return (
       <I18n namespace="game_client">
         {t => (
-          <select value={value} onChange={this.handleUpdate}>
+          <select
+            id={id}
+            name={name}
+            value={value}
+            onChange={this.handleUpdate}
+          >
             <option value="all">{t('speak.logVisibility.all')}</option>
             <option value="today">{t('speak.logVisibility.today')}</option>
             {day >= 1 ? (

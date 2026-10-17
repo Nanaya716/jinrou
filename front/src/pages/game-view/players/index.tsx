@@ -16,16 +16,27 @@ export interface IPropPlayers {
    * Callback for filtering specific player.
    */
   onFilter(userid: string): void;
+  /**
+   * Callback for inserting player name into chat input.
+   */
+  onInsertName?(name: string): void;
 }
 /**
  * Show a list of players.
  */
 export class Players extends React.Component<IPropPlayers, {}> {
   public render() {
-    const { players, onFilter } = this.props;
+    const { players, onFilter, onInsertName } = this.props;
     return (
       <I18n>
-        {t => <PlayersInner t={t} players={players} onFilter={onFilter} />}
+        {t => (
+          <PlayersInner
+            t={t}
+            players={players}
+            onFilter={onFilter}
+            onInsertName={onInsertName}
+          />
+        )}
       </I18n>
     );
   }
@@ -43,7 +54,7 @@ class PlayersInner extends React.Component<
 > {
   private filterHandlers = new CachedBinder<string, undefined>();
   public render() {
-    const { t, players } = this.props;
+    const { t, players, onInsertName } = this.props;
     return (
       <Wrapper>
         {players.map(pl => {
@@ -57,6 +68,7 @@ class PlayersInner extends React.Component<
               key={pl.id}
               player={pl}
               onEnableFilter={filterHandler}
+              onInsertName={onInsertName}
             />
           );
         })}
