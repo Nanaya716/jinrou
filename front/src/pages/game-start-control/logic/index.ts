@@ -135,7 +135,6 @@ function suggestionMessage(
           { max: maxobj.value },
         );
       } else {
-        console.warn('Range suggestion does not make sense');
         lbl = '';
         sug = '';
       }

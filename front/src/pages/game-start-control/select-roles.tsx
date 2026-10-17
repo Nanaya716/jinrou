@@ -146,7 +146,7 @@ export class SelectRoles extends React.Component<IPropSelectRoles, {}> {
   }
   protected getChangeHandler(
     role: string,
-  ): ((value: number, included: boolean) => void) {
+  ): (value: number, included: boolean) => void {
     const v = this.updateMap.get(role);
     if (v != null) {
       return v;
@@ -155,7 +155,7 @@ export class SelectRoles extends React.Component<IPropSelectRoles, {}> {
     this.updateMap.set(role, f);
     return f;
   }
-  protected getCategoryChangeHandler(cat: string): ((value: number) => void) {
+  protected getCategoryChangeHandler(cat: string): (value: number) => void {
     const v = this.updateCategoryMap.get(cat);
     if (v != null) {
       return v;
@@ -242,8 +242,8 @@ const RoleWrapper = styled.div<IPropRoleWrapper>`
     return status === 'active'
       ? 'rgba(255, 255, 255, 0.6)'
       : status === 'inactive'
-        ? 'rgba(255, 255, 255, 0.3)'
-        : 'rgba(255, 255, 255, 0.15)';
+      ? 'rgba(255, 255, 255, 0.3)'
+      : 'rgba(255, 255, 255, 0.15)';
   }};
 
   b {
@@ -342,6 +342,8 @@ class RoleCounter extends React.PureComponent<IPropRoleCounter, {}> {
     const exclusion = roleExclusion ? (
       <input
         type="checkbox"
+        id={`role-included-${role}`}
+        name={`roleIncluded-${role}`}
         checked={included}
         onChange={this.handleExclusionCheck}
       />
@@ -373,6 +375,8 @@ class RoleCounter extends React.PureComponent<IPropRoleCounter, {}> {
               <NumberWrap>
                 <input
                   type="number"
+                  id={`role-number-${role}`}
+                  name={`roleNumber-${role}`}
                   value={value}
                   min={0}
                   step={1}

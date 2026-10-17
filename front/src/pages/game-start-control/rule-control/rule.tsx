@@ -103,6 +103,8 @@ export class CheckboxControl extends React.PureComponent<
           <RuleName>{name}</RuleName>
           <input
             type="checkbox"
+            id={`rule-${item.id}`}
+            name={item.id}
             checked={checked}
             disabled={disabled}
             onChange={this.handleChange}
@@ -142,6 +144,8 @@ export class IntegerControl extends React.PureComponent<
           <RuleName>{name}</RuleName>
           <input
             type="number"
+            id={`rule-${item.id}`}
+            name={item.id}
             value={value}
             min={item.minValue}
             step={item.step}
@@ -199,6 +203,8 @@ export class SelectControl extends React.PureComponent<IPropSelectControl, {}> {
         <label title={label}>
           <RuleName>{name}</RuleName>
           <select
+            id={`rule-${item.id}`}
+            name={item.id}
             value={value}
             disabled={disabled}
             onChange={this.handleChange}
@@ -257,6 +263,8 @@ export class TimeControl extends React.PureComponent<IPropTimeControl, {}> {
           <input
             ref={i => (this.minutes = i)}
             type="number"
+            id={`rule-${item.id}-minutes`}
+            name={`${item.id}-minutes`}
             value={minutes}
             min={0}
             step={1}
@@ -267,6 +275,8 @@ export class TimeControl extends React.PureComponent<IPropTimeControl, {}> {
           <input
             ref={i => (this.seconds = i)}
             type="number"
+            id={`rule-${item.id}-seconds`}
+            name={`${item.id}-seconds`}
             value={seconds}
             min={-1}
             max={60}

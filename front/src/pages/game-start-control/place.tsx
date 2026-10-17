@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { runInAction } from 'mobx';
 
 import { CastingStore } from './store';
@@ -12,11 +11,15 @@ import {
 } from '../../defs';
 import { i18n } from '../../i18n';
 import { findLabeledGroupItem } from '../../util/labeled-group';
+import { mountReact } from '../../util/react-root';
 
 /**
- * Key of session storage to temporally save rule.
+ * Key of local storage to temporally save rule.
  */
-const sessionStorageRuleKey = 'lastSavedRule';
+const localStorageRuleKey = 'lastSavedRule';
+const draftStorageKeyPrefix = 'jinrou-gamestart-draft:';
+const draftIndexStorageKey = 'jinrou-gamestart-draft-index';
+const maxDraftCount = 5;
 
 /**
  * Options to place.
@@ -26,6 +29,10 @@ export interface IPlaceOptions {
    * i18n instance to use.
    */
   i18n: i18n;
+  /**
+   * Room id.
+   */
+  roomid: number | string;
   /**
    * A node to place the component to.
    */
@@ -60,12 +67,116 @@ export interface IPlaceResult {
   unmount(): void;
 }
 
+interface DraftEntry {
+  version: 1;
+  roomid: string;
+  updatedAt: number;
+  rule: string;
+}
+
+function draftStorageKey(roomid: string): string {
+  return `${draftStorageKeyPrefix}${roomid}`;
+}
+
+function loadDraftIndex(): Record<string, number> {
+  try {
+    const raw = localStorage.getItem(draftIndexStorageKey);
+    if (raw == null) {
+      return {};
+    }
+    const parsed = JSON.parse(raw);
+    const result: Record<string, number> = {};
+    for (const roomid in parsed) {
+      if (typeof parsed[roomid] === 'number') {
+        result[roomid] = parsed[roomid];
+      }
+    }
+    return result;
+  } catch {
+    return {};
+  }
+}
+
+function saveDraftIndex(index: Record<string, number>): void {
+  try {
+    localStorage.setItem(draftIndexStorageKey, JSON.stringify(index));
+  } catch {
+    // Ignore storage errors.
+  }
+}
+
+function pruneDrafts(index: Record<string, number>): void {
+  const entries = Object.entries(index).sort((a, b) => b[1] - a[1]);
+  for (const [roomid] of entries.slice(maxDraftCount)) {
+    try {
+      localStorage.removeItem(draftStorageKey(roomid));
+    } catch {
+      // Ignore storage errors.
+    }
+    delete index[roomid];
+  }
+  saveDraftIndex(index);
+}
+
+function loadDraft(roomid: string): string | null {
+  try {
+    const raw = localStorage.getItem(draftStorageKey(roomid));
+    if (raw == null) {
+      return null;
+    }
+    const parsed = JSON.parse(raw) as Partial<DraftEntry>;
+    if (
+      parsed.version !== 1 ||
+      parsed.roomid !== roomid ||
+      typeof parsed.rule !== 'string'
+    ) {
+      removeDraft(roomid);
+      return null;
+    }
+    return parsed.rule;
+  } catch {
+    removeDraft(roomid);
+    return null;
+  }
+}
+
+function saveDraft(roomid: string, rule: string): void {
+  const updatedAt = Date.now();
+  const draft: DraftEntry = {
+    version: 1,
+    roomid,
+    updatedAt,
+    rule,
+  };
+  try {
+    localStorage.setItem(draftStorageKey(roomid), JSON.stringify(draft));
+  } catch {
+    // Ignore storage errors.
+    return;
+  }
+  const index = loadDraftIndex();
+  index[roomid] = updatedAt;
+  pruneDrafts(index);
+}
+
+function removeDraft(roomid: string): void {
+  try {
+    localStorage.removeItem(draftStorageKey(roomid));
+  } catch {
+    // Ignore storage errors.
+  }
+  const index = loadDraftIndex();
+  delete index[roomid];
+  saveDraftIndex(index);
+}
+
 /**
  * Place a game start control component.
  * @returns Unmount point with newly created store.
  */
 export function place({
   i18n,
+  roomid,
   node,
   roles,
   castings,
@@ -74,29 +185,46 @@ export function place({
   initialCasting,
   onStart,
 }: IPlaceOptions): IPlaceResult {
+  const roomKey = String(roomid);
   const store = new CastingStore(roles, categories, initialCasting);
+  let draftDirty = false;
   runInAction(() => {
     store.setCurrentCasting(initialCasting);
     setInitialRules(rules, store);
-    if ('string' === typeof sessionStorage[sessionStorageRuleKey]) {
-      // load last saved key.
+    const draft = loadDraft(roomKey);
+    if (draft != null) {
       store.loadSerializedRule(
-        sessionStorage[sessionStorageRuleKey],
+        draft,
         castingId => findCastingDefinition(castings, castingId) || null,
       );
-      sessionStorage.removeItem(sessionStorageRuleKey);
+    } else if ('string' === typeof localStorage[localStorageRuleKey]) {
+      // 兼容旧 key；读取后迁移到房间级草稿。
+      store.loadSerializedRule(
+        localStorage[localStorageRuleKey],
+        castingId => findCastingDefinition(castings, castingId) || null,
+      );
+      localStorage.removeItem(localStorageRuleKey);
+      saveDraft(roomKey, store.serializedRule);
     } else {
-      loadSavedRules(castings, categories, roles, store);
+      if (loadSavedRules(castings, categories, roles, store)) {
+        saveDraft(roomKey, store.serializedRule);
+      }
     }
   });
 
   // XXX ad-hoc but exclude hidden roles.
   const cs = excludeHiddenRoles(categories, roles);
 
-  // Set unload event to save current settings on reload.
+  const saveCurrentDraft = () => {
+    draftDirty = true;
+    saveDraft(roomKey, store.serializedRule);
+  };
+
+  // Set unload event as a fallback. Normal saves are triggered by user edits.
   const unloadHandler = () => {
-    const serializedRule = store.serializedRule;
-    sessionStorage[sessionStorageRuleKey] = serializedRule;
+    if (draftDirty) {
+      saveDraft(roomKey, store.serializedRule);
+    }
   };
   window.addEventListener('unload', unloadHandler);
 
@@ -116,20 +244,23 @@ export function place({
       allCategories={categories}
       ruledefs={rules}
       onStart={startHandler}
+      onDraftSave={saveCurrentDraft}
     />
   );
 
-  ReactDOM.render(com, node);
+  const root = mountReact(node, com);
 
   return {
     store,
     unmount: () => {
       window.removeEventListener('unload', unloadHandler);
       if (!store.consumed) {
-        // component is unmounted but setting is not saved.
+        // component is unmounted but game was not started.
         unloadHandler();
+      } else {
+        removeDraft(roomKey);
       }
-      ReactDOM.unmountComponentAtNode(node);
+      root.unmount();
     },
   };
 }
@@ -202,60 +333,66 @@ function loadSavedRules(
   categories: RoleCategoryDefinition[],
   roles: string[],
   store: CastingStore,
-): void {
+): boolean {
   const { savedRule } = localStorage;
   if (!savedRule) {
-    return;
+    return false;
   }
 
-  const rule = JSON.parse(savedRule);
-  // First, set casting.
-  const castingId = rule.jobrule;
-  const casting = findCastingDefinition(castings, castingId);
-  if (casting != null) {
-    store.setCurrentCasting(casting);
-  }
+  try {
+    const rule = JSON.parse(savedRule);
+    // First, set casting.
+    const castingId = rule.jobrule;
+    const casting = findCastingDefinition(castings, castingId);
+    if (casting != null) {
+      store.setCurrentCasting(casting);
+    }
 
-  for (const key in rule) {
-    // XXX we have to ignore some keys.
-    if (
-      [
-        'number',
-        'maxnumber',
-        'blind',
-        'gm',
-        'watchspeak',
-        'jobrule',
-        '_jobquery',
-        'quantum_joblist',
-      ].includes(key)
-    ) {
-      continue;
-    }
-    if (rule[key] != null) {
-      // if not saved, leave it as initial.
-      store.updateRule(key, String(rule[key]));
-    }
-  }
-  // XXX we are following old query-based formats.
-  const jobs = rule._jobquery;
-  if (jobs != null) {
-    for (const role of roles) {
-      const num = Number(jobs[role]);
-      if (isFinite(num)) {
-        const included = jobs[`job_use_${role}`] === 'on';
-        store.updateJobNumber(role, num, included);
+    for (const key in rule) {
+      // XXX we have to ignore some keys.
+      if (
+        [
+          'number',
+          'maxnumber',
+          'blind',
+          'gm',
+          'watchspeak',
+          'jobrule',
+          '_jobquery',
+          'quantum_joblist',
+        ].includes(key)
+      ) {
+        continue;
+      }
+      if (rule[key] != null) {
+        // if not saved, leave it as initial.
+        store.updateRule(key, String(rule[key]));
       }
     }
-    for (const cat of categories) {
-      const num = Number(jobs[`category_${cat.id}`]);
-      if (isFinite(num)) {
-        store.updateCategoryNumber(cat.id, num);
+    // XXX we are following old query-based formats.
+    const jobs = rule._jobquery;
+    if (jobs != null) {
+      for (const role of roles) {
+        const num = Number(jobs[role]);
+        if (isFinite(num)) {
+          const included = jobs[`job_use_${role}`] === 'on';
+          store.updateJobNumber(role, num, included);
+        }
+      }
+      for (const cat of categories) {
+        const num = Number(jobs[`category_${cat.id}`]);
+        if (isFinite(num)) {
+          store.updateCategoryNumber(cat.id, num);
+        }
       }
     }
-  }
 
-  localStorage.removeItem('savedRule');
+    localStorage.removeItem('savedRule');
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 }
 /**
  * Find casting definition from id.
