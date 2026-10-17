@@ -347,14 +347,12 @@ exports.start=(roomid)->
         this_openjob_flag=false
         # 职业情報をもらった
         getjobinfo=(obj)->
-            console.log obj,this_room_id
             return unless obj.id==this_room_id
             my_player_id=obj.playerid
             # Prepare icons of players
             player_icons = {}
             if room.mode == "waiting"
                 # 開始前のユーザー一覧はroomから取得する
-                console.log room.players
                 for pl in room.players
                     if pl.icon
                         player_icons[pl.userid] = pl.icon
@@ -362,7 +360,6 @@ exports.start=(roomid)->
                 for pl in obj.game.players
                     if pl.icon
                         player_icons[pl.id] = pl.icon
-            console.log player_icons, obj.game?.players
 
             # Give info to the GameView component.
             game_view?.store.update {
@@ -529,7 +526,6 @@ exports.start=(roomid)->
                         # XXX ad-hoc!
                         initialCasting: castings[0].items[0].value
                         onStart: (query)->
-                            console.log 'newquery', query
                             ss.rpc "game.game.gameStart", roomid, query, (result)->
                                 if result?
                                     Promise.all([
@@ -758,8 +754,7 @@ exports.start=(roomid)->
         # 投票表单オープン
         socket_ids.push Index.socket.on "voteform",null,(msg,channel)->
             if channel=="room#{roomid}" || channel.indexOf("room#{roomid}_")==0 || channel==Index.app.userid()
-                # TODO remove this message?
-                console.log "voteform", msg
+                return
         # 残り時間
         socket_ids.push Index.socket.on "time",null,(msg,channel)->
             if channel=="room#{roomid}" || channel.indexOf("room#{roomid}_")==0 || channel==Index.app.userid()
@@ -785,13 +780,12 @@ exports.start=(roomid)->
                                     message: String result.error
                                 }
                                 return
-                            console.log result
                             return
         # show result. reported as disturbing, so only show result in console.
         socket_ids.push Index.socket.on 'punishresult',null,(msg,channel)->
             if msg.id==roomid
                 # Index.util.message "猝死惩罚",msg.name+" 由于猝死被禁止加入游戏。"
-                console.log "room:",msg.id,msg
+                return
         # プレイヤー一覧の情報を開始フォームに反映
         forminfo=()->
             # TODO: same logic appears twice
@@ -835,7 +829,6 @@ exports.end=->
 
 exports.reconnect=->
     if reload_room?
-        console.log "reloading"
         reload_room()
 
 #ソケットを全部off

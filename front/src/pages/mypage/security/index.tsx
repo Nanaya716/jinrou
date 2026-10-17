@@ -1,5 +1,5 @@
 import { SectionWrapper } from '../elements';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '../../../util/icon';
 import { useI18n } from '../../../i18n/react';
 import React, { useState, useEffect } from 'react';
 import { CheckButton } from '../../../common/forms/check-button';

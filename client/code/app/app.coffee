@@ -514,7 +514,6 @@ loadApplicationConfig = ()->
 checkBanData = ()->
     libban.loadBanData (data)->
         if data?
-            console.log "bay", data
             ss.rpc "user.requestban", data, (result)->
                 if result.banid
                     libban.saveBanData result.banid

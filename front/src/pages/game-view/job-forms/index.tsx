@@ -97,8 +97,6 @@ export const Form: React.FC<IPropForm> = React.memo(({ form, onSubmit }) => {
         // File should not occur here.
         if ('string' === typeof value) {
           query[key] = value;
-        } else {
-          console.warn('File', value);
         }
       }
     */
@@ -117,8 +115,6 @@ export const Form: React.FC<IPropForm> = React.memo(({ form, onSubmit }) => {
     }
     query.jobtype = type;
     query.objid = objid;
-    // query is generated
-    console.log(query);
     onSubmit(query);
   };
   // Handle click of something.

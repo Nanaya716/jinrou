@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '../../../util/icon';
 import React from 'react';
 import { Store } from '../store';
 import { observer } from 'mobx-react-lite';

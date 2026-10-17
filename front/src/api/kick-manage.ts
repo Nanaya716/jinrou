@@ -10,7 +10,6 @@ export function getKickList(roomid: number): Promise<string[]> {
         reject(result && result.error);
         return;
       }
-      console.log(result);
       resolve(result.result);
     });
   });

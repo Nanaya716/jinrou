@@ -102,8 +102,8 @@ export const Profile: React.FunctionComponent<{
             mail.new
               ? t('profile.mailAddressChanging')
               : mail.address && !mail.verified
-                ? t('profile.mailAddressNotVerified')
-                : undefined
+              ? t('profile.mailAddressNotVerified')
+              : undefined
           }
         />
         <IconEdit icon={icon} setIcon={setIcon} setEditing={setEditing} />
