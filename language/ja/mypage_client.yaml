@@ -76,5 +76,7 @@ links:
   settings:
     title: '设定'
     description: '变更各种设定。'
+  themeMaker:
+    title: '主题房间制作器'
   logout:
     title: '退出'
