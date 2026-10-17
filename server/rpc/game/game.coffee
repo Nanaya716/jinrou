@@ -14195,6 +14195,20 @@ class MajoantiLieDetector extends Complex
         }
 
 # 4. 魔女杀手
+class MajoantiWitchKiller extends Complex
+    cmplType:"MajoantiWitchKiller"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiWitchKiller.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiWitchKiller.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiWitchKiller.name"
+            type: "MajoantiWitchKiller"
+        }
+
+# 5. 身体交换
 class MajoantiBodySwap extends Complex
     cmplType:"MajoantiBodySwap"
     formType: FormType.optional
@@ -16281,6 +16295,7 @@ complexes=
     MajoantiBond: MajoantiBond
     MajoantiVision: MajoantiVision
     MajoantiLieDetector: MajoantiLieDetector
+    MajoantiWitchKiller: MajoantiWitchKiller
     MajoantiBodySwap: MajoantiBodySwap
     MajoantiFutureSight: MajoantiFutureSight
     MajoantiHeal: MajoantiHeal
@@ -18677,6 +18692,7 @@ MAJOANTI_MAGICS = [
     "MajoantiBond",           # 1. 缔结
     "MajoantiVision",         # 2. 幻视
     "MajoantiLieDetector",    # 3. 谎言侦测
+    "MajoantiWitchKiller",    # 4. 魔女杀手
     "MajoantiBodySwap",       # 5. 身体交换
     "MajoantiFutureSight",    # 6. 未来视
     "MajoantiHeal",           # 7. 治愈
