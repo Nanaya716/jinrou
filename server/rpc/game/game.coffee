@@ -14151,6 +14151,22 @@ isMajoantiMode = (antimode)->
 # ============================================================
 
 # 1. 缔结
+class MajoantiBond extends Complex
+    cmplType:"MajoantiBond"
+    formType: FormType.optional
+    # 显示格式：主职业【魔法名】
+    getJobname:-> @game.i18n.t "roles:MajoantiBond.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiBond.jobname", {jobname: @main.getJobDisp()}
+    # 提供详情信息（点击"详细"时显示魔法信息）
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiBond.name"
+            type: "MajoantiBond"
+        }
+
+# 2. 幻视
 class MajoantiBodySwap extends Complex
     cmplType:"MajoantiBodySwap"
     formType: FormType.optional
@@ -15982,6 +15998,7 @@ complexes=
     GuardedByPsychic:GuardedByPsychic
 
     # 魔女·反逆者モード用魔法クラス
+    MajoantiBond: MajoantiBond
     MajoantiBodySwap: MajoantiBodySwap
 
     # 役職ごとの強さ
@@ -18357,6 +18374,7 @@ tweet=(roomid,message)->
 
 # 魔女·反逆者模式的魔法列表
 MAJOANTI_MAGICS = [
+    "MajoantiBond",           # 1. 缔结
     "MajoantiBodySwap",       # 5. 身体交换
 ]
 
