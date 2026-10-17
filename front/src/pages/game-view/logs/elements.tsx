@@ -50,6 +50,7 @@ export const FixedSizeChunkWrapper = styled.div<{
  */
 export const FixedSizeLogRow = styled.div`
   contain: layout paint style;
+  box-shadow: 0 1px 0 var(--jf-log-bg);
   display: grid;
   grid-template-columns: ${fixedSizeGridColumnsPC};
   ${phone`

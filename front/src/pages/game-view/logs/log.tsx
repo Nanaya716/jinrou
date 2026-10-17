@@ -269,16 +269,17 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
         log.mode === 'nextturn' || !log.name
           ? null
           : log.mode === 'monologue' || log.mode === 'heavenmonologue'
-            ? t('log.monologue', { name: log.name }) + ':'
-            : log.mode === 'will'
-              ? t('log.will', { name: log.name }) + ':'
-              : log.mode === 'streaming'
-                ? t('log.streaming', { name: log.name }) + ':'
-                : log.name + ':';
+          ? t('log.monologue', { name: log.name }) + ':'
+          : log.mode === 'will'
+          ? t('log.will', { name: log.name }) + ':'
+          : log.mode === 'streaming'
+          ? t('log.streaming', { name: log.name }) + ':'
+          : log.name + ':';
       // Auto-link URLs and room numbers in it.
       const noName = icon == null && !nameText;
       const commentProps = {
         size,
+        mode: log.mode,
         noName,
         ...partAttrs(log.mode),
       };
@@ -400,7 +401,7 @@ export function computeLogStyle(mode: Log['mode'], theme: Theme): LogStyle {
       return {
         background: theme.user.day.bg,
         color: theme.user.day.color,
-        borderColor: null,
+        borderColor: 'rgba(0, 0, 0, 0.2)',
       };
     }
     case 'fox': {
@@ -668,6 +669,7 @@ const LogPart = styled.div`
   border-bottom: var(--jf-log-border);
   font-weight: var(--jf-log-weight);
   line-height: 1;
+  overflow: hidden;
   word-break: break-all;
   overflow-wrap: break-word;
   word-break: break-word;
@@ -882,12 +884,16 @@ const Name = styled(NameInner)<IPropName>`
   grid-column: 2;
   max-width: 10em;
   overflow: hidden;
+  position: relative;
 
   font-weight: bold;
   white-space: nowrap;
   word-wrap: break-word;
   text-align: right;
-  ${phone<IPropLogPart>`
+  ${({ size }) =>
+    size === 'big' || size === 'small'
+      ? 'line-height: 1.3;'
+      : 'line-height: 1.3;'} ${phone<IPropLogPart>`
     ${({ noName }) => (noName ? 'display: none;' : '')}
     max-width: none;
     text-align: left;
@@ -945,6 +951,7 @@ const NameMenuButton = styled.button`
  */
 const Main = styled(LogPart)<IPropLogPart>`
   grid-column: 3;
+
   ${phone<IPropLogPart>`
     grid-column: ${({ noName }) => (noName ? '2 / 3' : '2 / 4')};
     ${({ noName }) => (noName ? '' : 'border-top: none;')}
@@ -963,7 +970,16 @@ interface IPropComment {
   size?: 'big' | 'small';
 }
 
-const getFontSize = (size: 'big' | 'small' | undefined) =>
+const getFontSize = (
+  size?:
+    | 'big'
+    | 'small'
+    | 'skyblue'
+    | 'darkblue'
+    | 'purple'
+    | 'green'
+    | 'brown',
+) =>
   size === 'big'
     ? 'calc(1.2 * var(--base-font-size))'
     : size === 'small'
@@ -1009,6 +1025,7 @@ const TimeInner = ({
   const minute = ('0' + time.getMinutes()).slice(-2);
   const second = ('0' + time.getSeconds()).slice(-2);
   const str = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+
   return (
     <LogPart className={className} {...rest}>
       <time
