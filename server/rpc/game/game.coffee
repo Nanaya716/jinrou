@@ -115,6 +115,8 @@ FortuneResult =
     human: "human"
     # Werewolf
     werewolf: "werewolf"
+    # DoubleHeadedWolf
+    DoubleHeadedWolf: "DoubleHeadedWolf"
     # Vampire
     vampire: "vampire"
     # pumpkin
@@ -131,6 +133,8 @@ PsychicResult =
     werewolf: "werewolf"
     # BigWolf
     BigWolf: "BigWolf"
+    # DoubleHeadedWolf
+    DoubleHeadedWolf: "DoubleHeadedWolf"
     # TinyFox
     TinyFox: "TinyFox"
     # oni
@@ -141,6 +145,7 @@ PsychicResult =
         oni: 1
         werewolf: 2
         BigWolf: 3
+        DoubleHeadedWolf: 3
         TinyFox: 3
     # function to combine two results in chemical.
     # filter out low priority results.
@@ -4150,6 +4155,12 @@ class Werewolf extends Player
             return []
     getSpeakChoice:(game)->
         ["werewolf"].concat super
+
+class DoubleHeadedWolf extends Werewolf
+    type:"DoubleHeadedWolf"
+    fortuneResult: FortuneResult.DoubleHeadedWolf
+    psychicResult: PsychicResult.DoubleHeadedWolf
+    werewolfCount:->2
 
 
 
@@ -14416,6 +14427,7 @@ jobs=
     Fox:Fox
     Poisoner:Poisoner
     BigWolf:BigWolf
+    DoubleHeadedWolf:DoubleHeadedWolf
     TinyFox:TinyFox
     Bat:Bat
     Noble:Noble
@@ -14688,6 +14700,7 @@ jobStrength=
     Fox:25
     Poisoner:20
     BigWolf:80
+    DoubleHeadedWolf:40
     TinyFox:10
     Bat:10
     Noble:12
