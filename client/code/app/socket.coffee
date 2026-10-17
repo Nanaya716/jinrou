@@ -23,3 +23,13 @@ exports.on=(mesname,channel=null,func)->
 
 exports.off=(id)->
     evs=evs.filter (x)->x.id!=id
+
+exports.getDebugInfo=->
+    counts={}
+    for ev in evs
+        key="#{ev.mesname}:#{ev.channel ? '*'}"
+        counts[key]=(counts[key] ? 0)+1
+    {
+        total: evs.length
+        counts: counts
+    }
