@@ -14181,6 +14181,20 @@ class MajoantiBodySwap extends Complex
         }
 
 # 6. 未来视
+class MajoantiFutureSight extends Complex
+    cmplType:"MajoantiFutureSight"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiFutureSight.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiFutureSight.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiFutureSight.name"
+            type: "MajoantiFutureSight"
+        }
+
+# 7. 治愈
 class MajoantiBrainwash extends Complex
     cmplType:"MajoantiBrainwash"
     formType: FormType.optional
@@ -16070,6 +16084,7 @@ complexes=
     # 魔女·反逆者モード用魔法クラス
     MajoantiBond: MajoantiBond
     MajoantiBodySwap: MajoantiBodySwap
+    MajoantiFutureSight: MajoantiFutureSight
     MajoantiBrainwash: MajoantiBrainwash
     MajoantiFloat: MajoantiFloat
     MajoantiClairvoyance: MajoantiClairvoyance
@@ -18451,6 +18466,7 @@ tweet=(roomid,message)->
 MAJOANTI_MAGICS = [
     "MajoantiBond",           # 1. 缔结
     "MajoantiBodySwap",       # 5. 身体交换
+    "MajoantiFutureSight",    # 6. 未来视
     "MajoantiBrainwash",      # 8. 洗脑
     "MajoantiFloat",          # 11. 漂浮
     "MajoantiClairvoyance",   # 12. 千里眼

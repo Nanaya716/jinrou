@@ -228,6 +228,7 @@ jobname:
 # 魔女·反逆者モード用魔法（副職業）
   MajoantiBond: '缔结'
   MajoantiBodySwap: '身体交换'
+  MajoantiFutureSight: '未来视'
   MajoantiBrainwash: '洗脑'
   MajoantiFloat: '漂浮'
   MajoantiClairvoyance: '千里眼'
@@ -1370,6 +1371,9 @@ MajoantiBond:
 MajoantiBodySwap:
   name: '身体交换'
   jobname: '{{jobname}}（身体交换）'
+MajoantiFutureSight:
+  name: '未来视'
+  jobname: '{{jobname}}（未来视）'
 MajoantiBrainwash:
   name: '洗脑'
   jobname: '{{jobname}}（洗脑）'
