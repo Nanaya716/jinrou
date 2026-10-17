@@ -1,0 +1,163 @@
+module.exports=
+    name:"女神异闻录Q2"
+    #
+    opening:"欢迎来到我的天鹅绒房间。"
+    # to let players know woh they are
+    skin_tip:"你的身份"
+    # 主题的作者
+    author:"714991699"
+    # 修改时间
+    lastModified:"2021-08-21T10:46:33.917Z"
+    vote:"aaaa"
+    sunrise:"bbbbbb"
+    sunset:"cccccc"
+    icon:""
+    background_color:"black"
+    color:"rgb(255,0,166)"
+    lockable:true
+    isAvailable:->
+        # 如果想要做成有某种限制条件
+        # return false
+        return true
+    skins:
+        # 罗马字名 ，只允许半角英数字和下划线，数字和下划线不允许是首位
+        # 不可以重复
+        yuki_makoto:
+            # 头像链接 和 称号 可以是字符串数组，也可以是字符串
+            # 头像在显示的时候 会压缩为48*48，所以最好纵横比是1:1
+            avatar:"https://pic.imgdb.cn/item/66bb6c08d9c307b7e931620d.png" # 头像链接
+            name:"结城理" # 名字，必填
+            prize:"" # 称号
+        shiomi_kotone:
+            avatar:["https://pic.imgdb.cn/item/66bb6d21d9c307b7e932980e.png"]
+            name:"汐见琴音"
+            prize:"" # 称号是允许留空的
+        iori_junpei:
+            avatar:["https://pic.imgdb.cn/item/66bb6fa3d9c307b7e93541ec.png"]
+            name:"伊织顺平"
+            prize:"" 
+        yamagishi_fuuka:
+            avatar:["https://pic.imgdb.cn/item/66bb6eb2d9c307b7e93437af.png"]
+            name:"山岸风花"
+            prize:"" 
+        takeba_yukari:
+            avatar:["https://pic.imgdb.cn/item/66bb6fd3d9c307b7e9357143.png"]
+            name:"岳羽由加莉"
+            prize:"" 
+        kirijou_mitsuru:
+            avatar:["https://pic.imgdb.cn/item/66bb6ee1d9c307b7e9346dfd.png"]
+            name:"桐条美鹤"
+            prize:"" 
+        sanada_akihiko:
+            avatar:["https://pic.imgdb.cn/item/66bb6f62d9c307b7e934fda9.png"]
+            name:"真田明彦"
+            prize:"" 
+        aragaki_shinjirou:
+            avatar:["https://pic.imgdb.cn/item/66bb71e9d9c307b7e937b50a.png"]
+            name:"荒垣真次郎"
+            prize:"" 
+        amada_ken:
+            avatar:["https://pic.imgdb.cn/item/66bb6f2fd9c307b7e934ca17.png"]
+            name:"天田乾"
+            prize:""
+        koromaru:
+            avatar:["https://pic.imgdb.cn/item/66bb7136d9c307b7e936f51b.png"]
+            name:"虎狼丸"
+            prize:""
+        aegis:
+            avatar:["https://pic.imgdb.cn/item/66bb6f09d9c307b7e9349d06.png"]
+            name:"埃癸斯"
+            prize:""
+        elizabeth:
+            avatar:["https://pic.imgdb.cn/item/66bb7125d9c307b7e936dfce.png"]
+            name:"伊丽莎白"
+            prize:""
+        narukami_yuu:
+            avatar:["https://pic.imgdb.cn/item/66bb724bd9c307b7e938196c.png"]
+            name:"鸣上悠"
+            prize:""
+        hanamura_yousuke:
+            avatar:["https://pic.imgdb.cn/item/66bb7086d9c307b7e9362c8d.png"]
+            name:"花村阳介"
+            prize:""
+        satonaka_chie:
+            avatar:["https://pic.imgdb.cn/item/66bb728fd9c307b7e9385c4c.png"]
+            name:"里中千枝"
+            prize:""
+        amagi_yukiko:
+            avatar:["https://pic.imgdb.cn/item/66bb7066d9c307b7e93609aa.png"]
+            name:"天城雪子"
+            prize:""
+        kujikawa_rise:
+            avatar:["https://pic.imgdb.cn/item/66bb731ad9c307b7e938f129.png"]
+            name:"久慈川理世"
+            prize:""
+        tatsumi_kanji:
+            avatar:["https://pic.imgdb.cn/item/66bb7375d9c307b7e93953af.png"]
+            name:"巽完二"
+            prize:""
+        shirogane_naoto:
+            avatar:["https://pic.imgdb.cn/item/66bb73add9c307b7e9399401.png"]
+            name:"白钟直斗"
+            prize:""
+        kuma:
+            avatar:["https://pic.imgdb.cn/item/66bb72d4d9c307b7e938a441.png"]
+            name:"小熊"
+            prize:""
+        marry:
+            avatar:["https://pic.imgdb.cn/item/66bb7346d9c307b7e93920cd.png"]
+            name:"玛丽"
+            prize:""
+        margaret:
+            avatar:["https://pic.imgdb.cn/item/66bb70a2d9c307b7e936495a.png"]
+            name:"玛格丽特"
+            prize:""
+        amamiya_ren:
+            avatar:["https://pic.imgdb.cn/item/66bb6d0dd9c307b7e9328434.png"]
+            name:"雨宫莲"
+            prize:""
+        mona:
+            avatar:["https://pic.imgdb.cn/item/66bb7479d9c307b7e93a82be.png"]
+            name:"摩尔加纳"
+            prize:""
+        takamaki_ann:
+            avatar:["https://pic.imgdb.cn/item/66bb6dc0d9c307b7e93347ef.png"]
+            name:"高卷杏"
+            prize:""
+        sakimoto_ryuji:
+            avatar:["https://pic.imgdb.cn/item/66bb6cb4d9c307b7e9321cb2.png"]
+            name:"坂本龙司"
+            prize:""
+        kitagawa_yuusuke:
+            avatar:["https://pic.imgdb.cn/item/66bb6cdad9c307b7e9324e12.png"]
+            name:"喜多川祐介"
+            prize:""
+        niijima_makoto:
+            avatar:["https://pic.imgdb.cn/item/66bb6d50d9c307b7e932c7e1.png"]
+            name:"新岛真"
+            prize:""
+        sakura_futaba:
+            avatar:["https://pic.imgdb.cn/item/66bb6d93d9c307b7e933120d.png"]
+            name:"佐仓双叶"
+            prize:""
+        okumura_haru:
+            avatar:["https://pic.imgdb.cn/item/66bb6d75d9c307b7e932ee97.png"]
+            name:"奥村春"
+            prize:""
+        akechi_goro:
+            avatar:["https://pic.imgdb.cn/item/66bb6bf4d9c307b7e9314eb1.png"]
+            name:"明智吾郎"
+            prize:""
+        yoshizawa_kasumi:
+            avatar:["https://pic.imgdb.cn/item/66bb6e0ad9c307b7e93396af.png"]
+            name:"芳泽霞"
+            prize:""
+        caroline:
+            avatar:["https://free.picui.cn/free/2025/08/18/68a2280e3ae05.png"]
+            name:"卡萝莉娜"
+            prize:""
+        justine:
+            avatar:["https://free.picui.cn/free/2025/08/18/68a2280e029b5.png"]
+            name:"芮丝汀娜"
+            prize:""
+        
