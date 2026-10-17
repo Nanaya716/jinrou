@@ -9,7 +9,7 @@ exports.jobs=["Human","Werewolf","Diviner","Psychic","MindPsychic","Madman","Reb
 # ミラーズホロウの人狼
 "Hunter","Cupid","MumouDiviner",
 # 特殊役職?
-"Poisoner","BigWolf","DoubleHeadedWolf","TinyFox","Cat","Teruteru",
+"Poisoner","BigWolf","DoubleHeadedWolf","TinyFox","Cat","Teruteru","ButaOtoko",
 # るる鯖で見つけた职业
 "Fanatic","HearMadman","Immoral","SuperDiviner","SuperGuard","SuperFox"
 # 特殊役職2
@@ -131,7 +131,7 @@ exports.teams=teams=
     Hooligan:["Hooligan", "HooliganAttacker"]
     Duel:["Duelist"]
     Lorelei:["Lorelei"]
-    Others:["Bat","Stalker","Doppleganger","Copier","Tanner","Teruteru","Thief","Hoodlum","QuantumPlayer","Shishimai","HooliganGuard","Amanojaku","DarkClown","DualPersonality","Oni","GoldOni","FrontOni","BackOni","ResidualHaunting"],
+    Others:["Bat","Stalker","Doppleganger","Copier","Tanner","Teruteru","ButaOtoko","Thief","Hoodlum","QuantumPlayer","Shishimai","HooliganGuard","Amanojaku","DarkClown","DualPersonality","Oni","GoldOni","FrontOni","BackOni","ResidualHaunting"],
     Neet:["Neet"]
 
 # カテゴリ分け(手调黑暗火锅でつかうぞ!)
@@ -143,7 +143,7 @@ exports.categories=
     Fox:["Fox","NineTailedFox","SuperFox","HimeFox","FoxMatchmaker","TinyFox","XianFox","NightRabbit","Trickster","VariationFox","Actress"]
     Immoral:["Immoral","Blasphemy","Perfidious",]
     # sort by teams （恋人陣営、単独陣営、その他、変化系その他、変化系村人陣営）
-    Others:["Cupid","Lover","BadLady","Patissiere","SnowLover","LunaticLover","Devil","CultLeader","Hierarch","Vampire","Dracula","VampireClan","Raven","Ascetic","Hooligan","Lorelei","Bat","Tanner","Teruteru","Hoodlum","Shishimai","Amanojaku","DarkClown","Oni","GoldOni","Duelist","FrontOni","BackOni","ResidualHaunting"]
+    Others:["Cupid","Lover","BadLady","Patissiere","SnowLover","LunaticLover","Devil","CultLeader","Hierarch","Vampire","Dracula","VampireClan","Raven","Ascetic","Hooligan","Lorelei","Bat","Tanner","Teruteru","ButaOtoko","Hoodlum","Shishimai","Amanojaku","DarkClown","Oni","GoldOni","Duelist","FrontOni","BackOni","ResidualHaunting"]
     Switching:["Stalker","Copier","Doppleganger","DualPersonality","OccultMania","Cursed","BloodyMary","Phantom","Thief","Dreamer"]
     # Special category for "no category"
     None:[
@@ -1829,6 +1829,8 @@ exports.jobinfo=
             color:"#ede4b9"
         Teruteru:
             color:"#66ccff"
+        ButaOtoko:
+            color:"#ff9900"
         Thief:
             color:"#a4a4a4"
         Hoodlum:
