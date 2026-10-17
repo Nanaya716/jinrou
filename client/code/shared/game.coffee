@@ -1410,6 +1410,8 @@ exports.jobinfo=
             color:"#dddddd"
         Diviner:
             color:"#00b3ff"
+        Diviner:
+            color:"#00b3fA"
         Psychic:
             color:"#bb00ff"
         Guard:
