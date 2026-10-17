@@ -14181,6 +14181,20 @@ class MajoantiBodySwap extends Complex
         }
 
 # 6. 未来视
+class MajoantiBrainwash extends Complex
+    cmplType:"MajoantiBrainwash"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiBrainwash.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiBrainwash.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiBrainwash.name"
+            type: "MajoantiBrainwash"
+        }
+
+# 9. 声音模仿
 class GuardedByPsychic extends Complex
     cmplType: "GuardedByPsychic"
     # cmplFlag: 灵能者ID
@@ -16000,6 +16014,7 @@ complexes=
     # 魔女·反逆者モード用魔法クラス
     MajoantiBond: MajoantiBond
     MajoantiBodySwap: MajoantiBodySwap
+    MajoantiBrainwash: MajoantiBrainwash
 
     # 役職ごとの強さ
 jobStrength=
@@ -18376,6 +18391,7 @@ tweet=(roomid,message)->
 MAJOANTI_MAGICS = [
     "MajoantiBond",           # 1. 缔结
     "MajoantiBodySwap",       # 5. 身体交换
+    "MajoantiBrainwash",      # 8. 洗脑
 ]
 
 # 魔女·反逆者模式：公开当前场上已分配的魔法种类
