@@ -9904,30 +9904,30 @@ class TongueWolf extends Werewolf
                 continue unless pl?
                 continue unless pl.dead
 
-                if obj.isHuman
-                    # Attacked a Human. Skill is lost.
-                    log=
-                        mode: "skill"
-                        to: @id
-                        comment: game.i18n.t "roles:TongueWolf.resultLost", {
-                            name: @name
-                            target: obj.player.name
-                            job: obj.jobname
-                        }
-                    splashlog game.id, game, log
-                    @addGamelog game,"tongueresult", pl.type, pl.id
-                    @setFlag "lost"
-                else
-                    log=
-                        mode: "skill"
-                        to: @id
-                        comment: game.i18n.t "roles:TongueWolf.result", {
-                            name: @name
-                            target: obj.player.name
-                            job: obj.jobname
-                        }
-                    splashlog game.id, game, log
-                    @addGamelog game,"tongueresult", pl.type, pl.id
+                # if obj.isHuman
+                #     # Attacked a Human. Skill is lost.
+                #     log=
+                #         mode: "skill"
+                #         to: @id
+                #         comment: game.i18n.t "roles:TongueWolf.resultLost", {
+                #             name: @name
+                #             target: obj.player.name
+                #             job: obj.jobname
+                #         }
+                #     splashlog game.id, game, log
+                #     @addGamelog game,"tongueresult", pl.type, pl.id
+                #     @setFlag "lost"
+                # else
+                log=
+                    mode: "skill"
+                    to: @id
+                    comment: game.i18n.t "roles:TongueWolf.result", {
+                        name: @name
+                        target: obj.player.name
+                        job: obj.jobname
+                    }
+                splashlog game.id, game, log
+                @addGamelog game,"tongueresult", pl.type, pl.id
 
 class BlackCat extends Madman
     type:"BlackCat"
