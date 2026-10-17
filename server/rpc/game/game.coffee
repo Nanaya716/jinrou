@@ -1212,6 +1212,8 @@ class Game
         # プレイヤーシャッフル
         @players=shuffle @players
         @participants=@players.concat []    # コピー
+        if @players.some((x)->x.isJobType "Princess") && !@players.some((x)->x.isJobType "QueenSpectator")
+            inheritQueenSpectator @
         # ここでプレイヤー以外の処理をする
         for pl in supporters
             if pl.mode=="gm"
@@ -4724,10 +4726,36 @@ class QueenSpectator extends Player
     hasDeadlyWeapon:->true
     dying:(game,found)->
         super
+        if inheritQueenSpectator game
+            return
         # 感染
         humans = game.players.filter (x)->!x.dead && x.isHuman()    # 生きている人たち
         humans.forEach (x)->
             x.die game, "hinamizawa", @id
+
+class Princess extends Player
+    type:"Princess"
+    getTypeDisp:->"Human"
+    getJobDisp:->@game.i18n.t "roles:jobname.Human"
+
+inheritQueenSpectator = (game)->
+    princess = null
+    for pl in game.players
+        continue if pl.dead
+        princess = pl.accessByJobTypeAll("Princess")[0]
+        break if princess?
+    unless princess?
+        return false
+    newpl = Player.factory "QueenSpectator", game
+    princess.transProfile newpl
+    princess.transform game, newpl, false
+    log =
+        mode:"skill"
+        to:newpl.id
+        comment: game.i18n.t "roles:Princess.inherit", {name: newpl.name}
+    splashlog game.id, game, log
+    game.splashjobinfo [game.getPlayer newpl.id]
+    true
 
 class MadWolf extends Werewolf
     type:"MadWolf"
@@ -14113,6 +14141,7 @@ jobs=
     Fugitive:Fugitive
     Merchant:Merchant
     QueenSpectator:QueenSpectator
+    Princess:Princess
     MadWolf:MadWolf
     Neet:Neet
     Liar:Liar
@@ -14375,6 +14404,7 @@ jobStrength=
     Fugitive:8
     Merchant:18
     QueenSpectator:20
+    Princess:20
     MadWolf:40
     Neet:50
     Liar:8
@@ -16358,6 +16388,9 @@ writeGlobalJobInfo = (game, player, result={})->
         # 女王観戦者の情報
         if player.getTeam() == "Human" && player.getTeamDisp() == "Human"
             result.queens = game.players.filter((x)-> x.isJobType "QueenSpectator").map (x)->
+                x.publicinfo()
+        if player.isJobType "QueenSpectator"
+            result.princesses = game.players.filter((x)-> x.isJobType "Princess").map (x)->
                 x.publicinfo()
         # 狼による他の狼の把握
         vq = player.getVisibilityQuery game
