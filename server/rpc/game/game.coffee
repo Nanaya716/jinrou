@@ -4136,9 +4136,6 @@ class Diviner extends Player
             to:@id
             comment:r.result
         splashlog game.id,game,log
-class Madman extends Player
-    type:"Madman"
-    team:"Werewolf"
 class Guard extends Player
     type:"Guard"
     midnightSort: 80
@@ -4238,6 +4235,9 @@ class Psychic extends Player
         return false
 
 # 真·灵能者 - 拥有念杀护卫能力的灵能者
+class Madman extends Player
+    type:"Madman"
+    team:"Werewolf"
 class Couple extends Player
     type:"Couple"
     makejobinfo:(game,result)->
