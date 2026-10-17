@@ -226,6 +226,7 @@ jobname:
   Watching: '观战者'
 
 # 魔女·反逆者モード用魔法（副職業）
+  MajoantiBodySwap: '身体交换'
 # Name of categories.
 categoryName:
   Human: '村人系'
@@ -1357,5 +1358,8 @@ Authority:
   jobname: '{{jobname}}（权力者）'
 
 # 魔女·反逆者モード用魔法
+MajoantiBodySwap:
+  name: '身体交换'
+  jobname: '{{jobname}}（身体交换）'
 Chemical:
   jobname: '{{left}}×{{right}}'
