@@ -230,6 +230,7 @@ jobname:
   MajoantiBodySwap: '身体交换'
   MajoantiBrainwash: '洗脑'
   MajoantiClairvoyance: '千里眼'
+  MajoantiDeathRecall: '死亡回溯'
 # Name of categories.
 categoryName:
   Human: '村人系'
@@ -1373,5 +1374,8 @@ MajoantiBrainwash:
 MajoantiClairvoyance:
   name: '千里眼'
   jobname: '{{jobname}}（千里眼）'
+MajoantiDeathRecall:
+  name: '死亡回溯'
+  jobname: '{{jobname}}（死亡回溯）'
 Chemical:
   jobname: '{{left}}×{{right}}'

@@ -14209,6 +14209,20 @@ class MajoantiClairvoyance extends Complex
         }
 
 # 13. 视线引导
+class MajoantiDeathRecall extends Complex
+    cmplType:"MajoantiDeathRecall"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiDeathRecall.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiDeathRecall.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiDeathRecall.name"
+            type: "MajoantiDeathRecall"
+        }
+
+# 20. 怨念反噬
 class GuardedByPsychic extends Complex
     cmplType: "GuardedByPsychic"
     # cmplFlag: 灵能者ID
@@ -16030,6 +16044,7 @@ complexes=
     MajoantiBodySwap: MajoantiBodySwap
     MajoantiBrainwash: MajoantiBrainwash
     MajoantiClairvoyance: MajoantiClairvoyance
+    MajoantiDeathRecall: MajoantiDeathRecall
 
     # 役職ごとの強さ
 jobStrength=
@@ -18408,6 +18423,7 @@ MAJOANTI_MAGICS = [
     "MajoantiBodySwap",       # 5. 身体交换
     "MajoantiBrainwash",      # 8. 洗脑
     "MajoantiClairvoyance",   # 12. 千里眼
+    "MajoantiDeathRecall",    # 19. 死亡回溯
 ]
 
 # 魔女·反逆者模式：公开当前场上已分配的魔法种类
