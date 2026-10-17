@@ -36,17 +36,45 @@ export interface IPropLogs {
    */
   rule: Rule | undefined;
   /**
-   * Callback for resetting log pickup filter.
+   * Callback for resetting log pickup filter (triggered by double-click).
    */
   onResetLogPickup(): void;
   /**
    * Callback for shortId click.
    */
   onShortIdClick?: (shortId: string) => void;
+  /**
+   * Callback for selecting a user from log name menu.
+   */
+  onLogUserFilter?: (userid: string) => void;
 }
 
 export interface IStateLogs {
   renderingState: LogsRenderingState;
+}
+
+function cssString(value: string): string {
+  return `"${value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\A ')
+    .replace(/\r/g, '\\D ')}"`;
+}
+
+function PickupStyle({ userid }: { userid: string | null }) {
+  if (userid == null) {
+    return null;
+  }
+  return (
+    <style>
+      {[
+        `.jf-log-list[data-log-pickup-active="true"] .jf-log{opacity:0.3;}`,
+        `.jf-log-list[data-log-pickup-active="true"] .jf-log[data-log-userid=${cssString(
+          userid,
+        )}]:not(.jf-log-mode-system){opacity:1;}`,
+      ].join('\n')}
+    </style>
+  );
 }
 
 class StaticLogStyleRules extends React.PureComponent {
@@ -64,6 +92,12 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
    * Classname attached to each log.
    */
   private readonly logClass = 'jf-log';
+  /**
+   * Double-click detection state for resetting log pickup.
+   */
+  private wrapperLastClickTime = 0;
+  private wrapperClickTimeout: number | null = null;
+
   constructor(props: IPropLogs) {
     super(props);
     this.state = {
@@ -79,6 +113,10 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
   }
   public componentWillUnmount() {
     this.state.renderingState.dispose();
+    // Clear timeout if exists
+    if (this.wrapperClickTimeout != null) {
+      window.clearTimeout(this.wrapperClickTimeout);
+    }
   }
 
   /**
@@ -90,6 +128,36 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
     return this.props.logs.findByShortId(shortId);
   };
 
+  /**
+   * Handle click for double-click detection to reset log pickup.
+   * This is compatible with both desktop and mobile devices.
+   */
+  private handleLogWrapperClick = () => {
+    const now = Date.now();
+    const timeDiff = now - this.wrapperLastClickTime;
+    const delay = 300;
+
+    if (timeDiff < delay && timeDiff > 0) {
+      // Double-click detected
+      this.props.onResetLogPickup();
+      this.wrapperLastClickTime = 0;
+      if (this.wrapperClickTimeout != null) {
+        window.clearTimeout(this.wrapperClickTimeout);
+        this.wrapperClickTimeout = null;
+      }
+    } else {
+      // Potential single-click, wait for second click
+      if (this.wrapperClickTimeout != null) {
+        window.clearTimeout(this.wrapperClickTimeout);
+      }
+      this.wrapperClickTimeout = window.setTimeout(() => {
+        this.wrapperLastClickTime = 0;
+        this.wrapperClickTimeout = null;
+      }, delay);
+      this.wrapperLastClickTime = now;
+    }
+  };
+
   public render() {
     const {
       logs,
@@ -99,6 +167,7 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
       logPickup,
       onResetLogPickup,
       onShortIdClick,
+      onLogUserFilter,
     } = this.props;
     const { renderingState } = this.state;
 
@@ -116,9 +185,12 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
     return (
       <>
         <StaticLogStyleRules />
+        <PickupStyle userid={logPickup} />
         <LogWrapper
           className="jf-log-list"
           fixedSize={fixedSize}
+          data-log-pickup-active={logPickup != null ? 'true' : undefined}
+          onClick={this.handleLogWrapperClick}
         >
           {mapReverse(logs.chunks, (chunk, i) => {
             // Decide whether this chunk should be shown.
@@ -147,6 +219,7 @@ export class Logs extends React.Component<IPropLogs, IStateLogs> {
                 rule={rule}
                 resolveLogById={this.resolveLogById}
                 onShortIdClick={onShortIdClick}
+                onLogUserFilter={onLogUserFilter}
               />
             );
           })}
@@ -200,6 +273,10 @@ class LogChunk extends React.PureComponent<
      * Callback for shortId click.
      */
     onShortIdClick?: (shortId: string) => void;
+    /**
+     * Callback for selecting a user from log name menu.
+     */
+    onLogUserFilter?: (userid: string) => void;
   },
   {}
 > {
@@ -214,6 +291,7 @@ class LogChunk extends React.PureComponent<
       icons,
       resolveLogById,
       onShortIdClick,
+      onLogUserFilter,
     } = this.props;
     if (!visible && !fixedSize) {
       return null;
@@ -233,6 +311,7 @@ class LogChunk extends React.PureComponent<
               icons={icons}
               resolveLogById={resolveLogById}
               onShortIdClick={onShortIdClick}
+              onLogUserFilter={onLogUserFilter}
             />
           ))
         }

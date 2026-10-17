@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { createPortal } from 'react-dom';
+import Color from 'color';
 import styled, { withTheme } from '../../../util/styled';
 import { Log, autolinkLogType } from '../defs';
 import { Rule } from '../../../defs';
@@ -87,6 +89,10 @@ export interface IPropOneLog {
    * Callback for shortId click.
    */
   onShortIdClick?: (shortId: string) => void;
+  /**
+   * Callback for selecting a user from log name menu.
+   */
+  onLogUserFilter?: (userid: string) => void;
 }
 
 /**
@@ -111,6 +117,7 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
       icons,
       resolveLogById,
       onShortIdClick,
+      onLogUserFilter,
     } = this.props;
     currentShortIdClick = onShortIdClick;
     const baseClassName = logClass;
@@ -304,6 +311,8 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
             size={size}
             shortId={log.shortId}
             onShortIdClick={onShortIdClick}
+            pickupUserid={logUserid}
+            onLogUserFilter={onLogUserFilter}
             {...partAttrs(log.mode)}
           >
             {nameText ? sanitizeLog(nameText) : null}
@@ -711,31 +720,134 @@ interface IPropName extends IPropLogPart {
     | 'brown';
   shortId?: string;
   onShortIdClick?: (shortId: string) => void;
+  pickupUserid?: string;
+  onLogUserFilter?: (userid: string) => void;
 }
 
 const NameInner = ({
   children,
   shortId,
   onShortIdClick,
+  pickupUserid,
+  onLogUserFilter,
   className,
   ...rest
 }: IPropName & {
   className?: string;
   children?: React.ReactNode;
 }) => {
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0 });
+  const nameTextRef = React.useRef<HTMLSpanElement>(null);
+  const menuRef = React.useRef<HTMLSpanElement>(null);
+  const menuOpenTimerRef = React.useRef<number | null>(null);
+  const canOpenMenu =
+    pickupUserid != null && onLogUserFilter != null && children != null;
   const canUseShortId = shortId != null && onShortIdClick != null;
+
+  const clearMenuOpenTimer = React.useCallback(() => {
+    if (menuOpenTimerRef.current != null) {
+      window.clearTimeout(menuOpenTimerRef.current);
+      menuOpenTimerRef.current = null;
+    }
+  }, []);
+
+  const updateMenuPosition = React.useCallback(() => {
+    const anchor = nameTextRef.current;
+    if (anchor == null) {
+      return;
+    }
+    const rect = anchor.getBoundingClientRect();
+    const menuWidth = 120;
+    const left = Math.min(
+      Math.max(4, rect.left),
+      Math.max(4, window.innerWidth - menuWidth - 4),
+    );
+    setMenuPosition({
+      top: rect.bottom + 4,
+      left,
+    });
+  }, []);
+
+  React.useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+    let rafId: number | null = null;
+    const updatePosition = () => {
+      if (rafId != null) {
+        return;
+      }
+      rafId = requestAnimationFrame(() => {
+        updateMenuPosition();
+        rafId = null;
+      });
+    };
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        menuRef.current != null &&
+        !menuRef.current.contains(target) &&
+        nameTextRef.current != null &&
+        !nameTextRef.current.contains(target)
+      ) {
+        clearMenuOpenTimer();
+        setMenuOpen(false);
+      }
+    };
+    updateMenuPosition();
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+      document.removeEventListener('mousedown', handleClickOutside);
+      if (rafId != null) {
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }, [clearMenuOpenTimer, menuOpen, updateMenuPosition]);
+
+  React.useEffect(() => {
+    return clearMenuOpenTimer;
+  }, [clearMenuOpenTimer]);
 
   const handleNameClick = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     if (canUseShortId && handleShortIdDoubleClick(e)) {
+      clearMenuOpenTimer();
+      setMenuOpen(false);
       return;
     }
+    if (canOpenMenu) {
+      clearMenuOpenTimer();
+      menuOpenTimerRef.current = window.setTimeout(() => {
+        updateMenuPosition();
+        setMenuOpen(true);
+        menuOpenTimerRef.current = null;
+      }, SHORT_ID_DOUBLE_CLICK_DELAY);
+    }
+  };
+
+  const handleMenuClick = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+  };
+
+  const handleFilterClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    clearMenuOpenTimer();
+    if (pickupUserid != null && onLogUserFilter != null) {
+      onLogUserFilter(pickupUserid);
+    }
+    setMenuOpen(false);
   };
 
   return (
     <LogPart className={className} data-shortid={shortId} {...rest}>
-      {canUseShortId ? (
+      {canUseShortId || canOpenMenu ? (
         <NameText
+          ref={nameTextRef}
           data-shortid={shortId}
           onClick={handleNameClick}
           style={{ cursor: 'pointer' }}
@@ -745,6 +857,23 @@ const NameInner = ({
       ) : (
         children
       )}
+      {menuOpen
+        ? createPortal(
+            <NameMenu
+              ref={menuRef}
+              onClick={handleMenuClick}
+              style={{
+                top: `${menuPosition.top}px`,
+                left: `${menuPosition.left}px`,
+              }}
+            >
+              <NameMenuButton type="button" onClick={handleFilterClick}>
+                筛选发言
+              </NameMenuButton>
+            </NameMenu>,
+            document.body,
+          )
+        : null}
     </LogPart>
   );
 };
@@ -776,6 +905,39 @@ const NameText = styled.span`
   max-width: 100%;
   overflow: hidden;
   vertical-align: bottom;
+`;
+
+const NameMenu = styled.span`
+  position: fixed;
+  z-index: 9999;
+  display: block;
+  min-width: 6em;
+  padding: 2px;
+  background-color: ${({ theme }) => theme.globalStyle.background};
+  border: 1px solid
+    ${({ theme }) =>
+      Color(theme.globalStyle.color)
+        .fade(0.5)
+        .string()};
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+`;
+
+const NameMenuButton = styled.button`
+  width: 100%;
+  padding: 3px 8px;
+  border: none;
+  background: transparent;
+  color: ${({ theme }) => theme.globalStyle.color};
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    background-color: rgba(127, 127, 127, 0.2);
+    outline: none;
+  }
 `;
 
 /**

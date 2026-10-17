@@ -14,6 +14,10 @@ export const LogWrapper = styled.div<{
    * Whether the UI is in "fixed-size mode".
    */
   fixedSize: boolean;
+  /**
+   * Callback for click to reset log pickup filter (double-click detection).
+   */
+  onClick?: (e: React.MouseEvent) => void;
 }>`
   width: 100%;
   display: ${props => (props.fixedSize ? 'block' : 'grid')};
