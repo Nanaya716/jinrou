@@ -4044,6 +4044,7 @@ class Guard extends Player
         pl.transform game,newpl,true
         newpl.touched game,@id
         null
+
 class Couple extends Player
     type:"Couple"
     makejobinfo:(game,result)->
