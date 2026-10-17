@@ -2444,7 +2444,7 @@ exports.new_rules=[
             }
         ]
     }
-    # 埋毒者、猫又
+    # 猫又、九命妖猫
     {
         type: 'group'
         label:

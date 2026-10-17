@@ -292,7 +292,7 @@ rule:
       no: ""
   poisonwolf:
     name: "人狼袭击有毒对象"
-    label: "人狼袭击「埋毒者」・「猫又」时的动作设定。"
+    label: "人狼袭击「猫又」・「九命妖猫」时的动作设定。"
     labels:
       selector: "连坐袭击者"
       "": "随机连坐"
@@ -363,7 +363,7 @@ ruleGroup:
   hunter:
     name: "狩猎者的设定"
   poison:
-    name: "埋毒者・猫又的设定"
+    name: "猫又・九命妖猫的设定"
   lover:
     name: "恋人的设定"
   quantum:

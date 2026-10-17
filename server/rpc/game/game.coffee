@@ -4535,7 +4535,7 @@ class Poisoner extends Player
     hasDeadlyWeapon:->true
     dying:(game,found,from)->
         super
-        # 埋毒者の逆襲
+        # 猫又の逆襲
         canbedead = game.players.filter (x)->!x.dead    # 生きている人たち
         if Found.isNormalWerewolfAttack found
             # 噛まれた場合は狼のみ
