@@ -244,6 +244,7 @@ jobname:
   MajoantiDeathRecall: '死亡回溯'
   MajoantiGrudgeBite: '怨念反噬'
   MajoantiMomentaryReturn: '刹那回归'
+  MajoantiTrueNameDissolution: '真名溶解'
   MajoantiTime: '时间操纵'
 
 # Name of categories.
@@ -1431,6 +1432,9 @@ MajoantiGrudgeBite:
 MajoantiMomentaryReturn:
   name: '刹那回归'
   jobname: '{{jobname}}（刹那回归）'
+MajoantiTrueNameDissolution:
+  name: '真名溶解'
+  jobname: '{{jobname}}（真名溶解）'
 MajoantiTime:
   name: '时间操纵'
   jobname: '{{jobname}}（时间操纵）'

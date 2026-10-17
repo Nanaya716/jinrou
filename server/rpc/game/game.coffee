@@ -14405,6 +14405,20 @@ class MajoantiMomentaryReturn extends Complex
         }
 
 # 22. 真名溶解
+class MajoantiTrueNameDissolution extends Complex
+    cmplType:"MajoantiTrueNameDissolution"
+    formType: FormType.optional
+    getJobname:-> @game.i18n.t "roles:MajoantiTrueNameDissolution.jobname", {jobname: @main.getJobname()}
+    getJobDisp:-> @game.i18n.t "roles:MajoantiTrueNameDissolution.jobname", {jobname: @main.getJobDisp()}
+    makejobinfo:(game,result)->
+        @main.makejobinfo game, result
+        result.desc ?= []
+        result.desc.push {
+            name: @game.i18n.t "roles:MajoantiTrueNameDissolution.name"
+            type: "MajoantiTrueNameDissolution"
+        }
+
+# 23. 时间操纵
 class MajoantiTime extends Complex
     cmplType:"MajoantiTime"
     formType: FormType.optional
@@ -16254,6 +16268,7 @@ complexes=
     MajoantiDeathRecall: MajoantiDeathRecall
     MajoantiGrudgeBite: MajoantiGrudgeBite
     MajoantiMomentaryReturn: MajoantiMomentaryReturn
+    MajoantiTrueNameDissolution: MajoantiTrueNameDissolution
     MajoantiTime: MajoantiTime
 
     # 役職ごとの強さ
@@ -18647,6 +18662,7 @@ MAJOANTI_MAGICS = [
     "MajoantiDeathRecall",    # 19. 死亡回溯
     "MajoantiGrudgeBite",     # 20. 怨念反噬
     "MajoantiMomentaryReturn", # 21. 刹那回归
+    "MajoantiTrueNameDissolution", # 22. 真名溶解
     "MajoantiTime"            # 23. 时间操纵
 ]
 
