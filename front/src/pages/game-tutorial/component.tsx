@@ -62,6 +62,7 @@ export const GameTutorial: React.FunctionComponent<IPropGameTutorial> = observer
           roomControlHandlers={roomControlHandlers}
           {...gameInput}
           onReportFormSubmit={noop}
+          onFavoriteToggle={noop}
         />
       </>
     );

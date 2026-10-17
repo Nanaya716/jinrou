@@ -8,6 +8,29 @@ export interface RoomInStore extends Room {
    */
   fresh: boolean;
 }
+
+export interface FavoriteSummary {
+  total: number;
+  played: number;
+  win: number;
+  lose: number;
+  draw: number;
+  gm: number;
+  helper: number;
+}
+export interface FavoriteUserlog {
+  counter?: {
+    allgamecount?: number;
+  };
+  wincount?: {
+    all?: number;
+    [job: string]: number | undefined;
+  };
+  losecount?: {
+    all?: number;
+    [job: string]: number | undefined;
+  };
+}
 /**
  * States of room list page.
  * @package
@@ -37,6 +60,16 @@ export class RoomListStore {
    */
   @observable
   public mode: RoomListMode;
+  /**
+   * Summary of favorite rooms after current filtering.
+   */
+  @observable.shallow
+  public favoriteSummary: FavoriteSummary | null = null;
+  /**
+   * User log aggregated from all favorite rooms.
+   */
+  @observable.shallow
+  public favoriteUserlog: FavoriteUserlog | null = null;
 
   /**
    * Whether previous page is available.
@@ -65,13 +98,24 @@ export class RoomListStore {
    * Set rooms and page
    */
   @action
-  public setRooms(rooms: Room[], page: number): void {
+  public setRooms(
+    rooms: Room[],
+    page: number,
+    favoriteSummary?: FavoriteSummary | null,
+    favoriteUserlog?: FavoriteUserlog | null,
+  ): void {
     const currentTime = Date.now();
     this.rooms = rooms.map(room => ({
       ...room,
       fresh: room.made + freshDuration > currentTime,
     }));
     this.page = page;
+    if (favoriteSummary !== undefined) {
+      this.favoriteSummary = favoriteSummary;
+    }
+    if (favoriteUserlog !== undefined) {
+      this.favoriteUserlog = favoriteUserlog;
+    }
     this.state = 'loaded';
   }
   /**

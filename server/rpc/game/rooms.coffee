@@ -31,6 +31,112 @@ PlayerObject.mode="player" / "gm" / "helper"
 ###
 page_number=10
 
+sanitizeRoomForList = (room, userid)->
+    room.villageRules ?= ""
+    if room.password?
+        room.needpassword = true
+        room.password = undefined
+    if room.blind
+        room.owner = undefined
+    for p in room.players
+        # find my player
+        if p.realid == userid
+            p.me = true
+        p.realid = undefined
+        p.realname = undefined
+    unless room.watchspeak?
+        # old rooms do not have watchspeak set.
+        # watchspeak defaults to true.
+        room.watchspeak = true
+    if room.theme
+        theme = Server.game.themes.getTheme room.theme
+        unless theme == null
+            room.themeFullName = theme.name
+    room
+
+normalizeFavoriteSearchText = (text)->
+    String(text ? '').trim().toLowerCase()
+
+favoriteResultText = (subtype)->
+    switch subtype
+        when "win"
+            "胜利 win"
+        when "lose"
+            "败北 失败 lose"
+        when "draw"
+            "平局 draw"
+        when "gm"
+            "gm 游戏管理员"
+        when "helper"
+            "helper 帮手"
+        else
+            ""
+
+favoriteSearchText = (room, gameinfo)->
+    parts = [room.name ? ""]
+    if gameinfo?
+        parts.push gameinfo.job ? ""
+        parts.push i18n.t "roles:jobname.#{gameinfo.job}" if gameinfo.job?
+        parts.push favoriteResultText gameinfo.subtype
+    normalizeFavoriteSearchText parts.join " "
+
+makeFavoriteSummary = (items)->
+    summary =
+        total: items.length
+        played: 0
+        win: 0
+        lose: 0
+        draw: 0
+        gm: 0
+        helper: 0
+    for item in items
+        switch item.subtype
+            when "win"
+                summary.win += 1
+            when "lose"
+                summary.lose += 1
+            when "draw"
+                summary.draw += 1
+            when "gm"
+                summary.gm += 1
+            when "helper"
+                summary.helper += 1
+        if item.subtype?
+            summary.played += 1
+    summary
+
+makeFavoriteUserlog = (logs)->
+    userlog =
+        counter:
+            allgamecount: 0
+        wincount:
+            all: 0
+        losecount:
+            all: 0
+        drawcount:
+            all: 0
+    for log in logs
+        switch log.subtype
+            when "win"
+                userlog.counter.allgamecount += 1
+                userlog.wincount.all += 1
+                if log.job?
+                    userlog.wincount[log.job] ?= 0
+                    userlog.wincount[log.job] += 1
+            when "lose"
+                userlog.counter.allgamecount += 1
+                userlog.losecount.all += 1
+                if log.job?
+                    userlog.losecount[log.job] ?= 0
+                    userlog.losecount[log.job] += 1
+            when "draw"
+                userlog.counter.allgamecount += 1
+                userlog.drawcount.all += 1
+                if log.job?
+                    userlog.drawcount[log.job] ?= 0
+                    userlog.drawcount[log.job] += 1
+    userlog
+
 # Collection of jobs to reset readiness.
 readyResetJobCollection = new Map
 
@@ -172,17 +278,129 @@ module.exports.actions=(req,res,ss)->
                 return
             for x in results
                 if x.room?
-                    if x.room.password?
-                        x.room.needpassword = true
-                        x.room.password = undefined
-                    if x.room.blind
-                        x.room.owner = undefined
-                    for p in x.room.players
-                        # find my player
-                        if p.realid == req.session.userId
-                            p.me = true
-                        p.realid = undefined
+                    sanitizeRoomForList x.room, req.session.userId
             res results
+
+    getFavoriteRooms:(page, filter = {})->
+        unless req.session.userId
+            res {error: i18n.t "common:error.needLogin"}
+            return
+        keyword = normalizeFavoriteSearchText(
+            if typeof filter == "string" then filter else filter?.keyword
+        )
+        M.roomfavorites.find({
+            userid: req.session.userId
+        }).sort({createdAt: -1}).toArray (err, favorites)->
+            if err?
+                res {error: String err}
+                return
+            roomids = favorites.map (x)-> x.roomid
+            unless roomids.length
+                res {
+                    rooms: []
+                    summary: makeFavoriteSummary []
+                    userlog: null
+                }
+                return
+            M.userrawlogs.find({
+                userid: req.session.userId
+                type: libuserlogs.DataTypes.game
+                gameid:
+                    $in: roomids
+            }).toArray (err, logs)->
+                if err?
+                    res {error: String err}
+                    return
+                logsByRoom = {}
+                for log in logs
+                    logsByRoom[log.gameid] = log
+                M.rooms.find({
+                    id:
+                        $in: roomids
+                }).toArray (err, rooms)->
+                    if err?
+                        res {error: String err}
+                        return
+                    roomsById = {}
+                    for room in rooms
+                        roomsById[room.id] = room
+                    matched = []
+                    for favorite in favorites
+                        room = roomsById[favorite.roomid]
+                        continue unless room?
+                        gameinfo = logsByRoom[favorite.roomid]
+                        if keyword && favoriteSearchText(room, gameinfo).indexOf(keyword) < 0
+                            continue
+                        matched.push {
+                            room: sanitizeRoomForList room, req.session.userId
+                            job: gameinfo?.job ? null
+                            subtype: gameinfo?.subtype ? null
+                        }
+                    res {
+                        rooms: matched.slice page * page_number, (page + 1) * page_number
+                        summary: makeFavoriteSummary matched
+                        userlog: makeFavoriteUserlog logs
+                    }
+
+    getFavoriteState:(roomid)->
+        unless req.session.userId
+            res {available: false, favorite: false}
+            return
+        M.rooms.findOne {id: roomid}, (err, room)->
+            if err?
+                res {error: String err}
+                return
+            unless room? && room.mode == "end"
+                res {available: false, favorite: false}
+                return
+            M.roomfavorites.findOne {
+                userid: req.session.userId
+                roomid: roomid
+            }, (err, doc)->
+                if err?
+                    res {error: String err}
+                    return
+                res {
+                    available: true
+                    favorite: !!doc
+                }
+
+    setFavoriteRoom:(roomid, favorite)->
+        unless req.session.userId
+            res {error: i18n.t("common:error.needLogin"), require:"login"}
+            return
+        M.rooms.findOne {id: roomid}, (err, room)->
+            if err?
+                res {error: String err}
+                return
+            unless room?
+                res {error: i18n.t "error.noSuchRoom"}
+                return
+            unless room.mode == "end"
+                res {error: "只能收藏已经结束的房间。"}
+                return
+            query =
+                userid: req.session.userId
+                roomid: roomid
+            if favorite
+                M.roomfavorites.update query, {
+                    $setOnInsert:
+                        userid: req.session.userId
+                        roomid: roomid
+                        createdAt: new Date
+                }, {
+                    upsert: true
+                }, (err)->
+                    if err?
+                        res {error: String err}
+                    else
+                        res {favorite: true}
+            else
+                M.roomfavorites.remove query, (err)->
+                    if err?
+                        res {error: String err}
+                    else
+                        res {favorite: false}
 
 
     oneRoom:(roomid)->

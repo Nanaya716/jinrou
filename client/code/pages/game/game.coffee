@@ -113,7 +113,28 @@ exports.start=(roomid)->
                     query.room = roomid
                     query.userAgent = navigator.userAgent
                     ss.rpc "app.reportForm", query, (result)->
-                        console.log result
+                        return
+                onFavoriteToggle:(favorite)->
+                    game_view.store.update {
+                        favoriteState:
+                            loading: true
+                    }
+                    ss.rpc "game.rooms.setFavoriteRoom", roomid, favorite, (result)->
+                        if result?.error?
+                            game_view.store.update {
+                                favoriteState:
+                                    loading: false
+                            }
+                            dialog.showErrorDialog {
+                                modal: true
+                                message: String result.error
+                            }
+                            return
+                        game_view.store.update {
+                            favoriteState:
+                                favorite: !!result.favorite
+                                loading: false
+                        }
                 roomControlHandlers:
                     join: (user)->
                         processJoin = ->
@@ -253,6 +274,16 @@ exports.start=(roomid)->
         game_view?.store.update {
             roomName: room.name
         }
+        ss.rpc "game.rooms.getFavoriteState", roomid, (result)->
+            if result?.error?
+                console.error result.error
+                return
+            game_view?.store.update {
+                favoriteState:
+                    available: !!result.available
+                    favorite: !!result.favorite
+                    loading: false
+            }
         # 今までのログを送ってもらう
         this_openjob_flag=false
         # 职业情報をもらった

@@ -305,6 +305,16 @@ exports.showUrl=showUrl=(url,query={},nohistory=false)->
                 mode: "my"
                 page: Number query.page || 0
             }
+        when "/rooms/favorites"
+            # 收藏的房间
+            page "game-rooms", {
+                my: true
+            }, Index.game.rooms, {
+                mode: "favorites"
+                page: Number query.page || 0
+                noLinks: true
+                keyword: query.keyword ? ''
+            }
         when "/newroom"
             # 新しい部屋
             ss.rpc "game.themes.getThemeList", (docs)->

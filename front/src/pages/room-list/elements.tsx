@@ -54,6 +54,24 @@ export const NavLinks = styled.p`
 `;
 
 /**
+ * Search form for favorite rooms.
+ * @package
+ */
+export const FavoriteSearchForm = styled.form`
+  display: flex;
+  flex-flow: row wrap;
+  gap: 0.4em;
+  align-items: center;
+  margin: 0.4em 0;
+
+  input {
+    flex: 20em 1 1;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+`;
+
+/**
  * Wrapper of room list.
  * @package
  */

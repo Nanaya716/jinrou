@@ -11,6 +11,7 @@ import {
   TimerInfo,
   PlayerInfo,
   RoomControlInfo,
+  FavoriteState,
   getSpeakKindPriority,
 } from './defs';
 import { LogStore } from './logs/log-store';
@@ -31,6 +32,7 @@ export interface UpdateQuery {
   ruleOpen?: boolean;
   timer?: TimerInfo;
   roomControls?: RoomControlInfo | null;
+  favoriteState?: Partial<FavoriteState>;
   logPickup?: string | null;
   speakFocus?: boolean;
 }
@@ -60,6 +62,15 @@ export class GameStore {
    */
   @observable.shallow
   roomControls: RoomControlInfo | null = null;
+  /**
+   * State of room favorite control.
+   */
+  @observable
+  favoriteState: FavoriteState = {
+    available: false,
+    favorite: false,
+    loading: false,
+  };
   /**
    * Name of your role.
    */
@@ -149,6 +160,7 @@ export class GameStore {
     ruleOpen,
     timer,
     roomControls,
+    favoriteState,
     logPickup,
     speakFocus,
   }: UpdateQuery): void {
@@ -187,6 +199,12 @@ export class GameStore {
     }
     if (roomControls !== undefined) {
       this.roomControls = roomControls;
+    }
+    if (favoriteState != null) {
+      this.favoriteState = {
+        ...this.favoriteState,
+        ...favoriteState,
+      };
     }
     if (logPickup !== undefined) {
       this.logPickup = logPickup;

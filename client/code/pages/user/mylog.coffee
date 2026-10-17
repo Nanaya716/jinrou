@@ -12,7 +12,7 @@ exports.start=->
                 userlog = result.userlog
                 usersummary = result.usersummary
 
-                showUserlog i18n, userlog
+                exports.showUserlog i18n, userlog, $("#alldata").get 0
                 showUserSummary usersummary
 
                 if result.data_open_recent
@@ -57,20 +57,25 @@ namedJobinfo = (i18n)->
             }
     result
 
-showUserlog = (i18n, userlog)->
+exports.showUserlog = showUserlog = (i18n, userlog, container)->
     # 全期間データを表示
+    target = $ container
     unless userlog?
-        $("#alldata")
+        target
             .empty()
             .append("<p>尚无战绩。</p>")
         return
     grapharea = document.createElement 'div'
-    $("#alldata")
+    target
         .empty()
         .append("""<p>对战数：<b>#{userlog.counter?.allgamecount ? 0}</b>
             （胜利数：<b>#{userlog.wincount?.all ? 0}</b>，
-            败北数：<b>#{userlog.losecount?.all ? 0}</b>）</p>""")
-        .append(grapharea)
+            败北数：<b>#{userlog.losecount?.all ? 0}</b>，
+            平局数：<b>#{userlog.drawcount?.all ? 0}</b>）</p>""")
+    unless (userlog.wincount?.all ? 0) + (userlog.losecount?.all ? 0) + (userlog.drawcount?.all ? 0) > 0
+        target.append "<p>尚无可显示的胜败职业数据。</p>"
+        return
+    target.append grapharea
 
     # グラフも表示
     makeGraph i18n, userlog, grapharea
@@ -84,6 +89,7 @@ showUserSummary = (usersummary)->
         <p>对战数：<b>#{usersummary.game_total}</b></p>
         <p>胜利数：<b>#{usersummary.win}</b> (#{(if usersummary.game_total>0 then usersummary.win/usersummary.game_total*100 else 0).toFixed(1)}%)</p>
         <p>败北数：<b>#{usersummary.lose}</b> (#{(if usersummary.game_total>0 then usersummary.lose/usersummary.game_total*100 else 0).toFixed(1)}%)</p>
+        <p>平局数：<b>#{usersummary.draw ? 0}</b> (#{(if usersummary.game_total>0 then (usersummary.draw ? 0)/usersummary.game_total*100 else 0).toFixed(1)}%)</p>
         <p>猝死数：<b>#{usersummary.gone}</b> (#{(if usersummary.game_total>0 then usersummary.gone/usersummary.game_total*100 else 0).toFixed(1)}%)</p>
         <p>GM数：<b>#{usersummary.gm}</b></p>
         <p>帮手数：<b>#{usersummary.helper}</b></p>
@@ -117,6 +123,7 @@ changeOpenSetting = (mode, input)->
 makeGraph = (i18n, userlog, grapharea)->
     wincount = userlog.wincount ? {}
     losecount = userlog.losecount ? {}
+    drawcount = userlog.drawcount ? {}
     # 陣営の色
     teamcolors = merge namedJobinfo(i18n), {}
 
@@ -138,14 +145,18 @@ makeGraph = (i18n, userlog, grapharea)->
     gs=
         win:{}
         lose:{}
+        draw:{}
     for x,arr of Shared.game.teams
         gs.win[x]={}
         gs.lose[x]={}
+        gs.draw[x]={}
         for job in arr
             if wincount[job]?
                 gs.win[x][job]=wincount[job]
             if losecount[job]?
                 gs.lose[x][job]=losecount[job]
+            if drawcount[job]?
+                gs.draw[x][job]=drawcount[job]
     graph1.setData gs,{
         win:merge {
             name:"胜利"
@@ -154,6 +165,10 @@ makeGraph = (i18n, userlog, grapharea)->
         lose:merge {
             name:"败北"
             color:"#0000FF"
+        },teamcolors
+        draw:merge {
+            name:"平局"
+            color:"#777777"
         },teamcolors
     }
     graph1.openAnimate 0.6
@@ -173,9 +188,13 @@ makeGraph = (i18n, userlog, grapharea)->
             names[team][type].lose=
                 name:"败北"
                 color:"#0000FF"
+            names[team][type].draw=
+                name:"平局"
+                color:"#777777"
             gs[team][type]=
                 win:wincount[type] ? 0
                 lose:losecount[type] ? 0
+                draw:drawcount[type] ? 0
     graph2.setData gs,names
     graph2.openAnimate 0.6
 

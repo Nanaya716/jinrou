@@ -101,6 +101,10 @@ interface IPropGame {
    */
   onReportFormSubmit: (query: ReportFormQuery) => void;
   /**
+   * Toggle current room favorite state.
+   */
+  onFavoriteToggle: (favorite: boolean) => void;
+  /**
    * Handlers of room prelude.
    */
   roomControlHandlers: RoomControlHandlers;
@@ -134,6 +138,7 @@ export class Game extends React.Component<IPropGame, {}> {
       onJobQuery,
       onWillChange,
       onReportFormSubmit,
+      onFavoriteToggle,
       roomControlHandlers,
     } = this.props;
     const {
@@ -148,6 +153,7 @@ export class Game extends React.Component<IPropGame, {}> {
       roomControls,
       logPickup,
       speakFocus,
+      favoriteState,
     } = store;
     const styleMode = styleModeOf(roleInfo, gameInfo);
     const theme = this.makeTheme(themeStore.themeObject, teamColors);
@@ -212,6 +218,8 @@ export class Game extends React.Component<IPropGame, {}> {
                 onRefuseRevival={this.handleRefuseRevival}
                 onRuleOpen={this.handleRuleOpen}
                 onWillChange={onWillChange}
+                favoriteState={favoriteState}
+                onFavoriteToggle={onFavoriteToggle}
                 onFocus={this.handleSpeakFocus}
                 {...speakState}
               />
