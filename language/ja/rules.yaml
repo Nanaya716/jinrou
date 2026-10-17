@@ -281,6 +281,15 @@ rule:
     label: "设为「有」的时候，妖狐被占卜师咒杀的通知将与被人狼袭击致死的通知不同。"
     yes: "有"
     no: "无"
+  nekikill:
+    name: "献祭/念杀死因显示"
+    label: "设为「明显」的时候，被献祭或念杀的人的死因会显示为「被献祭了」或「被念杀了」。"
+    labels:
+      obvious: "明显"
+      normal: "普通"
+    descriptions:
+      obvious: "显示具体的死因。"
+      normal: "显示为「不成样子的尸体」。"
   hunter_lastattack:
     name: "绝地反击"
     label: "绝地反击设为「允许」的时候，狩猎者死亡后的技能将在胜利判定之前触发。"

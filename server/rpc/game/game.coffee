@@ -2149,6 +2149,10 @@ class Game
                     @i18n.t "found.goneDay", {name: x.name}
                 when "gone-night"
                     @i18n.t "found.goneNight", {name: x.name}
+                when "sacrificed"
+                    @i18n.t "found.sacrificed", {name: x.name}
+                when "nekikill"
+                    @i18n.t "found.nekikill", {name: x.name}
                 else
                     @i18n.t "found.fallback", {name: x.name}
             log=
@@ -2161,7 +2165,7 @@ class Game
             unless (obj.found in ["punish", "infirm", "bonds", "hunter", "gm", "gone-day", "gone-night"]) || (obj.found == "curse" && @rule.deadfox == "obvious")
                 if ["werewolf","werewolf2","trickedWerewolf","nineTailedFox","poison","hinamizawa",
                     "vampire","vampire2","witch","dog","trap","bomb",
-                    "marycurse","psycho","curse","punish","spygone","deathnote",
+                    "marycurse","psycho","curse","punish","spygone","deathnote","sacrificed","nekikill"
                     "foxsuicide","friendsuicide","twinsuicide","dragonknightsuicide","vampiresuicide","santasuicide","fascinatesuicide","loreleisuicide"
                     "infirm","hunter",
                     "gmpunish","gone-day","gone-night","crafty","greedy","tough","lunaticlover",
@@ -2240,6 +2244,10 @@ class Game
                         "assassinate"
                     when "ghostrevenge"
                         "ghostrevenge"
+                    when "sacrificed"
+                        "sacrificed"
+                    when "nekikill"
+                        "nekikill"
                     else
                         null
                 if emma_log?
@@ -12336,6 +12344,180 @@ class Actress extends Fox
             comment: game.i18n.t "roles:Actress.existence", {name: @name}
         splashlog game.id,game,log
 
+class HimeFox extends Fox
+    type:"HimeFox"
+    team:"Fox"
+    midnightSort: 106  # after werewolf kill
+    formType: FormType.optional
+    isFox:->true
+    constructor:->
+        super
+        @setFlag null  # sacrifice id
+        @setTarget null  # nekikill id
+        @nekikillBlockedLog = false  # 念杀被阻挡的标记，sunrise时播报
+        @nekikillFailedLog = false  # 念杀失败（猫又/九命妖猫）的标记，sunrise时播报
+
+    isFormTarget:(jobtype)-> jobtype in ["HimeFox", "NekikillTarget"]
+
+    checkJobValidity:(game,query)->
+        # 只有技能选择时才进行特殊验证，其他（投票等）使用默认逻辑
+        if query?.jobtype == "HimeFox"
+            pl = game.getPlayer query.target
+            return false unless pl?
+            return !pl.dead && (pl.isJobType("Perfidious") || pl.isJobType("Heretic"))
+        else if query?.jobtype == "NekikillTarget"
+            pl = game.getPlayer query.target
+            return false unless pl?
+            # isalive
+            return !pl.dead
+        else
+            return super
+
+    getOpenForms:(game)->
+        return [] if @dead
+        unless Phase.isNight(game.phase)
+            return []
+
+        perfidiousOrHeretic = game.players.filter (x)=>
+            !x.dead && (x.isJobType("Perfidious") || x.isJobType("Heretic"))
+        if perfidiousOrHeretic.length == 0
+            return []
+
+        # Returns different forms based on the selection stage
+        unless @flag?
+            # 1.select sacrifice
+            return [{
+                type: @type
+                options: perfidiousOrHeretic.map (pl) -> {name: pl.name, value: pl.id}
+                formType: FormType.optional
+                objid: @objid
+            }]
+        else if @flag? && !@target?
+            # 2.select nekikill target
+            alivePlayers = game.players.filter (pl)-> !pl.dead
+            return [{
+                type: "NekikillTarget"
+                options: alivePlayers.map (pl) -> {name: pl.name, value: pl.id}
+                formType: FormType.required
+                objid: @objid
+            }]
+        []
+
+    sleeping:-> !@flag? || !!@target
+    jobdone:(game)-> @flag? && @target?
+
+    job:(game, playerId, query)->
+        pl = game.getPlayer playerId
+        unless pl?
+            return game.i18n.t "error.common.nonexistentPlayer"
+        if pl.id==@id
+            return game.i18n.t "error.common.noSelectSelf"
+
+        if !@flag?
+            unless pl.isJobType("Perfidious") || pl.isJobType("Heretic")
+                return game.i18n.t "error.HimeFox.invalidSacrificeTarget"
+            @setFlag playerId
+            splashlog game.id, game, {
+                mode:"skill"
+                to:@id
+                comment: game.i18n.t "roles:HimeFox.selectSacrifice", {name: @name, target: pl.name}
+            }
+        else if !@target?
+            # 2.select nekikill target
+            @setTarget playerId
+            sacrificepl = game.getPlayer @flag
+            splashlog game.id, game, {
+                mode:"skill"
+                to:@id
+                comment: game.i18n.t "roles:HimeFox.select", {name: @name, target: pl.name, sacrifice: sacrificepl.name}
+            }
+        else
+            return game.i18n.t "error.common.alreadyUsed"
+        null
+
+    midnight:(game,midnightSort)->
+        super
+        return unless @flag? && @target?
+
+        sacrifice = game.getPlayer game.skillTargetHook.get @flag
+        target = game.getPlayer game.skillTargetHook.get @target
+        return unless sacrifice? && target?
+
+        currentSacrifice = game.getPlayer @flag
+        unless currentSacrifice? && (currentSacrifice.isJobType("Perfidious") || currentSacrifice.isJobType("Heretic"))
+            return
+
+        # check nekikill target is alive
+        currentTarget = game.getPlayer game.skillTargetHook.get @target
+        unless currentTarget? && !currentTarget.dead
+            return
+
+        # check guardbyMindPsychic
+        if currentTarget?.isCmplType "GuardedByPsychic"
+            guard = game.getPlayer currentTarget.cmplFlag
+            if guard? && !guard.dead
+                # blocked when guarded
+                guard.addGamelog game, "nekikill", null, @id
+                @nekikillBlockedLog = true
+                return
+
+        # curse himefox when nekikill to poisoner or cat
+        if target.type == "Poisoner" || target.type == "Cat"
+            @die game, "curse", currentTarget.id
+            currentTarget.addGamelog game, "nekikill", null, @id
+            @nekikillFailedLog = true
+            return
+
+        # nekikill
+        target.die game, "nekikill", @id
+        @addGamelog game, "nekikill", null, target.id
+
+        # do sacrifice when only nekikill success 
+        if currentTarget.dead && currentTarget.found == "nekikill" && !sacrifice.dead
+            sacrifice.die game, "sacrificed", @id
+        null
+
+    sunrise:(game)->
+        super
+        # 如果念杀被阻挡，播报log
+        if @nekikillBlockedLog
+            splashlog game.id, game, {
+                mode:"system"
+                comment: game.i18n.t "roles:HimeFox.nekikillBlocked", {}
+            }
+            @nekikillBlockedLog = false
+        # 如果念杀失败（猫又/九命妖猫），播报log
+        if @nekikillFailedLog
+            splashlog game.id, game, {
+                mode:"system"
+                comment: game.i18n.t "roles:HimeFox.nekikillFailed", {}
+            }
+            @nekikillFailedLog = false
+        @setFlag null
+        @setTarget null
+
+    deadsunrise:(game)->
+        # 死后也要播报log
+        if @nekikillBlockedLog
+            splashlog game.id, game, {
+                mode:"system"
+                comment: game.i18n.t "roles:HimeFox.nekikillBlocked", {}
+            }
+            @nekikillBlockedLog = false
+        if @nekikillFailedLog
+            splashlog game.id, game, {
+                mode:"system"
+                comment: game.i18n.t "roles:HimeFox.nekikillFailed", {}
+            }
+            @nekikillFailedLog = false
+        @setFlag null
+        @setTarget null
+
+    divined:(game,player)->
+        super
+        @die game,"curse", player.id
+        player.addGamelog game,"cursekill",null,@id
+
 class StraySheep extends Player
     type:"StraySheep"
     midnightSort:79
@@ -14818,6 +15000,7 @@ jobs=
     BigWolf:BigWolf
     DoubleHeadedWolf:DoubleHeadedWolf
     TinyFox:TinyFox
+    HimeFox:HimeFox
     FoxMatchmaker:FoxMatchmaker
     Bat:Bat
     Noble:Noble
@@ -15098,6 +15281,7 @@ jobStrength=
     BigWolf:80
     DoubleHeadedWolf:40
     TinyFox:10
+    HimeFox:20
     FoxMatchmaker:20
     Bat:10
     Noble:12
