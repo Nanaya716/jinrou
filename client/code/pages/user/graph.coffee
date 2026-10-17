@@ -107,7 +107,7 @@ class CircleGraph extends Graph
                 control.appendChild square
 
                 title.appendChild control
-                title.appendChild document.createTextNode "#{names[_name]?.name ? ""} #{thissum} (#{(thissum/@sum*100).toPrecision(2)}%)"
+                title.appendChild document.createTextNode "#{names[_name]?.name ? ""} #{thissum} (#{formatPercent thissum/@sum*100}%)"
                 li.appendChild title
                 child = datatable data[_name], name, names[_name]
                 li.appendChild child
@@ -178,3 +178,12 @@ class CircleGraph extends Graph
 
 
 exports.circleGraph=(size)->new CircleGraph size
+
+formatPercent = (value)->
+    return "0" unless isFinite value
+    if Math.abs(value - Math.round(value)) < 0.05
+        String Math.round value
+    else if value < 1
+        value.toFixed 2
+    else
+        value.toFixed 1

@@ -14,7 +14,7 @@ exports.start=(userid)->
 
                 $("#usersummary").append """
                 <p>最近 #{usersummary.days} 天内的战绩：</p>
-                <p>对战数 <b>#{usersummary.game_total}</b>，胜利数 <b>#{usersummary.win}</b>，败北数 <b>#{usersummary.lose}</b></p>
+                <p>对战数 <b>#{usersummary.game_total}</b>，胜利数 <b>#{usersummary.win}</b>，败北数 <b>#{usersummary.lose}</b>，平局数 <b>#{usersummary.draw ? 0}</b></p>
                 <p>GM数： <b>#{usersummary.gm}</b>，帮手数 <b>#{usersummary.helper}</b></p>
                 <p>猝死数 <b>#{usersummary.gone}</b> #{if usersummary.game_total > 0 then "(#{(usersummary.gone / usersummary.game_total * 100).toFixed(1)}%)" else ""}</p>
                 """
@@ -26,7 +26,7 @@ exports.start=(userid)->
         if userlog?
             $("#usersummary").append """
                 <p>全部战绩：</p>
-                <p>对战数 <b>#{userlog.game}</b>，胜利数 <b>#{userlog.win}</b>，败北数 <b>#{userlog.lose}</b></p>
+                <p>对战数 <b>#{userlog.game}</b>，胜利数 <b>#{userlog.win}</b>，败北数 <b>#{userlog.lose}</b>，平局数 <b>#{userlog.draw ? 0}</b></p>
                 """
         else
             $("#usersummary").append """
