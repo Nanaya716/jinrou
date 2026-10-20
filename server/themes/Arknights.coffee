@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-10-20T10:31:19.371Z"
+    lastModified: "2026-10-20T10:45:50.675Z"
     skins: {
         "Amiya": {
             "avatar": "https://s3.bmp.ovh/2026/09/16/0ZfB9kti.gif",
@@ -19,7 +19,7 @@ module.exports =
         },
         "Doctor": {
             "avatar": "https://s3.bmp.ovh/2026/09/14/BNwCOjJx.png",
-            "name": "博士1",
+            "name": "博士",
             "prize": ""
         },
         "Kaltsit": {
