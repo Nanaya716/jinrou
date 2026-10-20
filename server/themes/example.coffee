@@ -32,4 +32,3 @@ module.exports=
             avatar:["http://img.example.com/some_other_character_1.jpg","http://img.example.com/some_other_character_2.jpg"]
             name:"大鲶鱼"
             prize:"" # 称号是允许留空的
-# ThemeMaker deployment verification: example only
