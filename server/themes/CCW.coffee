@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-10-21T11:47:57.028Z"
+    lastModified: "2026-10-21T11:57:53.763Z"
     skins: {
         "character_1": {
             "name": "烤鸭",
@@ -26,6 +26,14 @@ module.exports =
             "prize": [
                 "无人机创造者",
                 "喜欢吃椰枣的蜜桃"
+            ]
+        },
+        "character_4": {
+            "name": "安静",
+            "avatar": "https://www.boximchat.com/file/box-im/image/20260922/2102362503827709952.jpg",
+            "prize": [
+                "别怕",
+                "请安静下来"
             ]
         }
     }
