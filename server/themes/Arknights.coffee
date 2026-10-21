@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-10-20T10:45:50.675Z"
+    lastModified: "2026-10-21T03:30:29.760Z"
     skins: {
         "Amiya": {
             "avatar": "https://s3.bmp.ovh/2026/09/16/0ZfB9kti.gif",
@@ -43,7 +43,7 @@ module.exports =
             "prize": ""
         },
         "Blaze": {
-            "avatar": "https://s3.bmp.ovh/2026/03/15/lR3j5wgx.png",
+            "avatar": "https://s3.bmp.ovh/2026/10/21/fuBb8n1i.png",
             "name": "煌",
             "prize": ""
         },
@@ -543,7 +543,7 @@ module.exports =
             "prize": ""
         },
         "Ceobe": {
-            "avatar": "https://s3.bmp.ovh/2026/03/16/ncG5K3rF.png",
+            "avatar": "https://s3.bmp.ovh/2026/10/21/bB0pu1FA.png",
             "name": "刻俄柏",
             "prize": ""
         },
@@ -588,7 +588,7 @@ module.exports =
             "prize": ""
         },
         "Gumi": {
-            "avatar": "https://s3.bmp.ovh/2026/03/16/SgAMXYPV.png",
+            "avatar": "https://s3.bmp.ovh/2026/10/21/Tr7HZHz0.png",
             "name": "古米",
             "prize": ""
         },
@@ -648,13 +648,11 @@ module.exports =
             "prize": ""
         },
         "Endministrator_M": {
-            "avatar": "https://s3.bmp.ovh/2026/09/15/IEZGHjmq.png",
-            "name": "管理员(男)",
-            "prize": ""
-        },
-        "Endministrator_F": {
-            "avatar": "https://s3.bmp.ovh/2026/09/12/jCQbQwiU.png",
-            "name": "管理员(女)",
+            "avatar": [
+                "https://s3.bmp.ovh/2026/09/15/IEZGHjmq.png",
+                "https://s3.bmp.ovh/2026/09/12/jCQbQwiU.png"
+            ],
+            "name": "管理员",
             "prize": ""
         },
         "Perlica": {
@@ -713,7 +711,7 @@ module.exports =
             "prize": ""
         },
         "Rossi": {
-            "avatar": "https://s3.bmp.ovh/2026/09/14/oq2lUvC5.png",
+            "avatar": "https://s3.bmp.ovh/2026/09/14/bSddQKpX.png",
             "name": "洛茜",
             "prize": ""
         },
@@ -746,6 +744,10 @@ module.exports =
             "avatar": "https://s3.bmp.ovh/2026/09/15/5RfQDGbF.png",
             "name": "提弗洛斯",
             "prize": ""
+        },
+        "character_1": {
+            "name": "祀",
+            "avatar": "https://s3.bmp.ovh/2026/10/21/K2cZPtHM.png"
         }
     }
     isAvailable: ->
