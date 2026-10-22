@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-10-22T11:15:35.790Z"
+    lastModified: "2026-10-22T11:20:49.958Z"
     skins: {
         "character_1": {
             "name": "烤鸭",
@@ -40,6 +40,9 @@ module.exports =
             "name": "无名cat",
             "avatar": "https://www.boximchat.com/file/box-im/image/20261001/2105531045825765376.jpg",
             "prize": "一个noob"
+        },
+        "character_6": {
+            "name": "占位角色"
         }
     }
     isAvailable: ->
