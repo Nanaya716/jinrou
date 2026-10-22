@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-10-22T11:22:58.566Z"
+    lastModified: "2026-10-22T11:33:19.000Z"
     skins: {
         "character_1": {
             "name": "烤鸭",
@@ -45,6 +45,11 @@ module.exports =
             "name": "鱼航员",
             "avatar": "https://www.boximchat.com/file/box-im/image/20260817/2089324655767736320.png",
             "prize": "这是鱼菇园！"
+        },
+        "character_7": {
+            "name": "需",
+            "avatar": "https://m.ccw.site/works-covers/198043446/9400da4ddff94b1214532dc123a26d59.PNG?x-oss-process=image%2Fresize%2Cs_360%2Fformat%2Cwebp&imageView2/3/w/360/h/360%7CimageMogr2/format/webp",
+            "prize": "冷漠，无趣……"
         }
     }
     isAvailable: ->
