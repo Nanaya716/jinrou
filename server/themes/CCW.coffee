@@ -6,11 +6,11 @@ module.exports =
     color: "#ff00a6"
     background_color: "#000000"
     icon: ""
-    vote: ""
-    sunrise: ""
-    sunset: ""
+    vote: "请把csense处刑掉吧！"
+    sunrise: "csense的黑夜结束了"
+    sunset: "不……ccw倒了……csense要……"
     lockable: true
-    lastModified: "2026-10-22T11:33:19.000Z"
+    lastModified: "2026-10-22T11:49:05.301Z"
     skins: {
         "character_1": {
             "name": "烤鸭",
