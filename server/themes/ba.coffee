@@ -1,16 +1,16 @@
 module.exports =
     name: "碧蓝档案"
     opening: "与你相遇，便是奇迹"
+    author: "2336489322 / 重制整理：Nanaya1；原画：Blue Archive"
     skin_tip: "你的学生"
-    author: "2336489322 / 重制整理：Nanaya；原画：Blue Archive"
-    lastModified: "2026-10-21T11:56:21.871Z"
+    color: "#1b4b6f"
+    background_color: "#f3fbff"
+    icon: ""
     vote: ""
     sunrise: ""
     sunset: ""
-    icon: ""
-    background_color: "#f3fbff"
-    color: "#1b4b6f"
     lockable: true
+    lastModified: "2026-11-08T06:13:13.401Z"
     skins: {
         "Okusora_Ayane": {
             "avatar": [
