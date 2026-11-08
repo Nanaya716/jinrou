@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-10-21T03:30:29.760Z"
+    lastModified: "2026-11-08T07:06:29.632Z"
     skins: {
         "Amiya": {
             "avatar": "https://s3.bmp.ovh/2026/09/16/0ZfB9kti.gif",
@@ -748,6 +748,10 @@ module.exports =
         "character_1": {
             "name": "祀",
             "avatar": "https://s3.bmp.ovh/2026/10/21/K2cZPtHM.png"
+        },
+        "character_2": {
+            "name": "明河",
+            "avatar": "https://s3.bmp.ovh/2026/11/08/Yn2rRnIP.png"
         }
     }
     isAvailable: ->
