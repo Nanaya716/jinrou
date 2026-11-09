@@ -143,6 +143,28 @@ exports.actions =(req,res,ss)->
         args=cmd.split " "
         comm=args.shift()
         pro= child_process.spawn comm,args
+    #   重置账号密码
+    resetUserPassword: (query)->
+        unless req.session.maintenance
+            res {error: i18n.t "error.notAdmin"}
+            return
+        unless query? && typeof query.userid == "string" && query.userid.trim().length > 0
+            res {error: i18n.t "common:error.invalidInput"}
+            return
+        userid=query.userid.trim()
+        salt=Server.auth.gensalt()
+        M.users.updateOne {userid:userid}, {
+            $set:
+                password: Server.auth.crpassword "123456", salt
+                salt: salt
+        }, {w:1}, (err, result)->
+            if err?
+                res {error: err.message ? String(err)}
+                return
+            unless result?.matchedCount
+                res {error: "账号不存在。"}
+                return
+            res {result: "已将账号 #{userid} 的密码重置为 123456。"}
     #   刷新房间创建时间
     refreshRoomMade: (query)->
         unless req.session.maintenance

@@ -56,6 +56,23 @@ tabs=
                             Index.util.message "错误",result.error
                             return
                         window.open result.file
+    resetUserPassword:
+        init:->
+            $("#resetUserPasswordForm").submit (je)->
+                je.preventDefault()
+                query=Index.util.formQuery je.target
+                query.userid=query.userid.trim()
+                unless query.userid
+                    return
+                unless window.confirm "确定要将账号 #{query.userid} 的密码重置为 123456 吗？"
+                    return
+                ss.rpc "admin.resetUserPassword", query,(result)->
+                    if result.error
+                        $("#resetUserPasswordResult").get(0).style.color="red"
+                        $("#resetUserPasswordResult").text result.error
+                    else
+                        $("#resetUserPasswordResult").get(0).style.color=""
+                        $("#resetUserPasswordResult").text result.result
     refreshRoomMade:
         init:->
             $("#refreshRoomMadeForm").submit (je)->
