@@ -1,5 +1,6 @@
 # Server-side Code
 crypto=require('crypto')
+auth=require '../auth.coffee'
 child_process=require('child_process')
 settings=Config.mongo
 ObjectId=require('mongodb').ObjectId
@@ -152,10 +153,10 @@ exports.actions =(req,res,ss)->
             res {error: i18n.t "common:error.invalidInput"}
             return
         userid=query.userid.trim()
-        salt=Server.auth.gensalt()
+        salt=auth.gensalt()
         M.users.updateOne {userid:userid}, {
             $set:
-                password: Server.auth.crpassword "123456", salt
+                password: auth.crpassword "123456", salt
                 salt: salt
         }, {w:1}, (err, result)->
             if err?
