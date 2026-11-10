@@ -282,11 +282,13 @@ normal2=(number)->
         if number==16
             ret.Immoral=1
             ret.Madman--
+            ret.Baker=1
         if 18<=number<=19
             ret.Immoral=1 
             if number==19
                 ret.Madman--
                 ret.Fanatic=1 #狂信者
+                ret.Immoral=0
         if number>=20
             ret.Madman--
             ret.HearMadman=1
@@ -298,7 +300,7 @@ normal2=(number)->
             ret.Fox++
             if number>=25
                 ret.Fox++
-    if number>=14
+    if number>=14 && number !=16
         ret.Couple=2
     if number==19 || number>=22
         ret.Teruteru=1
