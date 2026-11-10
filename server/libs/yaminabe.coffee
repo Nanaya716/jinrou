@@ -491,6 +491,9 @@ exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, hu
                 else if Math.random()<0.06 && !nonavs.LunaticLover
                     joblist.LunaticLover++
                     frees--
+                else if Math.random()<0.06 && !nonavs.DoomsdayYandere
+                    joblist.DoomsdayYandere++
+                    frees--
             else if 12>=playersnumber>=8
                 if Math.random()<0.045 && !nonavs.Lover
                     joblist.Lover++
@@ -503,6 +506,9 @@ exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, hu
                     frees--
                 else if Math.random()<0.03 && !nonavs.LunaticLover
                     joblist.LunaticLover++
+                    frees--
+                else if Math.random()<0.03 && !nonavs.DoomsdayYandere
+                    joblist.DoomsdayYandere++
                     frees--
             else if playersnumber>=17
                 rval = 1
@@ -522,10 +528,13 @@ exports.generate = ({joblist, frees, playersnumber, query, jobs, jobStrength, hu
                     else if Math.random()<0.08 && !nonavs.LunaticLover
                         joblist.LunaticLover++
                         frees--
+                    else if Math.random()<0.08 && !nonavs.DoomsdayYandere
+                        joblist.DoomsdayYandere++
+                        frees--
                     else
                         break
                     rval *= 0.6
-        exceptions.push "Cupid", "Lover", "BadLady", "Patissiere", "SnowLover", "LunaticLover"
+        exceptions.push "Cupid", "Lover", "BadLady", "Patissiere", "SnowLover", "LunaticLover", "DoomsdayYandere"
         # 決闘者陣営
         if frees>0
             if playersnumber<9

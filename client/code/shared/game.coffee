@@ -59,7 +59,7 @@ exports.jobs=["Human","Werewolf","Diviner","Psychic","MindPsychic","Madman","Reb
 # 人狼パーティー
 "TinyGhost","Ninja","Twin","Dracula","VampireClan"
 # その他
-"RedHood","Baker","XianFox","LunaticLover"
+"RedHood","Baker","XianFox","LunaticLover","DoomsdayYandere"
 # 人狼放浪記
 "MadDog","CraftyWolf","Pumpkin","MadScientist","SpiritPossessed","Forensic","MementoDisposer",
 # 真紅の狼
@@ -124,7 +124,7 @@ exports.teams=teams=
     Werewolf:["Werewolf","Madman","RebelliousMadman","MadDictator","BigWolf","DoubleHeadedWolf","Fanatic","HearMadman","Spy","WolfDiviner","NormalWolfDiviner","Spy2","Sorcerer","LoneWolf","MinionSelector","WolfCub","WhisperingMad","WolfBoy","GreedyWolf","SuperWerewolf","FascinatingWolf","SolitudeWolf","ToughWolf","LastStandWolf","ThreateningWolf","ObstructiveMad","PsychoKiller","CautiousWolf","Bomber","Ushinotokimairi","MadDog","Hypnotist","CraftyWolf","Pumpkin","MadScientist","MadHunter","MadCouple","EyesWolf","TongueWolf","BlackCat","LurkingMad","DecoyWolf","Satori","AbsoluteWolf","QueenOfNight","CurseWolf","IntuitionWolf","Faker","SealWolf","CynthiaWolf","NetherWolf","DarkWolf","SpaceWerewolfImposter","Acrobat","BloodWolf","Shadow","AttractiveWoman","DestroyCraziest","RainyBoy","WerewolfDescendant","LandmineGirl"]
     Fox:["Fox","NineTailedFox","SuperFox","TinyFox","Immoral","Perfidious","Heretic","Blasphemy","XianFox","NightRabbit","Trickster","VariationFox","Actress","HimeFox","FoxMatchmaker"]
     Devil:["Devil"]
-    Friend:["Cupid","Lover","BadLady","Patissiere","SnowLover","LunaticLover","FoxMatchmaker"]
+    Friend:["Cupid","Lover","BadLady","Patissiere","SnowLover","LunaticLover","DoomsdayYandere","FoxMatchmaker"]
     Vampire:["Vampire","Dracula","VampireClan"]
     Cult:["CultLeader","Hierarch"]
     Raven:["Raven","Ascetic"]
@@ -143,7 +143,7 @@ exports.categories=
     Fox:["Fox","NineTailedFox","SuperFox","HimeFox","FoxMatchmaker","TinyFox","XianFox","NightRabbit","Trickster","VariationFox","Actress"]
     Immoral:["Immoral","Blasphemy","Perfidious","Heretic"]
     # sort by teams （恋人陣営、単独陣営、その他、変化系その他、変化系村人陣営）
-    Others:["Cupid","Lover","BadLady","Patissiere","SnowLover","LunaticLover","Devil","CultLeader","Hierarch","Vampire","Dracula","VampireClan","Raven","Ascetic","Hooligan","Lorelei","Bat","Tanner","Teruteru","ButaOtoko","Hoodlum","Shishimai","Amanojaku","DarkClown","Oni","GoldOni","Duelist","FrontOni","BackOni","ResidualHaunting"]
+    Others:["Cupid","Lover","BadLady","Patissiere","SnowLover","LunaticLover","DoomsdayYandere","Devil","CultLeader","Hierarch","Vampire","Dracula","VampireClan","Raven","Ascetic","Hooligan","Lorelei","Bat","Tanner","Teruteru","ButaOtoko","Hoodlum","Shishimai","Amanojaku","DarkClown","Oni","GoldOni","Duelist","FrontOni","BackOni","ResidualHaunting"]
     Switching:["Stalker","Copier","Doppleganger","DualPersonality","OccultMania","Cursed","BloodyMary","Phantom","Thief","Dreamer"]
     # Special category for "no category"
     None:[
@@ -1783,6 +1783,8 @@ exports.jobinfo=
             color:"#f6ceff"
         LunaticLover:
             color:"#b30000"
+        DoomsdayYandere:
+            color:"#9e164b"
     Devil:
         color:"#735f9e"
         Devil:
