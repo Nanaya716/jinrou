@@ -180,7 +180,8 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
         </>,
       );
     } else if (log.mode === 'probability_table') {
-      // log of probability table for Quantum Werewwolf
+      const rows = Object.entries(log.probability_table);
+      const showFox = rows.some(([, row]) => row.Fox != null);
       return renderLine(
         log.mode,
         <>
@@ -208,6 +209,7 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
                   )}
                   {/* 人狼 */}
                   <th>{t('log.probabilityTable.Werewolf')}</th>
+                  {showFox && <th>{t('log.probabilityTable.Fox')}</th>}
                   {rule && rule.rules.get('quantumwerewolf_dead') !== 'no' ? (
                     /* 死亡 */
                     <th>{t('log.probabilityTable.dead')}</th>
@@ -215,8 +217,7 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
                 </tr>
               </thead>
               <tbody>
-                {Object.keys(log.probability_table).map(id => {
-                  const obj = log.probability_table[id];
+                {rows.map(([id, obj]) => {
                   return (
                     <ProbabilityTr dead={obj.dead === 1} key={id}>
                       <td>{sanitizeLog(obj.name)}</td>
@@ -226,6 +227,7 @@ class OneLogInner extends React.PureComponent<IPropOneLog, {}> {
                         <ProbTd prob={obj.Diviner} />
                       ) : null}
                       <ProbTd prob={obj.Werewolf} />
+                      {obj.Fox != null && <ProbTd prob={obj.Fox} />}
                       {rule &&
                       rule.rules.get('quantumwerewolf_dead') !== 'no' ? (
                         <ProbTd prob={obj.dead} />

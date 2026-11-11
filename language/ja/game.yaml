@@ -63,6 +63,7 @@ error:
     playerNotEnough: '人数不足，不能开始。含替身君最少要有{{count}}人。'
     # Too many for quantum werewolf.
     tooManyQuantum: '人数过多。量子人狼的人数应当在{{count}}人以下。'
+    quantumFoxPlayerCount: '量子人狼（妖狐）需要 6 至 12 名玩家。'
     # Chemical werewolf is not available under this rule.
     noChemical: '本规则下无法使用炼成人狼。'
     # unknown casting name is given
