@@ -6,7 +6,7 @@ module.exports =
     color: "#000000"
     background_color: "#000000"
     lockable: true
-    lastModified: "2026-11-11T05:35:01.235Z"
+    lastModified: "2026-11-11T05:57:30.256Z"
     skins: {
         "Amiya": {
             "name": "阿米娅",
@@ -14,21 +14,9 @@ module.exports =
                 "https://media.prts.wiki/3/36/%E5%A4%B4%E5%83%8F_%E9%98%BF%E7%B1%B3%E5%A8%85.png",
                 "https://media.prts.wiki/d/d9/%E5%A4%B4%E5%83%8F_%E9%98%BF%E7%B1%B3%E5%A8%85_skin1.png",
                 "https://media.prts.wiki/b/b4/%E5%A4%B4%E5%83%8F_%E9%98%BF%E7%B1%B3%E5%A8%85_skin2.png",
-                "https://media.prts.wiki/b/b9/%E5%A4%B4%E5%83%8F_%E9%98%BF%E7%B1%B3%E5%A8%85_skin3.png"
-            ],
-            "prize": ""
-        },
-        "AmiyaM": {
-            "name": "阿米娅(医疗)",
-            "avatar": [
+                "https://media.prts.wiki/b/b9/%E5%A4%B4%E5%83%8F_%E9%98%BF%E7%B1%B3%E5%A8%85_skin3.png",
                 "https://media.prts.wiki/a/ac/%E5%A4%B4%E5%83%8F_%E9%98%BF%E7%B1%B3%E5%A8%85%28%E5%8C%BB%E7%96%97%29.png",
-                "https://media.prts.wiki/9/96/%E5%A4%B4%E5%83%8F_%E9%98%BF%E7%B1%B3%E5%A8%85(%E5%8C%BB%E7%96%97)_skin1.png"
-            ],
-            "prize": ""
-        },
-        "AmiyaG": {
-            "name": "阿米娅(近卫)",
-            "avatar": [
+                "https://media.prts.wiki/9/96/%E5%A4%B4%E5%83%8F_%E9%98%BF%E7%B1%B3%E5%A8%85(%E5%8C%BB%E7%96%97)_skin1.png",
                 "https://media.prts.wiki/5/5b/%E5%A4%B4%E5%83%8F_%E9%98%BF%E7%B1%B3%E5%A8%85%28%E8%BF%91%E5%8D%AB%29.png",
                 "https://media.prts.wiki/c/c6/%E5%A4%B4%E5%83%8F_%E9%98%BF%E7%B1%B3%E5%A8%85(%E8%BF%91%E5%8D%AB)_skin1.png",
                 "https://media.prts.wiki/2/22/%E5%A4%B4%E5%83%8F_%E9%98%BF%E7%B1%B3%E5%A8%85(%E8%BF%91%E5%8D%AB)_skin2.png",
