@@ -10618,8 +10618,10 @@ class DoomsdayYandere extends Player
         return false unless @flag?.awakened && !@isPlayerDead(game)
         others = game.players.filter (pl)=> !pl.dead && pl.id != @id
         humans = others.reduce ((count, pl)-> count + pl.humanCount()), 0
+        # 陣営ではなく人数で判定する。他の狼・吸血鬼カウントが残る場合は勝利しない。
         humans <= @getTopPlayer(game).werewolfCount() && others.every (pl)->
-            pl.getTeam() == "Human" && !pl.isWerewolf() && !pl.isFox() && !pl.isVampire()
+            !pl.isWerewolf() && !pl.isFox() && !pl.isVampire() &&
+                pl.werewolfCount() == 0 && pl.vampireCount() == 0
     isWinner:(game, team)->
         if @flag?.awakened
             return team == @team && @canWinAfterAwakening(game)
