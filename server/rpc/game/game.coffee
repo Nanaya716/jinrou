@@ -10604,6 +10604,10 @@ class DoomsdayYandere extends Player
             to: @id
             comment: game.i18n.t "roles:DoomsdayYandere.awaken", {name: @name, target: beloved.name}
         }
+        splashlog game.id, game, {
+            mode: "system"
+            comment: game.i18n.t "roles:DoomsdayYandere.awakenPublic"
+        }
         game.splashjobinfo [@getTopPlayer(game)]
         false
     midnight:(game)->

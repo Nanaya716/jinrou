@@ -999,6 +999,7 @@ LunaticLover:
 DoomsdayYandere:
   select: '{{name}} 把 {{target}} 选为了死心塌地的对象。'
   awaken: '由于爱的人已经死去。{{name}} 决心毁灭世界。'
+  awakenPublic: '由于爱的人已经死去，终末病娇决心毁灭世界。'
   attack: '{{name}} 决定袭击 {{target}}。'
   
 Hooligan:
