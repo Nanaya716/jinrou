@@ -940,6 +940,28 @@ exports.jobrules=[
           ret
       }
       {
+        name:"终末病娇"
+        minNumber:15
+        rule:(number)->
+          ret=
+            Diviner:1
+            Psychic:1
+            Guard:1
+            MagicalGirl:1
+            DoomsdayYandere:1
+          if number>=18
+            ret.Couple=2
+            ret.Hero=1
+            ret.LastStandWolf=4
+            ret.Madman=1
+          else
+            ret.Baker=1
+            ret.WerewolfDescendant=1
+            ret.Werewolf=2 if number<17
+            ret.LastStandWolf=if number<17 then 1 else 3
+          ret
+      }
+      {
         name:"超职业"
         rule:(number)->
           ret=super1 number
