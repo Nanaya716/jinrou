@@ -840,11 +840,11 @@ class Game
         game
     # 公開情報
     publicinfo:(obj)->  #obj:オプション
-        # 内部情報(_jobquery など)をクライアントへ出さない
+        # 終了後の設定コピーにだけ _jobquery を公開する
         pubrule = @rule
         if @rule?
             pubrule = {}
-            pubrule[k] = v for k, v of @rule when k != "_jobquery"
+            pubrule[k] = v for k, v of @rule when k != "_jobquery" || @finished
         {
             rule:pubrule
             finished:@finished
