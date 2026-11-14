@@ -141,21 +141,22 @@ updateBanQuery = (userid, ip, doc)->
             id: makeBanId()
         }
     # IPアドレス
-    if Array.isArray doc.ip
-        unless ip in doc.ip
-            flag = true
-            result.$push = {
-                ip: ip
-            }
-    else
-        if ip != doc.ip
-            flag = true
-            if result.$set?
-                result.$set.ip = [doc.ip, ip]
-            else
-                result.$set = {
-                    ip: [doc.ip, ip]
+    if ip?
+        if Array.isArray doc.ip
+            unless ip in doc.ip
+                flag = true
+                result.$push = {
+                    ip: ip
                 }
+        else
+            if ip != doc.ip
+                flag = true
+                if result.$set?
+                    result.$set.ip = [doc.ip, ip]
+                else
+                    result.$set = {
+                        ip: [doc.ip, ip]
+                    }
     # ユーザーID
     if userid?
         if Array.isArray doc.userid

@@ -2021,6 +2021,7 @@ exports.new_rules=[
                     type:"time"
                     id: 'day'
                     defaultValue: 330
+                    minValue: 1
                     disabled:(rule)->
                         rule.rules.get('dynamic_day_time') == 'on'
             }
@@ -2030,6 +2031,7 @@ exports.new_rules=[
                     type:"time"
                     id: 'night'
                     defaultValue: 210
+                    minValue: 1
             }
             {
                 type: 'item'
