@@ -10,7 +10,7 @@ module.exports =
     sunrise: "csense的黑夜结束了"
     sunset: "不……ccw倒了……csense要……"
     lockable: true
-    lastModified: "2026-11-17T17:28:09.091Z"
+    lastModified: "2026-11-17T17:32:46.259Z"
     skins: {
         "character_8": {
             "name": "莱尔",
@@ -58,9 +58,9 @@ module.exports =
             "prize": "死亡错觉"
         },
         "character_17": {
-            "name": "盲视",
+            "name": "莫瞳",
             "avatar": "https://i.imgs.ovh/2026/11/18/03d8695df9fbd5f0e88d40e9b08cd3c7.jpg",
-            "prize": "莫瞳"
+            "prize": "盲视"
         },
         "character_18": {
             "name": "亥珀",
@@ -73,14 +73,14 @@ module.exports =
             "prize": "化兽妄想"
         },
         "character_20": {
-            "name": "四肢切断",
+            "name": "雷",
             "avatar": "https://i.imgs.ovh/2026/11/18/3cb4274c67c36495f5a55498c75914b4.jpg",
-            "prize": "雷"
+            "prize": "四肢切断"
         },
         "character_21": {
-            "name": "家人制造",
+            "name": "理教教主",
             "avatar": "https://i.imgs.ovh/2026/11/18/9f40503b1d972edb96f2b02194bca700.jpg",
-            "prize": "理教教主"
+            "prize": "家人制造"
         },
         "character_22": {
             "name": "理教教徒男",
