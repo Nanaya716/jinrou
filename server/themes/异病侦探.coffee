@@ -10,7 +10,7 @@ module.exports =
     sunrise: "csense的黑夜结束了"
     sunset: "不……ccw倒了……csense要……"
     lockable: true
-    lastModified: "2026-11-17T17:32:46.259Z"
+    lastModified: "2026-11-18T08:08:27.528Z"
     skins: {
         "character_8": {
             "name": "莱尔",
@@ -38,9 +38,9 @@ module.exports =
             "prize": "理解一切吧！"
         },
         "character_13": {
-            "name": "真寻",
+            "name": "真澄",
             "avatar": "https://i.imgs.ovh/2026/11/18/abac91b68fc8ccb42eb82bb97059de34.jpg",
-            "prize": "现实丧失"
+            "prize": "不必让自己假装坚强哦"
         },
         "character_14": {
             "name": "绊",
@@ -91,6 +91,11 @@ module.exports =
             "name": "理教教徒女",
             "avatar": "https://i.imgs.ovh/2026/11/18/7395c6669b90b9526a2ba631305c372e.jpg",
             "prize": "理解！理解？"
+        },
+        "character_24": {
+            "name": "真寻",
+            "avatar": "https://i.imgs.ovh/2026/11/18/891d5962c6f7c6ca1aa12eb53701ac5d.jpg",
+            "prize": "现实丧失"
         }
     }
     isAvailable: ->
