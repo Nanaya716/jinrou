@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-11-18T11:42:13.966Z"
+    lastModified: "2026-11-18T11:44:03.828Z"
     skins: {
         "yukisome_chisa": {
             "avatar": [
@@ -575,7 +575,7 @@ module.exports =
         "character_14": {
             "avatar": "https://pic1.imgdb.cn/i/034hw2s6wchd35HgDFlGQ6.jpg",
             "name": "六道真灵",
-            "prize": "今天要来点真灵吗"
+            "prize": "SP灵能者"
         },
         "character_15": {
             "avatar": "https://s41.ax1x.com/2026/01/11/pZBV83t.jpg",
