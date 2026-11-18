@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-11-17T21:45:39.687Z"
+    lastModified: "2026-11-18T11:39:57.373Z"
     skins: {
         "yukisome_chisa": {
             "avatar": [
@@ -21,9 +21,9 @@ module.exports =
             "prize": "纪念玉兔阁"
         },
         "akioi": {
-            "avatar": "https://z3.ax1x.com/2021/08/15/f2PBkQ.jpg",
+            "avatar": "https://z1.ax1x.com/2023/10/13/pipgDpR.jpg",
             "name": "akioi",
-            "prize": "永远的AK酱"
+            "prize": "每行一个称号，支持多个称号（选填）"
         },
         "tiger": {
             "avatar": [
