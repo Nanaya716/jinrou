@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-11-18T11:49:49.289Z"
+    lastModified: "2026-11-18T11:49:59.481Z"
     skins: {
         "yukisome_chisa": {
             "avatar": [
