@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-11-19T05:46:27.649Z"
+    lastModified: "2026-11-19T11:10:55.594Z"
     skins: {
         "character_1": {
             "name": "霜月 雪成",
@@ -71,6 +71,22 @@ module.exports =
         "character_15": {
             "name": "土屋 拓也",
             "avatar": "https://s3.bmp.ovh/2026/11/19/bdUKQhFG.jpg"
+        },
+        "character_16": {
+            "name": "相田 裕也",
+            "avatar": "https://s3.bmp.ovh/2026/11/19/aCJh0K0c.jpg"
+        },
+        "character_17": {
+            "name": "神崎 宗四郎",
+            "avatar": "https://s3.bmp.ovh/2026/11/19/kMmkCA4o.jpg"
+        },
+        "character_18": {
+            "name": "一条 椿",
+            "avatar": "https://s3.bmp.ovh/2026/11/19/aUQnHb3i.jpg"
+        },
+        "character_19": {
+            "name": "小野寺 凛佳",
+            "avatar": "https://s3.bmp.ovh/2026/11/19/kvwa8Mu1.jpg"
         }
     }
     isAvailable: ->
