@@ -10,6 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
+    lastModified: "2026-11-19T05:46:27.649Z"
     skins: {
         "character_1": {
             "name": "霜月 雪成",
@@ -66,8 +67,11 @@ module.exports =
         "character_14": {
             "name": "赤村 翔马",
             "avatar": "https://i.imgs.ovh/2026/11/18/e0ccc529f00a97de49daa084085ca4c2.jpg"
+        },
+        "character_15": {
+            "name": "土屋 拓也",
+            "avatar": "https://s3.bmp.ovh/2026/11/19/bdUKQhFG.jpg"
         }
     }
-    lastModified: "2026-11-17T22:18:39.909Z"
     isAvailable: ->
         return true
