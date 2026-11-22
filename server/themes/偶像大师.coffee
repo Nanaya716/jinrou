@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-11-22T09:34:27.928Z"
+    lastModified: "2026-11-22T09:39:12.230Z"
     skins: {
         "character_1": {
             "avatar": "https://s3.bmp.ovh/2026/08/12/cJBb8ABu.png",
@@ -239,7 +239,7 @@ module.exports =
         },
         "character_46": {
             "name": "冰渡香江名",
-            "avatar": "https://s3.bmp.ovh/2026/11/22/TovVTHtl.png",
+            "avatar": "https://s3.bmp.ovh/2026/11/22/RzaLKT91.png",
             "prize": "初星学园"
         }
     }
