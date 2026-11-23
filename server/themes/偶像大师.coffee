@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-11-22T09:39:12.230Z"
+    lastModified: "2026-11-23T04:24:26.837Z"
     skins: {
         "character_1": {
             "avatar": "https://s3.bmp.ovh/2026/08/12/cJBb8ABu.png",
@@ -241,6 +241,21 @@ module.exports =
             "name": "冰渡香江名",
             "avatar": "https://s3.bmp.ovh/2026/11/22/RzaLKT91.png",
             "prize": "初星学园"
+        },
+        "character_47": {
+            "name": "蓝井抚子",
+            "avatar": "https://s3.bmp.ovh/2026/11/23/tARcjWcF.jpg",
+            "prize": "极月学园"
+        },
+        "character_48": {
+            "name": "白草四音",
+            "avatar": "https://s3.bmp.ovh/2026/11/23/mQgMiovW.jpg",
+            "prize": "极月学园"
+        },
+        "character_49": {
+            "name": "白草月花",
+            "avatar": "https://s3.bmp.ovh/2026/11/23/VBETw9Fh.jpg",
+            "prize": "极月学园"
         }
     }
     isAvailable: ->
