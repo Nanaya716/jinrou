@@ -10,21 +10,21 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-11-24T08:54:44.273Z"
+    lastModified: "2026-11-24T08:56:37.333Z"
     skins: {
         "character_2": {
             "name": "梅梅卢恩",
-            "avatar": "https://huiji-public.huijistatic.com/ff14/uploads/4/42/087037.png",
+            "avatar": "https://huiji-public.huijistatic.com/ff14/uploads/e/e4/088037.png",
             "prize": "梅梅卢恩交易站"
         },
         "character_3": {
             "name": "蜥蜴人",
-            "avatar": "https://huiji-public.huijistatic.com/ff14/uploads/c/c5/087014.png",
+            "avatar": "https://huiji-public.huijistatic.com/ff14/uploads/8/80/088014.png",
             "prize": "帕戈尔赞草原的游牧之民"
         },
         "character_4": {
             "name": "渡渡鸟",
-            "avatar": "https://huiji-public.huijistatic.com/ff14/uploads/c/cf/087001.png",
+            "avatar": "https://huiji-public.huijistatic.com/ff14/uploads/a/a0/088001.png",
             "prize": "马兹拉雅岛的大型鸟类"
         },
         "character_5": {
