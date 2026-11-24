@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-11-24T08:56:37.333Z"
+    lastModified: "2026-11-24T08:57:40.080Z"
     skins: {
         "character_2": {
             "name": "梅梅卢恩",
@@ -31,6 +31,11 @@ module.exports =
             "name": "冬贝利",
             "avatar": "https://huiji-public.huijistatic.com/ff14/uploads/f/f2/088002.png",
             "prize": "谜一般的生物"
+        },
+        "character_6": {
+            "name": "塔塔露·塔露",
+            "avatar": "https://huiji-public.huijistatic.com/ff14/uploads/3/3c/088019.png",
+            "prize": "拂晓血盟接待员"
         }
     }
     isAvailable: ->
