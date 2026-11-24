@@ -10,13 +10,18 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
+    lastModified: "2026-11-24T08:44:02.750Z"
     skins: {
         "character_2": {
             "name": "梅梅卢恩",
             "avatar": "https://huiji-public.huijistatic.com/ff14/uploads/4/42/087037.png",
             "prize": "梅梅卢恩交易站"
+        },
+        "character_3": {
+            "name": "蜥蜴人",
+            "avatar": "https://huiji-public.huijistatic.com/ff14/uploads/c/c5/087014.png",
+            "prize": "帕戈尔赞草原的游牧之民"
         }
     }
-    lastModified: "2026-11-24T08:41:33.803Z"
     isAvailable: ->
         return true
