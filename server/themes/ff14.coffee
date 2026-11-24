@@ -10,7 +10,7 @@ module.exports =
     sunrise: ""
     sunset: ""
     lockable: true
-    lastModified: "2026-11-24T09:04:38.191Z"
+    lastModified: "2026-11-24T09:05:30.095Z"
     skins: {
         "character_2": {
             "name": "梅梅卢恩",
